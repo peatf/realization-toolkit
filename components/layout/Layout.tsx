@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import Head from 'next/head';
 import Lenis from '@studio-freight/lenis';
 import gsap from 'gsap';
+import { FogBackground } from '../ui/NeumorphicUI';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -10,53 +11,57 @@ interface LayoutProps {
   description?: string;
 }
 
-// Custom cursor component
+// Enhanced minimal custom cursor
 const CustomCursor: React.FC = () => {
-  const cursorRef = useRef<HTMLDivElement>(null);
-  const cursorDotRef = useRef<HTMLDivElement>(null);
+  const cursorOuterRef = useRef<HTMLDivElement>(null);
+  const cursorInnerRef = useRef<HTMLDivElement>(null);
+  const [isHovering, setIsHovering] = useState(false);
   
   useEffect(() => {
-    const cursor = cursorRef.current;
-    const cursorDot = cursorDotRef.current;
+    const cursorOuter = cursorOuterRef.current;
+    const cursorInner = cursorInnerRef.current;
     
-    if (!cursor || !cursorDot) return;
+    if (!cursorOuter || !cursorInner) return;
     
     const handleMouseMove = (e: MouseEvent) => {
-      // Main cursor follows mouse with a slight delay
-      gsap.to(cursor, {
+      // Outer cursor follows with delay for ethereal effect
+      gsap.to(cursorOuter, {
         x: e.clientX,
         y: e.clientY,
-        duration: 0.5,
-        ease: "power2.out"
+        duration: 0.8,
+        ease: "power3.out"
       });
       
-      // Dot follows mouse exactly
-      gsap.to(cursorDot, {
+      // Inner dot follows exactly with slight delay
+      gsap.to(cursorInner, {
         x: e.clientX,
         y: e.clientY,
-        duration: 0.1
+        duration: 0.3,
+        ease: "power2.out"
       });
     };
     
     const handleMouseEnter = () => {
-      cursor.classList.remove('opacity-0');
-      cursorDot.classList.remove('opacity-0');
+      cursorOuter.classList.remove('opacity-0');
+      cursorInner.classList.remove('opacity-0');
     };
     
     const handleMouseLeave = () => {
-      cursor.classList.add('opacity-0');
-      cursorDot.classList.add('opacity-0');
+      cursorOuter.classList.add('opacity-0');
+      cursorInner.classList.add('opacity-0');
     };
     
     // Track interactive elements to modify cursor appearance
     const handleLinkEnter = () => {
-      cursor.classList.add('scale-150');
-      cursorDot.classList.add('opacity-0');
+      setIsHovering(true);
+      cursorOuter.classList.add('scale-150', 'backdrop-blur-sm', 'bg-white/5');
+      cursorInner.classList.add('bg-neon-green', 'scale-150');
     };
     
     const handleLinkLeave = () => {
-      cursor.classList.remove('scale-150');
-      cursorDot.classList.remove('opacity-0');
+      setIsHovering(false);
+      cursorOuter.classList.remove('scale-150', 'backdrop-blur-sm', 'bg-white/5');
+      cursorInner.classList.remove('bg-neon-green', 'scale-150');
     };
     
     document.addEventListener('mousemove', handleMouseMove);
@@ -86,13 +91,18 @@ const CustomCursor: React.FC = () => {
   return (
     <>
       <div 
-        ref={cursorRef}
-        className="fixed top-0 left-0 w-8 h-8 rounded-full border border-white/70 pointer-events-none z-50 transform -translate-x-1/2 -translate-y-1/2 opacity-0 transition-transform duration-200"
-      ></div>
+        ref={cursorOuterRef}
+        className="fixed top-0 left-0 w-12 h-12 rounded-full border border-white/30 
+                  pointer-events-none z-50 opacity-0 mix-blend-difference
+                  transform -translate-x-1/2 -translate-y-1/2 transition-transform duration-slow"
+        style={{ transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)' }}
+      />
       <div 
-        ref={cursorDotRef}
-        className="fixed top-0 left-0 w-2 h-2 bg-white rounded-full pointer-events-none z-50 transform -translate-x-1/2 -translate-y-1/2 opacity-0"
-      ></div>
+        ref={cursorInnerRef}
+        className="fixed top-0 left-0 w-2 h-2 bg-white/60 rounded-full 
+                  pointer-events-none z-50 opacity-0 mix-blend-difference
+                  transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300"
+      />
     </>
   );
 };
@@ -105,9 +115,11 @@ const Layout: React.FC<LayoutProps> = ({
   // Initialize smooth scrolling with Lenis
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: 1.8, // Slower, more ethereal scrolling
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      touchMultiplier: 2,
+      touchMultiplier: 1.5,
+      smoothTouch: true,
+      wheelMultiplier: 0.8, // Gentler wheel scrolling
     });
 
     function raf(time: number) {
@@ -129,11 +141,22 @@ const Layout: React.FC<LayoutProps> = ({
         <meta name="description" content={description} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
+        
+        {/* Add Inter font for the light weight typography */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500&display=swap"
+          rel="stylesheet"
+        />
       </Head>
       
+      {/* Background fog effect */}
+      <FogBackground intensity="medium" />
+      
+      {/* Minimal custom cursor */}
       <CustomCursor />
       
-      <main>{children}</main>
+      {/* Main content */}
+      <main className="relative z-10">{children}</main>
     </>
   );
 };
