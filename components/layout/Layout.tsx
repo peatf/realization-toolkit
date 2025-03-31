@@ -249,16 +249,28 @@ const Layout: React.FC<LayoutProps> = ({
   description = 'Discover tools for personal transformation through our immersive digital experience.' 
 }) => {
   // Initialize smooth scrolling with Lenis
-  useEffect(() => {
-const lenis = new Lenis({
-  duration: 1.2,
-  easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-  direction: 'vertical',    // This is causing the error
-  gestureDirection: 'vertical',
-  smooth: true,
-  smoothTouch: false,
-  touchMultiplier: 2,
-});
+useEffect(() => {
+  const lenis = new Lenis({
+    duration: 1.2,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    // Remove 'direction' and 'gestureDirection' properties
+    smooth: true,
+    smoothTouch: false,
+    touchMultiplier: 2,
+  });
+  
+  // Rest of the code remains the same
+  function raf(time: number) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+  
+  requestAnimationFrame(raf);
+  
+  return () => {
+    lenis.destroy();
+  };
+}, []);
     
     // Integrate with GSAP
     function raf(time: number) {
