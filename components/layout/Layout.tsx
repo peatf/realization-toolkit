@@ -250,11 +250,11 @@ const Layout: React.FC<LayoutProps> = ({
 }) => {
   // Initialize smooth scrolling with Lenis
   useEffect(() => {
-    const lenis = new Lenis({
+const lenis = new Lenis({
   duration: 1.2,
   easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-  orientation: 'vertical',  // Changed from 'direction' to 'orientation'
-  wheelMultiplier: 1,       // Added instead of gestureDirection
+  direction: 'vertical',    // This is causing the error
+  gestureDirection: 'vertical',
   smooth: true,
   smoothTouch: false,
   touchMultiplier: 2,
