@@ -1,5 +1,7 @@
 
 // Mock component for Quiz Section with updated aesthetic
+import { GlassModule } from '../ui/NeumorphicUI';
+
 const QuizSectionMock: React.FC = () => {
   return (
     <section id="quiz" className="py-24 md:py-36 relative overflow-hidden">
