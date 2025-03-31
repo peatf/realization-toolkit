@@ -252,27 +252,27 @@ const Layout: React.FC<LayoutProps> = ({
   description = 'Discover tools for personal transformation through our immersive digital experience.' 
 }) => {
   // Initialize smooth scrolling with Lenis
-  useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smooth: true,
-      smoothTouch: false,
-      touchMultiplier: 2,
-    });
-    
-    // Integrate with GSAP
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-    
+  // Corrected Lenis initialization
+useEffect(() => {
+  const lenis = new Lenis({
+    duration: 1.2,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    // smoothWheel: true, // This is usually true by default, add if needed
+    touchMultiplier: 2,
+    // Add other valid options if required, e.g., orientation: 'vertical'
+  });
+
+  function raf(time: number) {
+    lenis.raf(time);
     requestAnimationFrame(raf);
-    
-    return () => {
-      lenis.destroy();
-    };
-  }, []);
+  }
+
+  requestAnimationFrame(raf);
+
+  return () => {
+    lenis.destroy();
+  };
+}, []);
   
   // Make sure the component returns JSX directly, not a function
   return (
