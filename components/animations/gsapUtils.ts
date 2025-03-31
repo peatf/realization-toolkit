@@ -1,9 +1,10 @@
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
+import { SplitText } from 'gsap/dist/SplitText';
 
 // Ensure GSAP plugins are registered
 if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger);
+  gsap.registerPlugin(ScrollTrigger, SplitText);
 }
 
 /**
@@ -174,7 +175,35 @@ export const createScrollAnimation = (element: HTMLElement, animation: {
  * @param type The type of split ('chars', 'words', or 'lines')
  * @param staggerAmount The amount of stagger between animations
  */
-
+export const createSplitTextAnimation = (element: HTMLElement, type: 'chars' | 'words' | 'lines' = 'words', staggerAmount: number = 0.03) => {
+  if (!element || typeof window === 'undefined') return;
+  
+  // @ts-ignore - SplitText from GSAP needs to be imported separately
+  const splitText = new SplitText(element, { type });
+  const splitElements = splitText[type];
+  
+  // Set initial state
+  gsap.set(splitElements, { opacity: 0, y: 20 });
+  
+  // Create scroll trigger
+  ScrollTrigger.create({
+    trigger: element,
+    start: "top 80%",
+    onEnter: () => {
+      gsap.to(splitElements, {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: staggerAmount,
+        ease: "power3.out"
+      });
+    },
+    once: true
+  });
+  
+  // Return the SplitText instance for potential cleanup
+  return splitText;
+};
 
 /**
  * Creates a parallax scroll effect for an element
