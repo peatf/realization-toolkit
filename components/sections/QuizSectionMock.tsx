@@ -1,5 +1,4 @@
-
-// Mock component for Quiz Section with updated aesthetic
+import { motion } from 'framer-motion';
 import { GlassModule } from '../ui/NeumorphicUI';
 
 const QuizSectionMock: React.FC = () => {
