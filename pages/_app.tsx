@@ -15,7 +15,7 @@ const lora = Lora({
   subsets: ['latin'],
   variable: '--font-editorial-serif',
   display: 'swap',
-  weight: ['300', '400', '500'] // Focus on lighter weights
+  weight: ['400', '500'] // Focus on lighter weights
 });
 
 const jetBrainsMono = JetBrains_Mono({
