@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Head from 'next/head';
-import Lenis from 'lenis';
+import Lenis from '@studio-freight/lenis';
 
 interface LayoutProps {
   children: React.ReactNode;
