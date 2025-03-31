@@ -1,6 +1,6 @@
 // Mock component for Tool Showcases with updated aesthetic
 import { motion } from 'framer-motion';
-import { FloatingElement, GlassModule } from '../components/ui/NeumorphicUI';
+import { FloatingElement, GlassModule } from '../ui/NeumorphicUI';
 
 const ToolShowcasesMock: React.FC = () => {
   return (
