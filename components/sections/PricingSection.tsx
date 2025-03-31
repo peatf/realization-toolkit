@@ -23,21 +23,28 @@ const FloatingOrb: React.FC<{
   amplitude?: number;
   duration?: number;
 }> = ({ size, color, blur, x, y, amplitude = 20, duration = 8 }) => {
+  // Create inline styles for the outer div
+  const orbitStyle = {
+    width: size,
+    height: size,
+    backgroundColor: color,
+    left: `${x}%`,
+    top: `${y}%`,
+  };
+
   return (
-    <FloatingElement
+    <div 
       className={`absolute rounded-full opacity-60 pointer-events-none blur-${blur}`}
-      amplitude={amplitude}
-      duration={duration}
-      style={{
-        width: size,
-        height: size,
-        backgroundColor: color,
-        left: `${x}%`,
-        top: `${y}%`,
-      }}
+      style={orbitStyle}
     >
-      <div className="w-full h-full"></div>
-    </FloatingElement>
+      <FloatingElement 
+        className="w-full h-full"
+        amplitude={amplitude}
+        duration={duration}
+      >
+        <div className="w-full h-full rounded-full"></div>
+      </FloatingElement>
+    </div>
   );
 };
 
