@@ -1,10 +1,18 @@
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
-import { SplitText } from 'gsap/dist/SplitText';
 
 // Ensure GSAP plugins are registered
 if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger, SplitText);
+  gsap.registerPlugin(ScrollTrigger);
+  
+  // Try to register SplitText if it's available
+  try {
+    // @ts-ignore - This will be ignored if SplitText doesn't exist
+    const { SplitText } = require('gsap/dist/SplitText');
+    gsap.registerPlugin(SplitText);
+  } catch (e) {
+    console.warn('SplitText plugin not available. Using fallback implementation.');
+  }
 }
 
 /**
@@ -170,6 +178,73 @@ export const createScrollAnimation = (element: HTMLElement, animation: {
 };
 
 /**
+ * Fallback implementation for SplitText
+ * @param element The element to split
+ * @param type The type of split ('chars', 'words', or 'lines')
+ * @returns An object with keys for the split types
+ */
+const fallbackSplitText = (element: HTMLElement, type: string | string[]) => {
+  const types = Array.isArray(type) ? type : [type];
+  const result: any = {};
+  
+  if (types.includes('chars')) {
+    const chars: HTMLElement[] = [];
+    const text = element.innerText;
+    element.innerHTML = '';
+    
+    Array.from(text).forEach(char => {
+      const span = document.createElement('span');
+      span.className = 'split-char';
+      span.innerText = char === ' ' ? '\u00A0' : char;
+      element.appendChild(span);
+      chars.push(span);
+    });
+    
+    result.chars = chars;
+  }
+  
+  if (types.includes('words')) {
+    const words: HTMLElement[] = [];
+    if (!types.includes('chars')) {
+      const text = element.innerText;
+      element.innerHTML = '';
+      
+      text.split(' ').forEach(word => {
+        const span = document.createElement('span');
+        span.className = 'split-word';
+        span.innerText = word;
+        element.appendChild(span);
+        
+        // Add space after word except for the last one
+        if (word !== text.split(' ').pop()) {
+          element.appendChild(document.createTextNode(' '));
+        }
+        
+        words.push(span);
+      });
+    } else {
+      // If chars are already split, group them into words
+      const wordElements = element.querySelectorAll('.split-word');
+      wordElements.forEach(word => words.push(word as HTMLElement));
+    }
+    
+    result.words = words;
+  }
+  
+  if (types.includes('lines')) {
+    // This is a simplified implementation that may not be accurate for all cases
+    // A proper line splitting would require more complex layout calculations
+    const lineElements = element.querySelectorAll('.split-line');
+    const lines: HTMLElement[] = [];
+    
+    lineElements.forEach(line => lines.push(line as HTMLElement));
+    result.lines = lines;
+  }
+  
+  return result;
+};
+
+/**
  * Creates a split text animation for headings and paragraphs
  * @param element The text element to animate
  * @param type The type of split ('chars', 'words', or 'lines')
@@ -178,9 +253,26 @@ export const createScrollAnimation = (element: HTMLElement, animation: {
 export const createSplitTextAnimation = (element: HTMLElement, type: 'chars' | 'words' | 'lines' = 'words', staggerAmount: number = 0.03) => {
   if (!element || typeof window === 'undefined') return;
   
-  // @ts-ignore - SplitText from GSAP needs to be imported separately
-  const splitText = new SplitText(element, { type });
-  const splitElements = splitText[type];
+  let splitElements;
+  
+  try {
+    // Try to use GSAP SplitText if available
+    if (typeof window !== 'undefined' && (window as any).SplitText) {
+      const SplitText = (window as any).SplitText;
+      const splitText = new SplitText(element, { type });
+      splitElements = splitText[type];
+    } else {
+      // Use fallback implementation
+      const splitText = fallbackSplitText(element, type);
+      splitElements = splitText[type];
+    }
+  } catch (e) {
+    // If SplitText fails, use fallback
+    const splitText = fallbackSplitText(element, type);
+    splitElements = splitText[type];
+  }
+  
+  if (!splitElements || splitElements.length === 0) return;
   
   // Set initial state
   gsap.set(splitElements, { opacity: 0, y: 20 });
@@ -200,9 +292,6 @@ export const createSplitTextAnimation = (element: HTMLElement, type: 'chars' | '
     },
     once: true
   });
-  
-  // Return the SplitText instance for potential cleanup
-  return splitText;
 };
 
 /**
