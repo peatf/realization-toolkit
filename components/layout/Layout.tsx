@@ -118,7 +118,6 @@ const Layout: React.FC<LayoutProps> = ({
       duration: 1.8, // Slower, more ethereal scrolling
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       touchMultiplier: 1.5,
-      smoothTouch: true,
       wheelMultiplier: 0.8, // Gentler wheel scrolling
     });
 
