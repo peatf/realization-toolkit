@@ -178,12 +178,17 @@ const MembershipBenefits: React.FC = () => {
         className="absolute top-1/4 right-0 w-64 h-64 rounded-full bg-sky-200/10 blur-3xl"
         amplitude={15}
         duration={12}
-      />
+      >
+        <div className="w-full h-full"></div>
+      </FloatingElement>
+      
       <FloatingElement
         className="absolute bottom-1/3 left-0 w-80 h-80 rounded-full bg-peach-200/10 blur-3xl"
         amplitude={20}
         duration={15}
-      />
+      >
+        <div className="w-full h-full"></div>
+      </FloatingElement>
       
       <div className="container mx-auto px-4 relative z-10">
         {/* Section header with glass effect */}
