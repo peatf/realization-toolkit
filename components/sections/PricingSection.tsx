@@ -35,7 +35,9 @@ const FloatingOrb: React.FC<{
         left: `${x}%`,
         top: `${y}%`,
       }}
-    />
+    >
+      <div className="w-full h-full"></div>
+    </FloatingElement>
   );
 };
 
