@@ -1,9 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
+import { NeumorphicButton, GlassModule, FloatingElement } from '../ui/NeumorphicUI';
 
 const OpeningSection: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -11,7 +9,7 @@ const OpeningSection: React.FC = () => {
   const rippleTextRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    // Initialize ripple text effect
+    // Initialize ripple text effect with more subtle, ethereal animation
     if (rippleTextRef.current) {
       const text = rippleTextRef.current;
       const words = text.innerText.split(' ');
@@ -27,7 +25,7 @@ const OpeningSection: React.FC = () => {
         // Create spans for each letter
         Array.from(word).forEach((letter) => {
           const letterSpan = document.createElement('span');
-          letterSpan.className = 'inline-block transition-transform duration-300 hover:scale-110';
+          letterSpan.className = 'inline-block transition-all duration-slower hover:text-neon-green hover:scale-110';
           letterSpan.innerText = letter;
           
           // Add event listeners for ripple effect
@@ -47,19 +45,14 @@ const OpeningSection: React.FC = () => {
       });
     }
     
-    // Initialize animation for the heading
+    // Initialize animation for the heading with slower, more organic motion
     if (headingRef.current) {
-      gsap.from(headingRef.current, {
-        y: 100,
+      gsap.from(headingRef.current.children, {
+        y: 50,
         opacity: 0,
-        duration: 1.2,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: headingRef.current,
-          start: "top bottom",
-          end: "bottom center",
-          scrub: true
-        }
+        duration: 2,
+        stagger: 0.3,
+        ease: "power2.out",
       });
     }
     
@@ -76,20 +69,20 @@ const OpeningSection: React.FC = () => {
   const createRippleEffect = (e: Event) => {
     const target = e.currentTarget as HTMLElement;
     
-    // Create ripple element
+    // Create ripple element with more subdued, foggy effect
     const ripple = document.createElement('span');
-    ripple.className = 'absolute w-full h-full bg-white/20 rounded-full scale-0 origin-center';
+    ripple.className = 'absolute w-full h-full bg-white/10 rounded-full scale-0 origin-center';
     
     // Position ripple
     target.style.position = 'relative';
     target.appendChild(ripple);
     
-    // Animate ripple
+    // Animate ripple with slower, more ethereal motion
     gsap.to(ripple, {
-      scale: 3,
+      scale: 4,
       opacity: 0,
-      duration: 0.6,
-      ease: "power2.out",
+      duration: 1.2,
+      ease: "power1.out",
       onComplete: () => {
         ripple.remove();
       }
@@ -104,34 +97,49 @@ const OpeningSection: React.FC = () => {
   return (
     <section 
       ref={containerRef}
-      className="min-h-screen flex flex-col items-center justify-center relative bg-gradient-to-b from-indigo-900 via-purple-900 to-violet-900 overflow-hidden"
+      className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden"
     >
-      {/* Background elements */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-1/4 left-1/4 w-32 h-32 rounded-full bg-blue-500 blur-xl"></div>
-        <div className="absolute top-3/4 right-1/4 w-40 h-40 rounded-full bg-purple-500 blur-xl"></div>
-        <div className="absolute bottom-1/4 left-1/3 w-36 h-36 rounded-full bg-pink-500 blur-xl"></div>
+      {/* Gradient background with foggy overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-mist-200/40 via-sage-50/30 to-mist-100/60"></div>
+      
+      {/* Soft blurred orbs in background */}
+      <div className="absolute inset-0 opacity-40 pointer-events-none">
+        <FloatingElement 
+          className="absolute top-1/4 left-1/5 w-64 h-64 rounded-full bg-peach-100/30 blur-3xl"
+          amplitude={20}
+          duration={15}
+        />
+        <FloatingElement 
+          className="absolute bottom-1/3 right-1/4 w-80 h-80 rounded-full bg-sky-100/20 blur-3xl"
+          amplitude={15}
+          duration={18}
+        />
+        <FloatingElement 
+          className="absolute top-2/3 left-1/3 w-72 h-72 rounded-full bg-sage-100/30 blur-3xl"
+          amplitude={25}
+          duration={20}
+        />
       </div>
       
-      {/* Main content */}
-      <div className="container mx-auto px-4 text-center z-10">
+      {/* Main content with glass effect */}
+      <GlassModule className="container mx-auto px-4 py-16 text-center z-10 max-w-4xl">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-          className="mb-6"
+          transition={{ duration: 1.5 }}
+          className="mb-8"
         >
-          <span className="font-mono text-violet-300 tracking-widest uppercase text-sm">Begin Your Journey</span>
+          <span className="font-mono text-mist-700 tracking-widest uppercase text-sm">Begin Your Journey</span>
         </motion.div>
         
         <h1 
           ref={headingRef}
-          className="font-serif text-5xl md:text-7xl font-light text-white mb-8 leading-tight"
+          className="font-serif text-5xl md:text-7xl font-extralight text-mist-800 mb-8 leading-tight"
         >
-          <span className="block">The Realization</span>
+          <span className="block ethereal-text">The Realization</span>
           <span 
             ref={rippleTextRef}
-            className="block text-transparent bg-clip-text bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-300"
+            className="block text-transparent bg-clip-text bg-gradient-to-r from-sky-400/80 via-peach-300/80 to-sage-400/80"
           >
             Toolkit
           </span>
@@ -140,23 +148,28 @@ const OpeningSection: React.FC = () => {
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          className="max-w-2xl mx-auto text-violet-100 text-lg mb-12"
+          transition={{ duration: 1.2, delay: 0.5 }}
+          className="max-w-2xl mx-auto text-mist-700 text-lg mb-16 font-light"
         >
           Attune to your rhythm and discover tools for personal transformation. 
           Our immersive experience guides you through a digital ritual of self-discovery.
         </motion.p>
         
-        {/* Radial Menu */}
-        <div className="relative w-64 h-64 mx-auto mt-12">
+        {/* Radial Menu with glass morphism effect */}
+        <div className="relative w-64 h-64 mx-auto mt-8">
+          {/* Orbital path guide */}
+          <div className="absolute top-1/2 left-1/2 w-[200px] h-[200px] rounded-full border border-white/10 transform -translate-x-1/2 -translate-y-1/2"></div>
+          
           {/* Center button */}
-          <motion.button
+          <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white flex items-center justify-center z-10"
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full 
+                      foggy-glass border border-white/20 flex items-center justify-center z-10 pulse-soft"
+            transition={{ duration: 0.7, ease: [0.34, 1.56, 0.64, 1] }}
           >
-            Begin
-          </motion.button>
+            <span className="text-mist-700 font-light">Begin</span>
+          </motion.div>
           
           {/* Orbit items */}
           {['Discover', 'Learn', 'Connect', 'Transform'].map((text, index) => {
@@ -165,41 +178,42 @@ const OpeningSection: React.FC = () => {
             const y = Math.sin(angle) * 100;
             
             return (
-              <motion.button
+              <motion.div
                 key={text}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1, x, y }}
                 transition={{ 
-                  duration: 0.5, 
-                  delay: 0.8 + index * 0.1,
-                  type: "spring"
+                  duration: 1, 
+                  delay: 1 + index * 0.2,
+                  type: "spring",
+                  stiffness: 70,
+                  damping: 15
                 }}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => handleRadialMenuClick(text)}
-                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 text-white/90 text-sm flex items-center justify-center"
+                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
+                          w-14 h-14 rounded-full foggy-glass border border-white/20 
+                          flex items-center justify-center cursor-pointer"
                 style={{ 
                   transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))` 
                 }}
               >
-                {text}
-              </motion.button>
+                <span className="text-mist-700 text-sm font-light">{text}</span>
+              </motion.div>
             );
           })}
-          
-          {/* Connecting lines */}
-          <div className="absolute top-1/2 left-1/2 w-[200px] h-[200px] rounded-full border border-white/10 transform -translate-x-1/2 -translate-y-1/2"></div>
         </div>
-      </div>
+      </GlassModule>
       
-      {/* Scroll indicator */}
+      {/* Scroll indicator with more ethereal animation */}
       <motion.div 
         className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
+        animate={{ y: [0, 8, 0] }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       >
-        <div className="w-5 h-10 rounded-full border border-white/30 flex items-center justify-center">
-          <div className="w-1.5 h-3 bg-white/50 rounded-full"></div>
+        <div className="w-5 h-10 rounded-full border border-mist-400/30 flex items-center justify-center">
+          <div className="w-1.5 h-3 bg-mist-400/50 rounded-full"></div>
         </div>
       </motion.div>
     </section>
