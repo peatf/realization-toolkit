@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
+import { GlassModule } from '../ui/NeumorphicUI';
 
 interface Testimonial {
   id: number;
@@ -58,38 +59,38 @@ const TestimonialCarousel: React.FC = () => {
   useEffect(() => {
     if (!orbitRef.current) return;
     
-    // Set up the 3D orbit animation
+    // Set up the 3D orbit animation with more ethereal, smooth movement
     const cards = orbitRef.current.querySelectorAll('.testimonial-card');
     const totalCards = cards.length;
     const radius = 250; // Orbit radius
     
-    // Initial setup - position cards in a circle
+    // Initial setup - position cards in a circle with smoother animation
     positionCards(activeIndex);
     
-    // Add mousemove effect for subtle movement
+    // Add mousemove effect for subtle movement - even more subtle and dreamy
     const handleMouseMove = (e: MouseEvent) => {
       if (containerRef.current && !isAnimating) {
         const rect = containerRef.current.getBoundingClientRect();
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
         
-        // Calculate mouse position relative to center
-        const mouseX = (e.clientX - centerX) / 50;
-        const mouseY = (e.clientY - centerY) / 50;
+        // Calculate mouse position relative to center - reduce effect for subtlety
+        const mouseX = (e.clientX - centerX) / 80; // More subtle
+        const mouseY = (e.clientY - centerY) / 80; // More subtle
         
-        // Apply subtle tilt to the orbit
+        // Apply gentle tilt to the orbit with slower animation
         gsap.to(orbitRef.current, {
           rotationX: -mouseY,
           rotationY: mouseX,
-          duration: 1,
-          ease: "power2.out"
+          duration: 1.8, // Slower, more dreamlike
+          ease: "power1.out" // Gentler easing
         });
       }
     };
     
     document.addEventListener('mousemove', handleMouseMove);
     
-    // Function to position cards in 3D space
+    // Function to position cards in 3D space with smoother transitions
     function positionCards(centerIndex: number) {
       cards.forEach((card, index) => {
         // Calculate angle based on position relative to center
@@ -98,16 +99,16 @@ const TestimonialCarousel: React.FC = () => {
         // Calculate 3D position
         const x = Math.sin(angleOffset) * radius;
         const z = Math.cos(angleOffset) * radius;
-        const scale = index === centerIndex ? 1 : 0.7;
-        const opacity = index === centerIndex ? 1 : 0.6;
+        const scale = index === centerIndex ? 1 : 0.85; // Less dramatic scaling
+        const opacity = index === centerIndex ? 1 : 0.7; // Higher minimum opacity
         
-        // Apply position with GSAP
+        // Apply position with GSAP - slower, more ethereal
         gsap.to(card, {
           x,
           z,
           scale,
           opacity,
-          duration: 0.8,
+          duration: 1.5, // Slower transition
           ease: "power2.out"
         });
         
@@ -133,41 +134,48 @@ const TestimonialCarousel: React.FC = () => {
     setActiveIndex(newIndex);
     
     // Animation completes after transition
-    setTimeout(() => setIsAnimating(false), 800);
+    setTimeout(() => setIsAnimating(false), 1500); // Longer timeout to match slower animation
   };
   
   return (
-    <section className="py-20 md:py-32 bg-gradient-to-b from-violet-900 to-indigo-900 relative overflow-hidden">
-      {/* Background elements */}
+    <section className="py-24 md:py-36 relative overflow-hidden">
+      {/* Soft gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-sage-50/50 to-mist-100/70"></div>
+      
+      {/* Background elements - subtle, foggy circles */}
       <div className="absolute top-0 left-0 w-full h-full opacity-20 pointer-events-none">
-        <div className="absolute top-1/4 right-1/4 w-64 h-64 rounded-full bg-purple-500/30 blur-3xl"></div>
-        <div className="absolute bottom-1/4 left-1/4 w-80 h-80 rounded-full bg-indigo-500/30 blur-3xl"></div>
+        <div className="absolute top-1/4 right-1/4 w-80 h-80 rounded-full bg-sky-200/30 blur-3xl"></div>
+        <div className="absolute bottom-1/4 left-1/4 w-96 h-96 rounded-full bg-peach-200/30 blur-3xl"></div>
       </div>
       
-      <div ref={containerRef} className="container mx-auto px-4">
+      <div ref={containerRef} className="container mx-auto px-4 relative z-10">
         {/* Section header */}
-        <div className="max-w-3xl mx-auto text-center mb-20">
+        <GlassModule
+          className="max-w-3xl mx-auto text-center mb-24 p-10 rounded-3xl"
+          blur="md"
+          opacity="low"
+        >
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 1.2 }}
             className="mb-4"
           >
-            <span className="font-mono text-violet-300 tracking-widest uppercase text-sm">Testimonials</span>
+            <span className="font-mono text-mist-600 tracking-widest uppercase text-sm">Testimonials</span>
           </motion.div>
           
-          <h2 className="font-serif text-4xl md:text-5xl text-white mb-6">
+          <h2 className="font-serif text-4xl md:text-5xl text-mist-800 mb-6 font-extralight">
             Transformative Experiences
           </h2>
           
-          <p className="text-violet-200 text-lg max-w-2xl mx-auto">
+          <p className="text-mist-700 text-lg max-w-2xl mx-auto font-light">
             Hear from our members about their journey with the Realization Toolkit
             and the impact it's had on their personal and professional lives.
           </p>
-        </div>
+        </GlassModule>
         
-        {/* 3D Carousel */}
-        <div className="relative h-[500px] perspective-1000 mb-12">
+        {/* 3D Carousel with more ethereal styling */}
+        <div className="relative h-[500px] perspective-1000 mb-16">
           {/* Orbit container */}
           <div 
             ref={orbitRef}
@@ -177,56 +185,62 @@ const TestimonialCarousel: React.FC = () => {
             {testimonials.map((testimonial, index) => (
               <div
                 key={testimonial.id}
-                className={`testimonial-card absolute w-80 h-auto bg-white/10 backdrop-blur-md rounded-xl p-6 shadow-xl border border-white/20 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-800 ${
-                  index === activeIndex ? 'z-10' : 'z-0'
-                }`}
+                className={`testimonial-card absolute w-80 h-auto foggy-glass 
+                           rounded-3xl p-8 border border-white/20 transform 
+                           -translate-x-1/2 -translate-y-1/2 transition-all 
+                           duration-slower ${index === activeIndex ? 'z-10' : 'z-0'}`}
                 style={{ transformStyle: 'preserve-3d' }}
               >
-                <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-400 to-indigo-500 flex items-center justify-center text-xl text-white font-bold">
+                <div className="flex items-center mb-6">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-sky-100/50 to-peach-100/50 
+                               flex items-center justify-center text-xl text-mist-800 font-light backdrop-blur-sm">
                     {testimonial.name.charAt(0)}
                   </div>
-                  <div className="ml-4">
-                    <h4 className="text-white font-medium">{testimonial.name}</h4>
-                    <p className="text-violet-300 text-sm">{testimonial.role}</p>
+                  <div className="ml-5">
+                    <h4 className="text-mist-800 font-light text-lg">{testimonial.name}</h4>
+                    <p className="text-mist-600 text-sm font-light">{testimonial.role}</p>
                   </div>
                 </div>
                 
-                <p className="text-white/90 italic mb-4">"{testimonial.quote}"</p>
+                <p className="text-mist-700 italic mb-4 font-light leading-relaxed">"{testimonial.quote}"</p>
                 
-                {/* Decorative elements */}
-                <div className="absolute top-2 right-2 text-white/20 text-2xl">❝</div>
-                <div className="absolute bottom-2 right-4 text-white/20 text-2xl">❞</div>
+                {/* Decorative elements - more subtle */}
+                <div className="absolute top-4 right-4 text-mist-500/20 text-3xl font-serif">❝</div>
+                <div className="absolute bottom-4 right-6 text-mist-500/20 text-3xl font-serif">❞</div>
               </div>
             ))}
           </div>
           
-          {/* Navigation buttons */}
-          <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-4">
+          {/* Navigation buttons - more neumorphic, subtle */}
+          <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-6">
             <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.05, y: -3 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.7, ease: [0.34, 1.56, 0.64, 1] }}
               onClick={() => rotateCarousel('prev')}
-              className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white"
+              className="w-14 h-14 rounded-full foggy-glass border border-white/20 
+                       flex items-center justify-center text-mist-700 shadow-neu-sm"
               disabled={isAnimating}
             >
-              ←
+              <span className="text-xl">←</span>
             </motion.button>
             
             <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.05, y: -3 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.7, ease: [0.34, 1.56, 0.64, 1] }}
               onClick={() => rotateCarousel('next')}
-              className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white"
+              className="w-14 h-14 rounded-full foggy-glass border border-white/20 
+                       flex items-center justify-center text-mist-700 shadow-neu-sm"
               disabled={isAnimating}
             >
-              →
+              <span className="text-xl">→</span>
             </motion.button>
           </div>
         </div>
         
-        {/* Indicator dots */}
-        <div className="flex justify-center gap-2">
+        {/* Indicator dots - more subtle styling */}
+        <div className="flex justify-center gap-3">
           {testimonials.map((_, index) => (
             <button
               key={index}
@@ -234,11 +248,13 @@ const TestimonialCarousel: React.FC = () => {
                 if (!isAnimating && index !== activeIndex) {
                   setIsAnimating(true);
                   setActiveIndex(index);
-                  setTimeout(() => setIsAnimating(false), 800);
+                  setTimeout(() => setIsAnimating(false), 1500);
                 }
               }}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                index === activeIndex ? 'bg-white w-6' : 'bg-white/40'
+              className={`transition-all duration-slower ${
+                index === activeIndex 
+                  ? 'w-10 h-2 bg-sky-300/50 rounded-full' 
+                  : 'w-2 h-2 bg-mist-400/30 rounded-full'
               }`}
               aria-label={`Go to testimonial ${index + 1}`}
             />
