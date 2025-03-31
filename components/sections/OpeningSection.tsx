@@ -13,29 +13,29 @@ const OpeningSection: React.FC = () => {
     if (rippleTextRef.current) {
       const text = rippleTextRef.current;
       const words = text.innerText.split(' ');
-
+      
       // Clear the text element
       text.innerHTML = '';
-
+      
       // Create spans for each word
       words.forEach((word, i) => {
         const wordSpan = document.createElement('span');
         wordSpan.className = 'inline-block';
-
+        
         // Create spans for each letter
         Array.from(word).forEach((letter) => {
           const letterSpan = document.createElement('span');
           letterSpan.className = 'inline-block transition-all duration-slower hover:text-neon-green hover:scale-110';
           letterSpan.innerText = letter;
-
+          
           // Add event listeners for ripple effect
           letterSpan.addEventListener('mouseenter', createRippleEffect);
-
+          
           wordSpan.appendChild(letterSpan);
         });
-
+        
         text.appendChild(wordSpan);
-
+        
         // Add space after each word except the last one
         if (i < words.length - 1) {
           const space = document.createElement('span');
@@ -44,7 +44,7 @@ const OpeningSection: React.FC = () => {
         }
       });
     }
-
+    
     // Initialize animation for the heading with slower, more organic motion
     if (headingRef.current) {
       gsap.from(headingRef.current.children, {
@@ -55,7 +55,7 @@ const OpeningSection: React.FC = () => {
         ease: "power2.out",
       });
     }
-
+    
     // Cleanup function
     return () => {
       // Remove event listeners
@@ -68,15 +68,15 @@ const OpeningSection: React.FC = () => {
 
   const createRippleEffect = (e: Event) => {
     const target = e.currentTarget as HTMLElement;
-
+    
     // Create ripple element with more subdued, foggy effect
     const ripple = document.createElement('span');
     ripple.className = 'absolute w-full h-full bg-white/10 rounded-full scale-0 origin-center';
-
+    
     // Position ripple
     target.style.position = 'relative';
     target.appendChild(ripple);
-
+    
     // Animate ripple with slower, more ethereal motion
     gsap.to(ripple, {
       scale: 4,
@@ -103,30 +103,32 @@ const OpeningSection: React.FC = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-mist-200/40 via-sage-50/30 to-mist-100/60"></div>
       
       {/* Soft blurred orbs in background */}
-      <FloatingElement 
-        className="absolute top-1/4 left-1/5 w-64 h-64 rounded-full bg-peach-100/30 blur-3xl"
-        amplitude={20}
-        duration={15}
-      >
-        <div className="w-full h-full"></div>
-      </FloatingElement>
-
-      <FloatingElement 
-        className="absolute bottom-1/3 right-1/4 w-80 h-80 rounded-full bg-sky-100/20 blur-3xl"
-        amplitude={15}
-        duration={18}
-      >
-        <div className="w-full h-full"></div>
-      </FloatingElement>
-
-      <FloatingElement 
-        className="absolute top-2/3 left-1/3 w-72 h-72 rounded-full bg-sage-100/30 blur-3xl"
-        amplitude={25}
-        duration={20}
-      >
-        <div className="w-full h-full"></div>
-      </FloatingElement>
-
+      <div className="absolute inset-0 opacity-40 pointer-events-none">
+        <FloatingElement 
+          className="absolute top-1/4 left-1/5 w-64 h-64 rounded-full bg-peach-100/30 blur-3xl"
+          amplitude={20}
+          duration={15}
+        >
+          <div className="w-full h-full"></div>
+        </FloatingElement>
+        
+        <FloatingElement 
+          className="absolute bottom-1/3 right-1/4 w-80 h-80 rounded-full bg-sky-100/20 blur-3xl"
+          amplitude={15}
+          duration={18}
+        >
+          <div className="w-full h-full"></div>
+        </FloatingElement>
+        
+        <FloatingElement 
+          className="absolute top-2/3 left-1/3 w-72 h-72 rounded-full bg-sage-100/30 blur-3xl"
+          amplitude={25}
+          duration={20}
+        >
+          <div className="w-full h-full"></div>
+        </FloatingElement>
+      </div>
+      
       {/* Main content with glass effect */}
       <GlassModule className="container mx-auto px-4 py-16 text-center z-10 max-w-4xl">
         <motion.div
@@ -182,7 +184,7 @@ const OpeningSection: React.FC = () => {
             const angle = (index * Math.PI * 2) / 4;
             const x = Math.cos(angle) * 100;
             const y = Math.sin(angle) * 100;
-
+            
             return (
               <motion.div
                 key={text}
