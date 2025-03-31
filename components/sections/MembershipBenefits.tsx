@@ -2,9 +2,12 @@ import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
-import { createScrollAnimation, createSplitTextAnimation } from '../animations/gsapUtils';
+import { createScrollAnimation } from '../animations/gsapUtils';
 
-gsap.registerPlugin(ScrollTrigger);
+// Make sure to register the ScrollTrigger plugin
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 interface BenefitProps {
   title: string;
@@ -27,7 +30,16 @@ const Benefit: React.FC<BenefitProps> = ({ title, description, icon, index }) =>
     }
     
     if (titleRef.current) {
-      createSplitTextAnimation(titleRef.current, 'words', 0.03);
+      // Instead of using SplitText, we'll apply a simple fade-in animation
+      gsap.from(titleRef.current, {
+        opacity: 0,
+        y: 20,
+        duration: 0.8,
+        scrollTrigger: {
+          trigger: titleRef.current,
+          start: "top 85%"
+        }
+      });
     }
   }, []);
   
@@ -70,7 +82,16 @@ const MembershipBenefits: React.FC = () => {
   
   useEffect(() => {
     if (headingRef.current) {
-      createSplitTextAnimation(headingRef.current, 'words', 0.05);
+      // Instead of using SplitText, use a simple animation
+      gsap.from(headingRef.current, {
+        opacity: 0,
+        y: 30,
+        duration: 1,
+        scrollTrigger: {
+          trigger: headingRef.current,
+          start: "top 85%"
+        }
+      });
     }
     
     if (subheadingRef.current) {
