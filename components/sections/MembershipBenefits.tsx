@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
-import { createScrollAnimation } from '../animations/gsapUtils';
+import { NeumorphicCard, GlassModule, FloatingElement } from '../ui/NeumorphicUI';
 
 // Make sure to register the ScrollTrigger plugin
 if (typeof window !== 'undefined') {
@@ -22,22 +22,37 @@ const Benefit: React.FC<BenefitProps> = ({ title, description, icon, index }) =>
   
   useEffect(() => {
     if (benefitRef.current) {
-      createScrollAnimation(benefitRef.current, {
-        from: { opacity: 0, y: 50 },
-        scrub: false,
-        start: "top 85%",
-      });
+      // More subtle entrance animation
+      gsap.fromTo(
+        benefitRef.current,
+        { 
+          opacity: 0,
+          y: 30,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1.5,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: benefitRef.current,
+            start: "top 85%",
+            once: true
+          }
+        }
+      );
     }
     
     if (titleRef.current) {
-      // Instead of using SplitText, we'll apply a simple fade-in animation
+      // Very subtle text reveal animation
       gsap.from(titleRef.current, {
         opacity: 0,
-        y: 20,
-        duration: 0.8,
+        y: 15,
+        duration: 1.2,
         scrollTrigger: {
           trigger: titleRef.current,
-          start: "top 85%"
+          start: "top 85%",
+          once: true
         }
       });
     }
@@ -46,29 +61,35 @@ const Benefit: React.FC<BenefitProps> = ({ title, description, icon, index }) =>
   return (
     <motion.div
       ref={benefitRef}
-      className="mb-16 md:mb-24"
+      className="mb-20 md:mb-24"
       initial={{ opacity: 0 }}
     >
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12">
-        {/* Left column - Icon */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 items-center">
+        {/* Left column - Icon with floating effect */}
         <div className="md:col-span-3 flex justify-start md:justify-end">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-violet-400 to-indigo-500 flex items-center justify-center text-white">
-            <span className="text-2xl">{icon}</span>
-          </div>
+          <FloatingElement 
+            className="w-16 h-16 rounded-full foggy-glass flex items-center justify-center"
+            amplitude={5}
+            duration={8}
+          >
+            <span className="text-2xl text-sky-400/80">{icon}</span>
+          </FloatingElement>
         </div>
         
-        {/* Right column - Content */}
+        {/* Right column - Content with neumorphic card */}
         <div className="md:col-span-9">
-          <h3 
-            ref={titleRef}
-            className="font-serif text-2xl md:text-3xl mb-4 text-white"
-          >
-            {title}
-          </h3>
-          <p className="text-violet-200 leading-relaxed">{description}</p>
-          
-          {/* Decorative line */}
-          <div className="mt-8 w-full h-px bg-gradient-to-r from-transparent via-violet-500/30 to-transparent"></div>
+          <NeumorphicCard isFoggy={true} className="p-8 backdrop-blur-sm">
+            <h3 
+              ref={titleRef}
+              className="font-serif text-2xl md:text-3xl mb-4 text-mist-800 font-light"
+            >
+              {title}
+            </h3>
+            <p className="text-mist-700 leading-relaxed font-light">{description}</p>
+            
+            {/* Subtle decorative line */}
+            <div className="mt-6 w-full h-px bg-gradient-to-r from-transparent via-sky-300/30 to-transparent"></div>
+          </NeumorphicCard>
         </div>
       </div>
     </motion.div>
@@ -82,42 +103,32 @@ const MembershipBenefits: React.FC = () => {
   
   useEffect(() => {
     if (headingRef.current) {
-      // Instead of using SplitText, use a simple animation
+      // Soft, subtle heading entrance
       gsap.from(headingRef.current, {
         opacity: 0,
         y: 30,
-        duration: 1,
+        duration: 1.6,
+        ease: "power2.out",
         scrollTrigger: {
           trigger: headingRef.current,
-          start: "top 85%"
+          start: "top 85%",
+          once: true
         }
       });
     }
     
     if (subheadingRef.current) {
-      createScrollAnimation(subheadingRef.current, {
-        from: { opacity: 0, y: 30 },
-        start: "top 85%",
-      });
-    }
-    
-    // Create a timeline for section reveal
-    if (sectionRef.current) {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 80%",
-          end: "bottom 20%",
-          toggleActions: "play none none reverse"
-        }
-      });
-      
-      tl.from(".benefit-decorative-circle", {
-        scale: 0,
+      gsap.from(subheadingRef.current, {
         opacity: 0,
-        duration: 1,
-        stagger: 0.2,
-        ease: "elastic.out(1, 0.5)"
+        y: 20,
+        duration: 1.6,
+        delay: 0.2,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: subheadingRef.current,
+          start: "top 85%",
+          once: true
+        }
       });
     }
     
@@ -157,39 +168,54 @@ const MembershipBenefits: React.FC = () => {
   return (
     <section 
       ref={sectionRef}
-      className="py-20 md:py-32 bg-gradient-to-b from-indigo-900 to-violet-900 overflow-hidden relative"
+      className="py-24 md:py-36 relative overflow-hidden"
     >
-      {/* Decorative elements */}
-      <div className="absolute top-1/4 right-0 w-64 h-64 rounded-full bg-purple-600/10 blur-3xl benefit-decorative-circle"></div>
-      <div className="absolute bottom-1/3 left-0 w-80 h-80 rounded-full bg-indigo-600/10 blur-3xl benefit-decorative-circle"></div>
+      {/* Soft gradient background with fog effect */}
+      <div className="absolute inset-0 bg-gradient-to-b from-mist-100/70 to-sage-50/50"></div>
       
-      <div className="container mx-auto px-4">
-        {/* Section header */}
-        <div className="max-w-3xl mx-auto text-center mb-20 md:mb-32">
+      {/* Decorative elements - soft, blurred circular shapes */}
+      <FloatingElement
+        className="absolute top-1/4 right-0 w-64 h-64 rounded-full bg-sky-200/10 blur-3xl"
+        amplitude={15}
+        duration={12}
+      />
+      <FloatingElement
+        className="absolute bottom-1/3 left-0 w-80 h-80 rounded-full bg-peach-200/10 blur-3xl"
+        amplitude={20}
+        duration={15}
+      />
+      
+      <div className="container mx-auto px-4 relative z-10">
+        {/* Section header with glass effect */}
+        <GlassModule
+          className="max-w-3xl mx-auto text-center mb-24 md:mb-32 p-10 rounded-3xl"
+          blur="md"
+          opacity="low"
+        >
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 1.2 }}
             className="mb-4"
           >
-            <span className="font-mono text-violet-300 tracking-widest uppercase text-sm">Membership Benefits</span>
+            <span className="font-mono text-mist-600 tracking-widest uppercase text-sm">Membership Benefits</span>
           </motion.div>
           
           <h2 
             ref={headingRef}
-            className="font-serif text-4xl md:text-5xl lg:text-6xl mb-6 text-white leading-tight"
+            className="font-serif text-4xl md:text-5xl lg:text-6xl mb-6 text-mist-800 leading-tight font-extralight"
           >
             Transform Your Experience
           </h2>
           
           <p 
             ref={subheadingRef}
-            className="text-violet-200 text-lg md:text-xl max-w-2xl mx-auto"
+            className="text-mist-700 text-lg md:text-xl max-w-2xl mx-auto font-light"
           >
             Our membership unlocks a suite of tools and experiences designed to guide your journey 
             toward self-discovery and personal transformation.
           </p>
-        </div>
+        </GlassModule>
         
         {/* Benefits list */}
         <div className="max-w-5xl mx-auto">
@@ -204,17 +230,19 @@ const MembershipBenefits: React.FC = () => {
           ))}
         </div>
         
-        {/* CTA */}
-        <div className="mt-20 text-center">
+        {/* CTA with glass effect */}
+        <div className="mt-24 text-center">
           <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-8 py-4 bg-gradient-to-r from-violet-500 to-indigo-500 rounded-full text-white font-medium tracking-wide shadow-lg shadow-indigo-500/30"
+            whileHover={{ scale: 1.05, y: -5 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ duration: 0.7, ease: [0.34, 1.56, 0.64, 1] }}
+            className="px-10 py-5 foggy-glass rounded-full text-mist-800 font-light 
+                     tracking-wide border border-white/20 shadow-neu-md"
           >
             Become a Member
           </motion.button>
           
-          <p className="mt-4 text-violet-300 text-sm">
+          <p className="mt-5 text-mist-600 text-sm font-light">
             Begin your journey today and unlock your full potential
           </p>
         </div>
