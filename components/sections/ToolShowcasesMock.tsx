@@ -1,4 +1,7 @@
 // Mock component for Tool Showcases with updated aesthetic
+import { motion } from 'framer-motion';
+import { GlassModule } from '../ui/NeumorphicUI';
+
 const ToolShowcasesMock: React.FC = () => {
   return (
     <section id="tools" className="py-24 md:py-36 relative overflow-hidden">
