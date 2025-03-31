@@ -243,34 +243,23 @@ const CustomCursor: React.FC = () => {
   );
 };
 
+// The issue is likely around the useEffect hook at line 246
+// Here's the corrected Layout component structure:
+
 const Layout: React.FC<LayoutProps> = ({ 
   children, 
   title = 'Realization Toolkit', 
   description = 'Discover tools for personal transformation through our immersive digital experience.' 
 }) => {
   // Initialize smooth scrolling with Lenis
-useEffect(() => {
-  const lenis = new Lenis({
-    duration: 1.2,
-    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    // Remove 'direction' and 'gestureDirection' properties
-    smooth: true,
-    smoothTouch: false,
-    touchMultiplier: 2,
-  });
-  
-  // Rest of the code remains the same
-  function raf(time: number) {
-    lenis.raf(time);
-    requestAnimationFrame(raf);
-  }
-  
-  requestAnimationFrame(raf);
-  
-  return () => {
-    lenis.destroy();
-  };
-}, []);
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smooth: true,
+      smoothTouch: false,
+      touchMultiplier: 2,
+    });
     
     // Integrate with GSAP
     function raf(time: number) {
@@ -285,6 +274,7 @@ useEffect(() => {
     };
   }, []);
   
+  // Make sure the component returns JSX directly, not a function
   return (
     <>
       <Head>
