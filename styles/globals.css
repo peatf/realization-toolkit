@@ -198,3 +198,95 @@ body {
   --shadow-color: rgba(0, 0, 0, 0.2);
   --highlight-color: rgba(255, 255, 255, 0.1);
 }
+/* CSS for the Simple Accordion Component */
+
+/* Container (Optional - you might use Tailwind or other layout styles) */
+.accordion-container {
+    max-width: 600px; /* Example: Limit width */
+    margin: 2rem auto; /* Example: Center */
+    /* Add any other container styles specific to your app */
+}
+
+/* Basic transition and initial state for accordion content */
+.accordion-content {
+   overflow: hidden;
+   transition: max-height 0.3s ease-out, opacity 0.3s ease-out, visibility 0.3s ease-out;
+   max-height: 0;
+   opacity: 0;
+   visibility: hidden; /* Ensure it's hidden when closed */
+}
+
+/* Open state for accordion content */
+.accordion-content.open {
+   max-height: 1000px; /* Adjust if needed, large enough for content */
+   opacity: 1;
+   visibility: visible; /* Make visible when open */
+}
+
+/* Styling for the trigger button */
+.accordion-trigger {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   width: 100%;
+   padding: 1rem 0; /* Adjust padding as needed */
+   text-align: left;
+   font-weight: 600;
+   cursor: pointer;
+   border: none;
+   background: none;
+   border-bottom: 1px solid #e5e7eb; /* Example border color */
+   /* Add any other base styles for the trigger */
+}
+
+.accordion-trigger:hover {
+    /* Add hover styles if desired, e.g., text-decoration: underline; */
+    /* Example: background-color: #f9fafb; */
+}
+
+/* Styling for the icon within the trigger */
+.accordion-trigger svg {
+   flex-shrink: 0;
+   transition: transform 0.2s ease-out;
+   margin-left: 1rem; /* Space between text and icon */
+   opacity: 0.6; /* Example opacity */
+   width: 16px; /* Ensure consistent size */
+   height: 16px; /* Ensure consistent size */
+}
+
+/* Rotate icon when the trigger/content is open */
+.accordion-trigger.open svg {
+    transform: rotate(180deg);
+}
+
+/* Styling for the text container within the content */
+.accordion-content-text {
+    padding: 0.5rem 0 1rem 0; /* Adjust padding as needed (top, right, bottom, left) */
+    color: #4b5563; /* Example text color */
+    font-size: 0.875rem; /* Example font size */
+    line-height: 1.5; /* Example line height */
+    /* Add other text styles */
+}
+
+/* Styling for the main title text within the trigger */
+.accordion-title-text {
+   font-size: 15px; /* Example size */
+   line-height: 1.5rem; /* Example leading */
+   /* Add other title styles */
+}
+
+/* Styling for the sub-text within the trigger (if used) */
+.accordion-sub-text {
+    font-size: 0.875rem; /* Example size */
+    font-weight: 400; /* Example weight */
+    color: #6b7280; /* Example color */
+    /* Add other sub-text styles */
+}
+
+/* Optional: Remove border from the last item's trigger */
+/* You might need to adjust the selector based on your final structure */
+/* .accordion-item:last-child .accordion-trigger { */
+/* border-bottom: none; */
+/* } */
+
+
