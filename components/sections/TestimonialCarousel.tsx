@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 
 // Placeholder image URL - replace if needed
@@ -28,64 +28,52 @@ const Star: React.FC<StarProps> = ({ isGlowing, delay }) => {
 // ---------- StarsBackground Component ----------
 const StarsBackground: React.FC = () => {
   const [glowingStars, setGlowingStars] = useState<number[]>([]);
-  const stars = 50;
-
+  // Reduce number of stars
+  const stars = 30; 
+  
   useEffect(() => {
+    // References for cleanup
+    let mounted = true;
     const interval = setInterval(() => {
-      const newGlowingStars = Array.from({ length: 5 }, () => Math.floor(Math.random() * stars));
-      setGlowingStars(newGlowingStars);
-    }, 2000);
-    return () => clearInterval(interval);
+      if (mounted) {
+        const newGlowingStars = Array.from({ length: 3 }, () => Math.floor(Math.random() * stars));
+        setGlowingStars(newGlowingStars);
+      }
+    }, 3000); // Slower interval
+    
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
+  // Pre-compute random positions for better performance
+  const starPositions = useMemo(() => {
+    return Array.from({ length: stars }, () => ({
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      delay: Math.random() * 0.5
+    }));
+  }, [stars]);
+
   return (
-    <div
-      className="stars-container"
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        overflow: 'hidden',
-        pointerEvents: 'none',
-      }}
-    >
-      {Array.from({ length: stars }).map((_, index) => {
+    <div className="stars-container absolute inset-0 overflow-hidden pointer-events-none">
+      {starPositions.map((pos, index) => {
         const isGlowing = glowingStars.includes(index);
-        const left = Math.random() * 100;
-        const top = Math.random() * 100;
-        const delay = (index % 10) * 0.1;
         return (
           <div
             key={`star-${index}`}
+            className="absolute"
             style={{
-              position: 'absolute',
-              left: `${left}%`,
-              top: `${top}%`,
+              left: `${pos.left}%`,
+              top: `${pos.top}%`,
               opacity: isGlowing ? 1 : 0.5,
               transform: `scale(${isGlowing ? 1.5 : 1})`,
-              transition: `all 2s ease-in-out ${delay}s`,
+              transition: `all 2s ease-in-out ${pos.delay}s`,
+              willChange: 'transform, opacity'
             }}
           >
-            <Star isGlowing={isGlowing} delay={delay} />
-            {isGlowing && (
-              <div
-                style={{
-                  position: 'absolute',
-                  width: '6px',
-                  height: '6px',
-                  borderRadius: '50%',
-                  background: 'rgba(59, 130, 246, 0.6)',
-                  filter: 'blur(2px)',
-                  top: '-2px',
-                  left: '-2px',
-                  boxShadow:
-                    '0 0 8px 2px rgba(59, 130, 246, 0.6), 0 0 12px 4px rgba(59, 130, 246, 0.4)',
-                  zIndex: 0,
-                }}
-              />
-            )}
+            <Star isGlowing={isGlowing} delay={pos.delay} />
           </div>
         );
       })}

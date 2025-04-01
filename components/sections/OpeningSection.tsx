@@ -28,36 +28,11 @@ const OpeningSection: React.FC = () => {
   };
 
   return (
-    <section className="min-h-screen relative overflow-hidden">
-      {/* Gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-mist-200/40 via-sage-50/30 to-mist-100/60"></div>
-      
-      {/* Floating background elements */}
-      <div className="absolute inset-0 opacity-40 pointer-events-none">
-        <FloatingElement 
-          className="absolute top-1/4 left-1/5 w-64 h-64 rounded-full bg-peach-100/30 blur-3xl"
-          amplitude={20}
-          duration={15}
-        >
-          <div className="w-full h-full"></div>
-        </FloatingElement>
-        
-        <FloatingElement 
-          className="absolute bottom-1/3 right-1/4 w-80 h-80 rounded-full bg-sky-100/20 blur-3xl"
-          amplitude={15}
-          duration={18}
-        >
-          <div className="w-full h-full"></div>
-        </FloatingElement>
-        
-        <FloatingElement 
-          className="absolute top-2/3 left-1/3 w-72 h-72 rounded-full bg-sage-100/30 blur-3xl"
-          amplitude={25}
-          duration={20}
-        >
-          <div className="w-full h-full"></div>
-        </FloatingElement>
-      </div>
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Make floating elements more transparent */}
+      <div className="absolute top-1/4 left-1/5 w-64 h-64 rounded-full bg-peach-100/10 blur-3xl"></div>
+      <div className="absolute bottom-1/3 right-1/4 w-80 h-80 rounded-full bg-sky-100/10 blur-3xl"></div>
+      <div className="absolute top-2/3 left-1/3 w-72 h-72 rounded-full bg-sage-100/10 blur-3xl"></div>
       
       {/* Circular Menu Component */}
       <div className="w-full h-screen flex items-center justify-center">

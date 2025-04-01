@@ -5,6 +5,7 @@ import Lenis from '@studio-freight/lenis';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { FogBackground } from '../ui/NeumorphicUI';
+import GlobalBackground from './GlobalBackground';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -193,8 +194,7 @@ const Layout: React.FC<LayoutProps> = ({
         />
       </Head>
       
-      {/* Background fog effect */}
-      <FogBackground intensity="medium" />
+      <GlobalBackground />
       
       {/* Minimal custom cursor */}
       <CustomCursor />

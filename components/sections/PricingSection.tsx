@@ -461,7 +461,9 @@ const PricingSection: React.FC = () => {
       style={{
         width: '100%',
         minHeight: '100vh',
-        background: 'linear-gradient(45deg, #0f172a, #1e293b)',
+        background: 'rgba(255, 255, 255, 0.05)',
+        backdropFilter: 'blur(8px)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',

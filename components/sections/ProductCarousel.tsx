@@ -24,10 +24,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
   };
 
   return (
-    <section className="py-24 md:py-36 relative overflow-hidden">
-      {/* Soft gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-mist-100/70 to-mist-100/40"></div>
-      
+    <section className="relative py-24">
       <div className="container mx-auto px-4 relative z-10">
         {/* Section header */}
         <div className="max-w-3xl mx-auto text-center mb-16">

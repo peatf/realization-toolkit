@@ -1,90 +1,87 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useRef, memo } from 'react';
 
-const QuizSection: React.FC = () => {
+// Use memo to prevent unnecessary re-renders
+const QuizSection: React.FC = memo(() => {
+  const [iframeHeight, setIframeHeight] = useState(600);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const lastUpdateTimeRef = useRef(0);
+  
   useEffect(() => {
     const minHeight = 600;
-    const maxHeight = 2400; // Maximum allowed height
+    const maxHeight = 1800; 
     let lastHeight = minHeight;
-    let lastUpdateTime = 0;
-    const updateThrottle = 500; // Minimum ms between updates
-
-    function resizeIframe(height: number) {
+    const updateThrottle = 500;
+    
+    // More efficient resize logic with useRef
+    const throttledResize = (height: number) => {
       const now = Date.now();
-      // Throttle updates
-      if (now - lastUpdateTime < updateThrottle) return;
-      const wrapper = document.querySelector('.iframe-wrapper') as HTMLElement;
-      if (!wrapper) return;
-      // Clamp height between min and max
+      if (now - lastUpdateTimeRef.current < updateThrottle) return;
+      
       const newHeight = Math.min(maxHeight, Math.max(minHeight, height));
-      // Only update if change is significant
       if (Math.abs(lastHeight - newHeight) > 5) {
-        wrapper.style.height = `${newHeight}px`;
+        setIframeHeight(newHeight);
         lastHeight = newHeight;
-        lastUpdateTime = now;
-      }
-    }
-
-    const messageHandler = (event: MessageEvent) => {
-      // Ensure the message comes from the correct origin
-      if (event.origin !== "https://alignment-cards.vercel.app") return;
-      if (event.data && typeof event.data.height === 'number') {
-        resizeIframe(event.data.height);
+        lastUpdateTimeRef.current = now;
       }
     };
-
+    
+    // Optimized event handler with origin check first
+    const messageHandler = (event: MessageEvent) => {
+      if (event.origin !== "https://alignment-cards.vercel.app") return;
+      
+      // Only access data if origin is verified
+      const height = event.data?.height;
+      if (height) throttledResize(height);
+    };
+    
     window.addEventListener("message", messageHandler);
-
-    // Initial setup: set the iframe wrapper's height
-    const wrapper = document.querySelector('.iframe-wrapper') as HTMLElement;
-    if (wrapper) {
-      wrapper.style.height = `${minHeight}px`;
-    }
-
+    
+    // Cleanup function
     return () => {
       window.removeEventListener("message", messageHandler);
     };
   }, []);
-
+  
   return (
-    <div id="quiz-section">
-      <div className="iframe-wrapper">
+    <section id="quiz-section" className="py-16">
+      <div 
+        ref={wrapperRef}
+        className="iframe-wrapper"
+        style={{ 
+          height: `${iframeHeight}px`,
+          position: 'relative',
+          width: '100%',
+          maxWidth: '1100px',
+          margin: '0 auto',
+          borderRadius: '15px',
+          overflow: 'hidden',
+          minHeight: '600px',
+          transition: 'height 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          transform: 'translateZ(0)',
+          WebkitTransform: 'translateZ(0)',
+          willChange: 'height'
+        }}
+      >
         <iframe
           src="https://alignment-cards.vercel.app"
           title="Alignment Cards"
           id="alignmentIframe"
           allow="fullscreen"
           scrolling="no"
-        ></iframe>
+          style={{
+            width: '100%',
+            height: '100%',
+            border: 'none',
+            display: 'block',
+            borderRadius: '15px'
+          }}
+          loading="lazy" // Add lazy loading for iframe
+        />
       </div>
-      <style jsx>{`
-        .iframe-wrapper {
-          position: relative;
-          width: 100%;
-          max-width: 1100px;
-          margin: 0 auto;
-          border-radius: 15px;
-          overflow: hidden;
-          min-height: 600px;
-          transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          transform: translateZ(0);
-          -webkit-transform: translateZ(0);
-          will-change: height;
-        }
-        #alignmentIframe {
-          width: 100%;
-          height: 100%;
-          border: none;
-          display: block;
-          border-radius: 15px; /* Add border radius to iframe itself */
-        }
-        @media (max-width: 768px) {
-          .iframe-wrapper {
-            min-height: 720px; /* Increased mobile height */
-          }
-        }
-      `}</style>
-    </div>
+    </section>
   );
-};
+});
+
+QuizSection.displayName = 'QuizSection'; // For React DevTools
 
 export default QuizSection;
