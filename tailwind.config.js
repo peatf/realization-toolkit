@@ -11,7 +11,20 @@ module.exports = {
         mono: ['var(--font-mono)', 'monospace'],
       },
       colors: {
-        // Foggy, misty colors
+        // Updated color palette
+        background: '#FEFFFA',
+        text: {
+          primary: '#1A1A1A',
+          secondary: '#5A5A5A',
+        },
+        card: '#EFEFEF',
+        accent: {
+          taupe: '#D8D0C9',
+          green: '#AFCEAE',
+          sand: '#E5DED5',
+          lavender: '#B0B7D8',
+        },
+        // Keep the original palette for backward compatibility
         mist: {
           50: '#f8f9fa',
           100: '#f0f2f5',
@@ -24,7 +37,6 @@ module.exports = {
           800: '#343a40',
           900: '#212529',
         },
-        // Soft pastel accents
         sage: {
           50: '#f0f4f1',
           100: '#d8e2dc',
@@ -61,26 +73,27 @@ module.exports = {
           800: '#173866',
           900: '#0b1c33',
         },
-        neon: {
-          green: '#d0ff94',
-          blue: '#94fff5',
-          pink: '#ff94d0',
-          purple: '#c894ff',
-        },
       },
       boxShadow: {
-        // Neumorphic shadows
+        // Updated shadows for glass effect
+        'glass-sm': '0 4px 12px rgba(0, 0, 0, 0.03)',
+        'glass-md': '0 8px 24px rgba(0, 0, 0, 0.04)',
+        'glass-lg': '0 12px 32px rgba(0, 0, 0, 0.05)',
+        // Keep original neumorphic shadows for backward compatibility
         'neu-sm': '5px 5px 10px rgba(0, 0, 0, 0.05), -5px -5px 10px rgba(255, 255, 255, 0.05)',
         'neu-md': '8px 8px 16px rgba(0, 0, 0, 0.06), -8px -8px 16px rgba(255, 255, 255, 0.06)',
         'neu-lg': '15px 15px 30px rgba(0, 0, 0, 0.07), -15px -15px 30px rgba(255, 255, 255, 0.07)',
         'neu-inner': 'inset 2px 2px 5px rgba(0, 0, 0, 0.05), inset -2px -2px 5px rgba(255, 255, 255, 0.05)',
       },
       borderRadius: {
+        // Updated border radiuses for more rounded corners
         'xl': '1rem',
         '2xl': '1.5rem',
         '3xl': '2rem',
         '4xl': '2.5rem',
         '5xl': '3rem',
+        'card': '24px',
+        'button': '20px',
         'full': '9999px',
       },
       backdropBlur: {
@@ -91,15 +104,6 @@ module.exports = {
         xl: '16px',
         '2xl': '24px',
         '3xl': '32px',
-      },
-      transitionDuration: {
-        'slow': '700ms',
-        'slower': '1000ms',
-        'slowest': '1500ms',
-      },
-      transitionTimingFunction: {
-        'organic': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
-        'natural': 'cubic-bezier(0.68, -0.6, 0.32, 1.6)',
       },
     },
   },
