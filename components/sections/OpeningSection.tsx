@@ -1,9 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FloatingElement, GlassModule } from '../ui/NeumorphicUI';
-import SimplifiedCircularMenu from './CircularMenuWithGooeyText';
+import CircularMenuWithGooeyText from './CircularMenuWithGooeyText';
 
-const SimpleOpeningSection: React.FC = () => {
+const OpeningSection: React.FC = () => {
   // Array of prompts for the circular menu
   const songPrompts = [
     "Make a song to be happy.",
@@ -16,8 +16,16 @@ const SimpleOpeningSection: React.FC = () => {
     "Make a song for a road trip.",
   ];
 
+  // Custom configuration for the circular menu to match project aesthetics
+  const customConfig = {
+    cBg: 'rgba(240, 242, 245, 0.4)', // Mist-100 with transparency
+    cAccent: 'rgba(138, 190, 255, 0.8)', // Sky-300 with transparency
+    cText: '#495057', // Mist-700
+    itemOpacityDefault: 0.3,
+  };
+
   return (
-    <section className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
+    <section className="min-h-screen relative overflow-hidden">
       {/* Gradient background with foggy overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-mist-200/40 via-sage-50/30 to-mist-100/60"></div>
       
@@ -48,8 +56,8 @@ const SimpleOpeningSection: React.FC = () => {
         </FloatingElement>
       </div>
       
-      {/* Main content with glass effect */}
-      <GlassModule className="container mx-auto px-4 py-16 text-center z-10 max-w-4xl">
+      {/* Main heading content */}
+      <div className="container mx-auto px-4 pt-16 text-center z-10 relative">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -70,17 +78,22 @@ const SimpleOpeningSection: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, delay: 0.5 }}
-          className="max-w-2xl mx-auto text-mist-700 text-lg mb-16 font-light"
+          className="max-w-2xl mx-auto text-mist-700 text-lg mb-12 font-light"
         >
-          Select a creative prompt from our circular menu or use the arrow keys to navigate. 
+          Select a creative prompt from our carousel or use the arrow keys to navigate. 
           Experience our immersive interface with smooth transitions and elegant text effects.
         </motion.p>
-        
-        {/* Simplified Circular Menu */}
-        <SimplifiedCircularMenu items={songPrompts} />
-      </GlassModule>
+      </div>
       
-      {/* Scroll indicator with more ethereal animation */}
+      {/* Circular Menu with Gooey Text */}
+      <div className="w-full h-[60vh] mt-8 overflow-hidden">
+        <CircularMenuWithGooeyText 
+          items={songPrompts} 
+          customConfig={customConfig}
+        />
+      </div>
+      
+      {/* Scroll indicator with ethereal animation */}
       <motion.div 
         className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
         animate={{ y: [0, 8, 0] }}
@@ -93,5 +106,3 @@ const SimpleOpeningSection: React.FC = () => {
     </section>
   );
 };
-
-export default SimpleOpeningSection;
