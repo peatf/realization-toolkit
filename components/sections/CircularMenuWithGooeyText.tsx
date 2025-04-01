@@ -157,7 +157,8 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuWithGooeyTextProps> = ({
     });
   }, [updateSpinnerRotation]);
 
-  const handleWheel = useCallback((e: WheelEvent) => {
+  // Only use standard TypeScript WheelEvent properties
+  const handleWheel = useCallback((e: React.WheelEvent<HTMLDivElement> | WheelEvent) => {
     // Access current states properly with state updater pattern
     setScrolling(isCurrentlyScrolling => {
       if (isCurrentlyScrolling) {
@@ -165,8 +166,8 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuWithGooeyTextProps> = ({
         return isCurrentlyScrolling;
       }
       
-      // Use only standard properties for TypeScript compatibility
-      const delta = e.deltaY || (e as any).detail;
+      // Just use deltaY which is standard and well-supported
+      const delta = e.deltaY;
       
       setCurrentIndex(currentIdx => {
         if (delta > 0 && currentIdx < config.snapCount - 1) {
@@ -228,10 +229,8 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuWithGooeyTextProps> = ({
 
     document.addEventListener('keydown', handleKeyDown);
 
-    const scrollerElement = scrollerRef.current;
-    if (scrollerElement) {
-      scrollerElement.addEventListener('wheel', handleWheel as EventListener, { passive: false });
-    }
+    // We'll handle wheel events with React's onWheel instead of addEventListener
+    // for better TypeScript compatibility
 
     return () => {
       clearTimeout(initTimer);
@@ -239,9 +238,6 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuWithGooeyTextProps> = ({
       if (scrollingTimeoutRef.current) clearTimeout(scrollingTimeoutRef.current);
       if (gooeyTimeoutRef.current) clearTimeout(gooeyTimeoutRef.current);
       document.removeEventListener('keydown', handleKeyDown);
-      if (scrollerElement) {
-        scrollerElement.removeEventListener('wheel', handleWheel as EventListener);
-      }
     };
   }, [config.snapCount, handleWheel, scrollToItem]);
 
