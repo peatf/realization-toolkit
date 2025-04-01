@@ -489,19 +489,20 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuWithGooeyTextProps> = ({
           
           const defsElement = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
           
-          filterElement = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
-          filterElement.setAttribute('id', 'gooey-filter');
+          const filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
+          filter.setAttribute('id', 'gooey-filter');
           
           const feColorMatrix = document.createElementNS('http://www.w3.org/2000/svg', 'feColorMatrix');
           feColorMatrix.setAttribute('in', 'SourceGraphic');
           feColorMatrix.setAttribute('type', 'matrix');
           feColorMatrix.setAttribute('values', '1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 255 -140');
           
-          filterElement.appendChild(feColorMatrix);
-          defsElement.appendChild(filterElement);
+          filter.appendChild(feColorMatrix);
+          defsElement.appendChild(filter);
           svgElement.appendChild(defsElement);
           
           document.body.appendChild(svgElement);
+          filterElement = document.getElementById('gooey-filter');
         }
         
         // Create wrapper with filter
