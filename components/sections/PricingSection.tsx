@@ -1,311 +1,150 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
-import { FloatingElement, GlassModule, NeumorphicButton } from '../ui/NeumorphicUI';
-import gsap from 'gsap';
+import React, { useEffect, useState, useRef } from 'react';
 
-interface PricingOption {
-  id: string;
-  name: string;
-  price: number;
-  interval: string;
-  description: string;
-  features: string[];
-  accent: string;
-  recommended?: boolean;
-}
+const Star = ({ isGlowing, delay }) => {
+  return (
+    <div
+      style={{
+        width: '2px', height: '2px', borderRadius: '50%',
+        background: isGlowing ? '#fff' : '#666',
+        transition: `all 2s ease-in-out ${delay}s`,
+        position: 'relative', zIndex: 1
+      }}
+    ></div>
+  );
+};
 
-const FloatingOrb: React.FC<{
-  size: number;
-  color: string;
-  blur: 'md' | 'lg' | 'xl' | '2xl' | '3xl';
-  x: number;
-  y: number;
-  amplitude?: number;
-  duration?: number;
-}> = ({ size, color, blur, x, y, amplitude = 20, duration = 8 }) => {
-  // Create inline styles for the outer div
-  const orbitStyle = {
-    width: size,
-    height: size,
-    backgroundColor: color,
-    left: `${x}%`,
-    top: `${y}%`,
-  };
+const StarsBackground = () => {
+  const [glowingStars, setGlowingStars] = useState([]);
+  const stars = 50;
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newGlowingStars = Array.from({ length: 5 }, () => Math.floor(Math.random() * stars));
+      setGlowingStars(newGlowingStars);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <div 
-      className={`absolute rounded-full opacity-60 pointer-events-none blur-${blur}`}
-      style={orbitStyle}
-    >
-      <FloatingElement 
-        className="w-full h-full"
-        amplitude={amplitude}
-        duration={duration}
-      >
-        <div className="w-full h-full rounded-full"></div>
-      </FloatingElement>
+    <div className="stars-container" style={{
+      position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+      overflow: 'hidden', pointerEvents: 'none'
+    }}>
+      {Array.from({ length: stars }).map((_, index) => {
+        const isGlowing = glowingStars.includes(index);
+        const left = Math.random() * 100;
+        const top = Math.random() * 100;
+        const delay = (index % 10) * 0.1;
+        return (
+          <div key={`star-${index}`} style={{
+              position: 'absolute', left: `${left}%`, top: `${top}%`,
+              opacity: isGlowing ? 1 : 0.5, transform: `scale(${isGlowing ? 1.5 : 1})`,
+              transition: `all 2s ease-in-out ${delay}s` }}>
+            <Star isGlowing={isGlowing} delay={delay} />
+            {isGlowing && (
+              <div style={{
+                position: 'absolute', width: '6px', height: '6px', borderRadius: '50%',
+                background: 'rgba(59, 130, 246, 0.6)', filter: 'blur(2px)',
+                top: '-2px', left: '-2px',
+                boxShadow: '0 0 8px 2px rgba(59, 130, 246, 0.6), 0 0 12px 4px rgba(59, 130, 246, 0.4)',
+                zIndex: 0 }} />
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 };
 
-const PricingOption: React.FC<{
-  option: PricingOption;
-  isActive: boolean;
-  onSelect: () => void;
-}> = ({ option, isActive, onSelect }) => {
-  const cardRef = useRef<HTMLDivElement>(null);
-  
-  useEffect(() => {
-    if (cardRef.current) {
-      const card = cardRef.current;
-      
-      // Very subtle glow effect on active card
-      if (isActive) {
-        gsap.to(card, {
-          boxShadow: `0 0 40px 2px ${option.accent}20`,
-          duration: 1.2,
-          ease: "power2.out"
-        });
-      } else {
-        gsap.to(card, {
-          boxShadow: '0 0 0 0 transparent',
-          duration: 1.2,
-          ease: "power2.out"
-        });
-      }
-    }
-  }, [isActive, option.accent]);
-  
-  return (
-    <motion.div
-      ref={cardRef}
-      className={`relative p-8 rounded-3xl backdrop-blur-md border transition-all duration-slower 
-                cursor-pointer ${isActive 
-        ? 'foggy-glass border-white/30 transform -translate-y-3' 
-        : 'bg-white/5 border-white/10 hover:bg-white/10'
-      }`}
-      onClick={onSelect}
-      whileHover={{ y: -8 }}
-      whileTap={{ y: -2 }}
-      transition={{ duration: 0.7, ease: [0.34, 1.56, 0.64, 1] }}
-    >
-      {option.recommended && (
-        <div 
-          className="absolute -top-4 left-1/2 transform -translate-x-1/2 px-5 py-1 rounded-full 
-                   text-xs uppercase tracking-wider font-light backdrop-blur-sm"
-          style={{ 
-            backgroundColor: `${option.accent}30`, 
-            color: option.accent 
-          }}
-        >
-          Recommended
-        </div>
-      )}
-      
-      <h3 className="text-2xl font-serif text-mist-800 mb-3 font-light">{option.name}</h3>
-      
-      <div className="mb-5">
-        <span className="text-4xl font-extralight text-mist-800">${option.price}</span>
-        <span className="text-mist-600 ml-1 font-light">/{option.interval}</span>
-      </div>
-      
-      <p className="text-mist-700 mb-7 font-light">{option.description}</p>
-      
-      <ul className="space-y-4 mb-10">
-        {option.features.map((feature, index) => (
-          <li key={index} className="flex items-start">
-            <span 
-              className="mr-3 mt-1 flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center opacity-70"
-              style={{ backgroundColor: option.accent }}
-            >
-              <svg width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M1 3L3 5L7 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </span>
-            <span className="text-mist-700 font-light">{feature}</span>
-          </li>
-        ))}
-      </ul>
-      
-      <motion.button
-        className="w-full py-4 rounded-full text-mist-100 font-light transition-all duration-slower"
-        style={{ 
-          backgroundColor: isActive ? `${option.accent}90` : 'rgba(255, 255, 255, 0.1)',
-          border: isActive ? 'none' : '1px solid rgba(255, 255, 255, 0.2)'
-        }}
-        whileHover={{ scale: 1.03 }}
-        whileTap={{ scale: 0.98 }}
-        transition={{ duration: 0.7, ease: [0.34, 1.56, 0.64, 1] }}
-      >
-        {isActive ? 'Select Plan' : 'Learn More'}
-      </motion.button>
-    </motion.div>
-  );
+const products = [
+  {
+    id: 'rtk', title: "Realization Toolkit ꩜", hasMultipleIntervals: true,
+    intervals: {
+      monthly: { price: "376.00", interval: "Every month", pricingOptionId: "25c4487a-6156-469c-a69c-fe8920e9ec29" },
+      weekly: { price: "188.00", interval: "Every 2 weeks", pricingOptionId: "9bed5f13-3739-4c68-946f-de79b88f46b7" }
+    },
+    toggleLabels: { monthly: "Monthly", weekly: "2 Weeks" },
+    pricingPlanId: "fc0ee596-0820-4e2d-ae7f-8762360121ba",
+    features: [ "Access to Alchemical Tools", "Access to Power Tools", "Access to Live Vision Coaching Calls", "Access to Vision Coaching Call Replays", "Access to 1:1 Booking" ]
+  },
+  {
+    id: 'ap-tools', title: "Alchemical + Power Tools", price: "96.00", interval: "Every month",
+    pricingPlanId: "c8a2ed11-3bee-4456-9e25-54ace2d47267", pricingOptionId: "51646566-212a-480d-83d4-fe70f664958d",
+    features: [ "Access to Realization: Alchemical Tools", "Access to Realization: Power Tools", "Access to one Monthly Vision Coaching Call recording" ]
+  },
+  {
+    id: 'refiner', title: "The Refiner 𓂀", hasMultipleIntervals: true,
+    intervals: {
+      monthly: { price: "34.00", interval: "Every month", pricingOptionId: "6e23e623-a4dd-4269-8bb9-24d79dc02da5" },
+      weekly: { price: "8.50", interval: "Every week", pricingOptionId: "1dd0b7cd-69c7-4f1f-85bb-1bb347110ee8" }
+    },
+    toggleLabels: { monthly: "Monthly", weekly: "Weekly" },
+    pricingPlanId: "6e1c0811-d0c3-4e0d-8579-bc65cc83b41f",
+    features: [ "Unlimited Access to the Refiner", "Bonus: Access to Tension to Form Tool" ]
+  }
+];
+
+const UserAccountApi = window.UserAccountApi || {
+  joinPricingPlan: (planId, optionId) => {
+    console.warn('UserAccountApi.joinPricingPlan called (mocked):', { planId, optionId });
+    alert(`Simulating signup for plan ${planId}, option ${optionId}`);
+  }
 };
 
-const PricingSection: React.FC = () => {
-  const [activeOption, setActiveOption] = useState('premium');
-  const sectionRef = useRef<HTMLDivElement>(null);
-  
-  const pricingOptions: PricingOption[] = [
-    {
-      id: 'essential',
-      name: 'Essential',
-      price: 9,
-      interval: 'month',
-      description: 'Begin your journey with foundational tools',
-      features: [
-        'Basic Resonance Mapping',
-        'Monthly Digital Ritual Access',
-        'Community Access (Read-Only)',
-        'Standard Toolkit Suite'
-      ],
-      accent: '#90ae98', // sage-400
-    },
-    {
-      id: 'premium',
-      name: 'Premium',
-      price: 19,
-      interval: 'month',
-      description: 'Enhanced tools and personalized experience',
-      features: [
-        'Advanced Resonance Mapping',
-        'Unlimited Digital Rituals',
-        'Full Community Participation',
-        'Complete Toolkit Access',
-        'Personal Frequency Analysis'
-      ],
-      accent: '#8abeff', // sky-300
-      recommended: true,
-    },
-    {
-      id: 'visionary',
-      name: 'Visionary',
-      price: 39,
-      interval: 'month',
-      description: 'Comprehensive suite for dedicated practitioners',
-      features: [
-        'Master Resonance Mapping',
-        'Custom Digital Ritual Creation',
-        'Community Leadership Access',
-        'Complete Toolkit + Beta Features',
-        'Personal Frequency Analysis',
-        'One-on-One Guidance Session'
-      ],
-      accent: '#ffb08d', // peach-300
-    }
-  ];
-  
+const PricingSection = () => {
+  const [activeCardIndex, setActiveCardIndex] = useState(0);
+  const [selectedIntervals, setSelectedIntervals] = useState(
+    products.reduce((acc, product, index) => {
+      if (product.hasMultipleIntervals) acc[index] = 'monthly';
+      return acc;
+    }, {})
+  );
+  const containerRef = useRef(null);
+  const [prevHover, setPrevHover] = useState(false);
+  const [nextHover, setNextHover] = useState(false);
+
+  const handleSelectCard = (index) => setActiveCardIndex(index);
+  const handleIntervalChange = (productIndex, intervalKey) => {
+    setSelectedIntervals(prev => ({ ...prev, [productIndex]: intervalKey }));
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'ArrowUp' && activeCardIndex > 0) {
+        setActiveCardIndex(activeCardIndex - 1);
+      } else if (e.key === 'ArrowDown' && activeCardIndex < products.length - 1) {
+        setActiveCardIndex(activeCardIndex + 1);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeCardIndex]);
+
   return (
-    <section 
-      ref={sectionRef}
-      className="py-24 md:py-36 relative overflow-hidden"
-    >
-      {/* Soft gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-mist-100/70 to-mist-100/40"></div>
-      
-      {/* Floating orbs background - more subtle, foggy */}
-      <div className="absolute inset-0 pointer-events-none">
-        <FloatingOrb size={220} color="rgba(144, 174, 152, 0.15)" blur="3xl" x={15} y={25} amplitude={15} duration={15} />
-        <FloatingOrb size={320} color="rgba(138, 190, 255, 0.12)" blur="3xl" x={75} y={60} amplitude={18} duration={18} />
-        <FloatingOrb size={180} color="rgba(255, 176, 141, 0.1)" blur="2xl" x={65} y={20} amplitude={12} duration={12} />
-        <FloatingOrb size={280} color="rgba(196, 181, 253, 0.08)" blur="3xl" x={25} y={70} amplitude={20} duration={20} />
-        <FloatingOrb size={200} color="rgba(222, 226, 230, 0.15)" blur="2xl" x={85} y={85} amplitude={14} duration={14} />
+    <div ref={containerRef} style={{
+        width: '100%', minHeight: '100vh', background: 'linear-gradient(45deg, #0f172a, #1e293b)',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        padding: '40px 20px', overflow: 'hidden', position: 'relative',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
+
+      <h1 style={{ color: 'white', marginBottom: '80px', textAlign: 'center', fontSize: '32px' }}>
+        Membership Options
+      </h1>
+
+      <div style={{ position: 'relative', width: '100%', height: '500px',
+          display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
+        {products.map((plan, index) => (
+          <div key={plan.id || index}>{plan.title}</div> // Placeholder - swap for full MembershipCard
+        ))}
       </div>
-      
-      {/* Content container */}
-      <div className="container mx-auto px-4 relative z-10">
-        {/* Section header */}
-        <GlassModule
-          className="max-w-3xl mx-auto text-center mb-24 p-10 rounded-3xl"
-          blur="md"
-          opacity="low"
-        >
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.2 }}
-            className="mb-4"
-          >
-            <span className="font-mono text-mist-600 tracking-widest uppercase text-sm">Pricing</span>
-          </motion.div>
-          
-          <h2  
-            className="font-serif text-4xl md:text-5xl text-mist-800 mb-6 font-extralight"
-          >
-            Choose Your Path
-          </h2>
-          
-          <p  
-            className="text-mist-700 text-lg max-w-2xl mx-auto font-light"
-          >
-            Select the membership tier that resonates with your journey and access
-            our transformative tools at your own pace.
-          </p>
-        </GlassModule>
-        
-        {/* Decision portal - pricing cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto relative">
-          {/* Portal light effect behind cards - more subtle fog */}
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
-                        w-full h-full rounded-full bg-gradient-to-r from-sage-100/5 via-sky-100/10 
-                        to-peach-100/5 blur-3xl -z-10"></div>
-          
-          {pricingOptions.map((option) => (
-            <motion.div
-              key={option.id}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ 
-                duration: 1.2, 
-                delay: pricingOptions.findIndex(o => o.id === option.id) * 0.2 + 0.3, 
-                ease: "power2.out" 
-              }}
-            >
-              <PricingOption
-                option={option}
-                isActive={activeOption === option.id}
-                onSelect={() => setActiveOption(option.id)}
-              />
-            </motion.div>
-          ))}
-        </div>
-        
-        {/* Satisfaction guarantee - more neumorphic, minimal */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, delay: 0.9, ease: "power2.out" }}
-          className="mt-20 text-center"
-        >
-          <div className="inline-block px-8 py-4 rounded-full foggy-glass border border-white/20">
-            <p className="text-mist-700 flex items-center font-light">
-              <svg className="w-5 h-5 mr-3 text-sky-400/70" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
-              </svg>
-              30-Day Resonance Guarantee — Begin your journey risk-free
-            </p>
-          </div>
-          
-          <p className="mt-5 text-mist-600 text-sm font-light max-w-lg mx-auto">
-            If you don't feel a shift in your personal frequency within 30 days, 
-            we'll refund your membership completely.
-          </p>
-        </motion.div>
-        
-        {/* FAQ link - minimal styling */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.2, delay: 1.1, ease: "power2.out" }}
-          className="mt-12 text-center"
-        >
-          <a href="#faq" className="text-mist-600 hover:text-sky-400 transition-colors duration-slower">
-            Have questions? View our Frequently Asked Questions
-          </a>
-        </motion.div>
+
+      <div style={{ display: 'flex', marginTop: '30px', gap: '10px', justifyContent: 'center' }}>
+        {products.map((_, index) => (
+          <button key={index} onClick={() => setActiveCardIndex(index)}
+            style={{ width: '12px', height: '12px', borderRadius: '50%', background: index === activeCardIndex ? '#3b82f6' : 'rgba(255,255,255,0.3)', border: 'none', cursor: 'pointer', transition: 'all 0.3s ease' }}
+            aria-label={`View ${products[index].title} plan`} />
+        ))}
       </div>
-    </section>
+    </div>
   );
 };
 
