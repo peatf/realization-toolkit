@@ -9,6 +9,8 @@ import ProductCarousel from '../components/sections/ProductCarousel';
 import { personalToolsProducts, communityToolsProducts } from '../data/productData';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
+import { GlassModule } from '../components/ui/NeumorphicUI';
+import { motion } from 'framer-motion';
 
 // Mock component for Quiz Section with updated aesthetic
 const QuizSectionMock: React.FC = () => {
