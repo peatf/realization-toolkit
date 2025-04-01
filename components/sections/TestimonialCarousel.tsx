@@ -195,32 +195,35 @@ const TestimonialCarousel: React.FC = () => {
   // useEffect for 3D positioning of rendered slides
   useEffect(() => {
     if (!orbitRef.current || totalTestimonials === 0) return;
-    const cards = orbitRef.current.querySelectorAll('.testimonial-card');
+    const cards = Array.from(orbitRef.current.querySelectorAll('.testimonial-card'));
     if (cards.length !== slidesToRender.length) return;
 
-    const radius = 280; // Orbit radius
-
-    cards.forEach((card, cardDomIndex) => {
-      const slideData = slidesToRender[cardDomIndex];
-      if (!slideData) return;
-      const originalIndex = slideData.originalIndex;
-      const angleOffset =
-        totalTestimonials > 0
+    const radius = 280;
+    
+    // Batch DOM operations to prevent layout thrashing
+    requestAnimationFrame(() => {
+      cards.forEach((card, cardDomIndex) => {
+        const slideData = slidesToRender[cardDomIndex];
+        if (!slideData) return;
+        
+        const originalIndex = slideData.originalIndex;
+        const angleOffset = totalTestimonials > 0
           ? (((originalIndex - activeIndex + totalTestimonials) % totalTestimonials) / totalTestimonials) * Math.PI * 2
           : 0;
-      const x = Math.sin(angleOffset) * radius;
-      const z = Math.cos(angleOffset) * radius;
-      const isActive = originalIndex === activeIndex;
-      const scale = isActive ? 1 : 0.85;
-      const opacity = isActive ? 1 : 0.5;
-
-      (card as HTMLElement).style.transform = `translate(-50%, -50%) translateX(${x}px) translateZ(${z}px) scale(${scale})`;
-      (card as HTMLElement).style.opacity = `${opacity}`;
-      (card as HTMLElement).style.transition = 'transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.8s ease-out';
-      (card as HTMLElement).style.position = 'absolute';
-      (card as HTMLElement).style.left = '50%';
-      (card as HTMLElement).style.top = '50%';
-      (card as HTMLElement).style.zIndex = isActive ? '100' : `${Math.round(50 + (z / (radius * 2)) * 50)}`;
+        
+        const x = Math.sin(angleOffset) * radius;
+        const z = Math.cos(angleOffset) * radius;
+        const isActive = originalIndex === activeIndex;
+        const scale = isActive ? 1 : 0.85;
+        const opacity = isActive ? 1 : 0.5;
+        const zIndex = isActive ? 100 : Math.round(50 + (z / (radius * 2)) * 50);
+        
+        // Use transform: translate3d for hardware acceleration
+        const el = card as HTMLElement;
+        el.style.transform = `translate3d(-50%, -50%, 0) translateX(${x}px) translateZ(${z}px) scale(${scale})`;
+        el.style.opacity = `${opacity}`;
+        el.style.zIndex = `${zIndex}`;
+      });
     });
   }, [activeIndex, totalTestimonials, slidesToRender]);
 

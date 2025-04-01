@@ -3,7 +3,10 @@ import { motion } from 'framer-motion';
 import Head from 'next/head';
 import Lenis from '@studio-freight/lenis';
 import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { FogBackground } from '../ui/NeumorphicUI';
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -16,55 +19,73 @@ const CustomCursor: React.FC = () => {
   const cursorOuterRef = useRef<HTMLDivElement>(null);
   const cursorInnerRef = useRef<HTMLDivElement>(null);
   const [isHovering, setIsHovering] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const lastMousePos = useRef({ x: 0, y: 0 });
+  const frameRef = useRef<number | null>(null);
   
   useEffect(() => {
+    // Skip on touch devices
+    if ('ontouchstart' in window) return;
+    
     const cursorOuter = cursorOuterRef.current;
     const cursorInner = cursorInnerRef.current;
     
     if (!cursorOuter || !cursorInner) return;
     
+    // Throttle mouse movement using requestAnimationFrame instead of GSAP
     const handleMouseMove = (e: MouseEvent) => {
-      // Outer cursor follows with delay for ethereal effect
-      gsap.to(cursorOuter, {
-        x: e.clientX,
-        y: e.clientY,
-        duration: 0.8,
-        ease: "power3.out"
-      });
+      lastMousePos.current = { x: e.clientX, y: e.clientY };
       
-      // Inner dot follows exactly with slight delay
-      gsap.to(cursorInner, {
-        x: e.clientX,
-        y: e.clientY,
-        duration: 0.3,
-        ease: "power2.out"
-      });
+      // Show cursor if hidden
+      if (!isVisible) {
+        setIsVisible(true);
+        cursorOuter.classList.remove('opacity-0');
+        cursorInner.classList.remove('opacity-0');
+      }
     };
     
+    // Update positions only in animation frame
+    const updateCursorPosition = () => {
+      const { x, y } = lastMousePos.current;
+      
+      // Direct style manipulation instead of GSAP
+      if (cursorOuter) {
+        cursorOuter.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
+      }
+      
+      if (cursorInner) {
+        cursorInner.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
+      }
+      
+      frameRef.current = requestAnimationFrame(updateCursorPosition);
+    };
+    
+    frameRef.current = requestAnimationFrame(updateCursorPosition);
+    
     const handleMouseEnter = () => {
-      cursorOuter.classList.remove('opacity-0');
-      cursorInner.classList.remove('opacity-0');
+      cursorOuter?.classList.remove('opacity-0');
+      cursorInner?.classList.remove('opacity-0');
     };
     
     const handleMouseLeave = () => {
-      cursorOuter.classList.add('opacity-0');
-      cursorInner.classList.add('opacity-0');
+      cursorOuter?.classList.add('opacity-0');
+      cursorInner?.classList.add('opacity-0');
     };
     
     // Track interactive elements to modify cursor appearance
     const handleLinkEnter = () => {
       setIsHovering(true);
-      cursorOuter.classList.add('scale-150', 'backdrop-blur-sm', 'bg-white/5');
-      cursorInner.classList.add('bg-neon-green', 'scale-150');
+      cursorOuter?.classList.add('scale-150');
+      cursorInner?.classList.add('bg-neon-green', 'scale-150');
     };
     
     const handleLinkLeave = () => {
       setIsHovering(false);
-      cursorOuter.classList.remove('scale-150', 'backdrop-blur-sm', 'bg-white/5');
-      cursorInner.classList.remove('bg-neon-green', 'scale-150');
+      cursorOuter?.classList.remove('scale-150');
+      cursorInner?.classList.remove('bg-neon-green', 'scale-150');
     };
     
-    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mousemove', handleMouseMove, { passive: true });
     document.addEventListener('mouseenter', handleMouseEnter);
     document.addEventListener('mouseleave', handleMouseLeave);
     
@@ -81,12 +102,19 @@ const CustomCursor: React.FC = () => {
       document.removeEventListener('mouseenter', handleMouseEnter);
       document.removeEventListener('mouseleave', handleMouseLeave);
       
+      if (frameRef.current) cancelAnimationFrame(frameRef.current);
+      
       interactiveElements.forEach((el) => {
         el.removeEventListener('mouseenter', handleLinkEnter);
         el.removeEventListener('mouseleave', handleLinkLeave);
       });
     };
-  }, []);
+  }, [isVisible]);
+  
+  // Don't render cursor on touch devices
+  if (typeof window !== 'undefined' && 'ontouchstart' in window) {
+    return null;
+  }
   
   return (
     <>
@@ -94,14 +122,15 @@ const CustomCursor: React.FC = () => {
         ref={cursorOuterRef}
         className="fixed top-0 left-0 w-12 h-12 rounded-full border border-white/30 
                   pointer-events-none z-50 opacity-0 mix-blend-difference
-                  transform -translate-x-1/2 -translate-y-1/2 transition-transform duration-slow"
-        style={{ transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)' }}
+                  transform -translate-x-1/2 -translate-y-1/2"
+        style={{ willChange: 'transform' }}
       />
       <div 
         ref={cursorInnerRef}
         className="fixed top-0 left-0 w-2 h-2 bg-white/60 rounded-full 
                   pointer-events-none z-50 opacity-0 mix-blend-difference
-                  transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300"
+                  transform -translate-x-1/2 -translate-y-1/2"
+        style={{ willChange: 'transform' }}
       />
     </>
   );
@@ -115,20 +144,36 @@ const Layout: React.FC<LayoutProps> = ({
   // Initialize smooth scrolling with Lenis
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.8, // Slower, more ethereal scrolling
+      duration: 0.8, // Even shorter duration
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       touchMultiplier: 1.5,
-      wheelMultiplier: 0.8, // Gentler wheel scrolling
+      wheelMultiplier: 0.8,
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
     });
 
+    // Only update ScrollTrigger when necessary
+    let lastScrollTop = 0;
+    const scrollThreshold = 5; // Only update if scrolled more than 5px
+    
+    const scrollFn = ({ scroll }: { scroll: number }) => {
+      if (Math.abs(scroll - lastScrollTop) > scrollThreshold) {
+        ScrollTrigger.update();
+        lastScrollTop = scroll;
+      }
+    };
+    lenis.on('scroll', scrollFn);
+
+    // More efficient way to link with requestAnimationFrame
     function raf(time: number) {
       lenis.raf(time);
       requestAnimationFrame(raf);
     }
-
     requestAnimationFrame(raf);
-
+    
     return () => {
+      lenis.off('scroll', scrollFn);
       lenis.destroy();
     };
   }, []);

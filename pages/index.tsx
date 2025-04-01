@@ -18,31 +18,40 @@ const Home: NextPage = () => {
     // Register GSAP plugins
     gsap.registerPlugin(ScrollTrigger);
     
-    // Global scroll animations with more gentle, subtle effects
+    // Use a more optimized approach with fewer animations
     const sections = document.querySelectorAll('section');
     
+    // Create one timeline per section
     sections.forEach(section => {
-      gsap.fromTo(
-        section.querySelectorAll('.animate-on-scroll'),
-        { y: 30, opacity: 0 }, // Smaller y offset for subtlety
-        {
-          y: 0,
-          opacity: 1,
-          duration: 1.5, // Slower animation
-          ease: 'power2.out', // Gentler easing
-          stagger: 0.3, // More spacing between elements
-          scrollTrigger: {
-            trigger: section,
-            start: 'top 85%', // Start earlier
-            end: 'bottom 15%',
-            toggleActions: 'play none none reverse'
-          }
+      const elements = section.querySelectorAll('.animate-on-scroll');
+      if (elements.length === 0) return;
+      
+      // Batch animations in a timeline for better performance
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "top 85%",
+          end: "bottom 15%",
+          toggleActions: "play none none reverse",
+          // markers: true, // Enable for debugging
+        }
+      });
+      
+      // Add all animations to the timeline
+      tl.fromTo(elements, 
+        { y: 20, opacity: 0 },
+        { 
+          y: 0, 
+          opacity: 1, 
+          duration: 0.8, // Faster animation
+          stagger: 0.1, // Smaller stagger for more performance
+          ease: "power2.out",
+          clearProps: "transform" // Clean up after animation
         }
       );
     });
     
     return () => {
-      // Clean up scroll triggers on unmount
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
   }, []);

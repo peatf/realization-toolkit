@@ -1,6 +1,7 @@
 /**
  * CSS Animation utilities for simple transitions and effects
  */
+import { useState, useEffect, useRef } from 'react';
 
 /**
  * Sets up an Intersection Observer to trigger animations when elements enter the viewport
@@ -152,6 +153,37 @@ export const animationClasses = {
   slideInLeft: 'slide-in-left',
   slideInRight: 'slide-in-right',
   blurIn: 'blur-in',
+};
+
+/**
+ * React hook for using Intersection Observer
+ * @param options Intersection Observer options
+ * @returns A tuple containing a ref and a boolean indicating if the element is intersecting
+ */
+export const useIntersectionObserver = (
+  options = { threshold: 0.1, rootMargin: '0px' }
+) => {
+  const [observerEntry, setObserverEntry] = useState<IntersectionObserverEntry | null>(null);
+  const elementRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (!elementRef.current) return;
+    
+    const observer = new IntersectionObserver(
+      ([entry]) => setObserverEntry(entry),
+      options
+    );
+    
+    observer.observe(elementRef.current);
+    
+    return () => {
+      if (elementRef.current) {
+        observer.unobserve(elementRef.current);
+      }
+    };
+  }, [options.threshold, options.rootMargin]);
+
+  return [elementRef, observerEntry?.isIntersecting];
 };
 
 // Export default for convenience
