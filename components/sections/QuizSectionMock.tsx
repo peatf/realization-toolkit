@@ -1,3 +1,5 @@
+// components/sections/QuizSectionMock.tsx
+import React from 'react';
 import { motion } from 'framer-motion';
 import { GlassModule } from '../ui/NeumorphicUI';
 
@@ -56,3 +58,5 @@ const QuizSectionMock: React.FC = () => {
     </section>
   );
 };
+
+export default QuizSectionMock;
