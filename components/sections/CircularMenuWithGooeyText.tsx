@@ -564,7 +564,7 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuWithGooeyTextProps> = ({
         
         // Animation loop
         let animationId: number;
-        function animate() {
+        const animate = () => {
           animationId = requestAnimationFrame(animate);
           const newTime = new Date();
           const dt = (newTime.getTime() - time.getTime()) / 1000;
@@ -583,7 +583,7 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuWithGooeyTextProps> = ({
             // Reset the original content
             parentElement.innerHTML = nextText;
           }
-        }
+        };
         
         // Start animation
         animationId = requestAnimationFrame(animate);
