@@ -1,14 +1,6 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
-
-// Define TypeScript interfaces for the component props
-interface Product {
-  id: number;
-  image: string;
-  alt: string;
-  title: string;
-  tip: string;
-}
+import { Product } from '../data/productData';
 
 interface ProductCarouselProps {
   products?: Product[];
@@ -16,7 +8,11 @@ interface ProductCarouselProps {
   subtitle?: string;
 }
 
-const defaultProducts: Product[] = [
+const ProductCarousel: React.FC<ProductCarouselProps> = ({
+  products = [],
+  title = "Featured Tools",
+  subtitle = "Explore our toolkit"
+}) => {
   {
     id: 1,
     image: "/api/placeholder/500/500",
