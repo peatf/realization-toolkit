@@ -42,7 +42,7 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuWithGooeyTextProps> = ({
   // Refs
   const spinnerRef = useRef<HTMLDivElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
-  const itemsRef = useRef<(HTMLDivElement | null)[]>(Array(items.length).fill(null));
+  const itemsRef = useRef<Array<HTMLDivElement | null>>(Array(items.length).fill(null));
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Set up gooey filter once
@@ -120,6 +120,11 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuWithGooeyTextProps> = ({
       
       document.body.appendChild(svgElement);
     }
+  };
+  
+  // Set a ref for item element
+  const setItemRef = (el: HTMLDivElement | null, index: number) => {
+    itemsRef.current[index] = el;
   };
   
   // Update active item visual state
@@ -368,7 +373,7 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuWithGooeyTextProps> = ({
             {items.map((text, i) => (
               <div
                 key={`item-${i}`}
-                ref={el => itemsRef.current[i] = el}
+                ref={(el) => setItemRef(el, i)}
                 className={`absolute whitespace-nowrap transition-all duration-300 cursor-pointer text-lg
                   ${i === currentIndex ? 
                     'active text-2xl font-bold' : 
