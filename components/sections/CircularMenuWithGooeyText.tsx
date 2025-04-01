@@ -311,155 +311,153 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuWithGooeyTextProps> = ({
 
   // CSS styles for components
   const styles = {
-    root: {
-      // CSS variable values
-      '--radius': config.radius,
-      '--invis-radius': config.invisRadius,
-      '--invis-offset': config.invisOffset,
-      '--offset': config.offset,
-      '--c-bg': config.cBg,
-      '--c-accent': config.cAccent,
-      '--c-text': config.cText,
-      '--item-opacity-default': config.itemOpacityDefault,
-      '--snap-height': config.snapHeight,
-      '--snap-count': config.snapCount
-    } as React.CSSProperties,
-    body: {
-      height: '100vh',
-      margin: 0,
-      padding: 0,
-      background: 'var(--c-bg)',
-      overflow: 'hidden',
-      minWidth: '320px'
-    },
-    scroller: {
-      scrollSnapType: 'y mandatory',
-      height: '100vh',
-      overflowY: 'scroll',
-      position: 'relative',
-      zIndex: 1,
-      scrollbarWidth: 'none'
-    } as React.CSSProperties,
-    buffer: {
-      height: '100vh',
-      scrollSnapAlign: 'start'
-    },
-    snap: {
-      height: 'var(--snap-height)',
-      scrollSnapAlign: 'end'
-    },
-    spinnerWrap: {
-      width: '100vw',
-      height: '100vh',
-      overflow: 'hidden',
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      pointerEvents: 'none'
-    } as React.CSSProperties,
-    spinner: {
-      position: 'absolute',
-      top: '-9999px',
-      bottom: '-9999px',
-      left: 'var(--invis-offset)',
-      width: 'calc(var(--radius) * 2)',
-      height: 'calc(var(--radius) * 2)',
-      margin: 'auto',
-      transformOrigin: '50% 50%'
-    },
-    dot: {
-      position: 'absolute',
-      top: 0,
-      left: 'calc(50vw - var(--invis-radius) + 3.5vw)',
-      bottom: 0,
-      margin: 'auto',
-      width: '3vw',
-      height: '3vw',
-      borderRadius: '50%',
-      backgroundColor: 'var(--c-accent)',
-      transition: 'transform 0.3s ease, opacity 0.3s ease'
-    },
-    itemWrap: {
-      position: 'absolute',
-      bottom: 0,
-      left: '50%',
-      top: 0,
-      margin: 'auto'
-    },
-    item: {
-      position: 'absolute',
-      left: 0,
-      top: 0,
-      bottom: 0,
-      margin: 'auto',
-      height: '80px',
-      display: 'flex',
-      alignItems: 'center',
-      fontSize: 'min(7vw, 96px)',
-      whiteSpace: 'nowrap',
-      letterSpacing: '-0.02em',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-      transformOrigin: '0 50%',
-      opacity: 'var(--item-opacity-default)',
-      cursor: 'pointer',
-      transition: 'opacity 0.3s ease'
-    } as React.CSSProperties,
-    activeItem: {
-      opacity: 1
-    },
-    explainer: {
-      position: 'absolute',
-      right: '16px',
-      top: '16px',
-      backgroundColor: explainerCollapsed ? 'transparent' : '#fff',
-      width: '300px',
-      padding: '24px',
-      paddingRight: '40px',
-      zIndex: 2,
-      fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace'
-    },
-    explainerToggle: {
-      position: 'absolute',
-      top: '8px',
-      right: '8px',
-      appearance: 'none',
-      width: '30px',
-      height: '30px'
-    } as React.CSSProperties,
-    explainerIcon: {
-      position: 'absolute',
-      top: '8px',
-      right: '8px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      pointerEvents: 'none',
-      backgroundColor: 'rgba(0, 0, 0, 0.05)',
-      borderRadius: '50%',
-      width: '30px',
-      height: '30px'
-    } as React.CSSProperties,
-    explainerText: {
-      fontSize: '12px',
-      lineHeight: '18px',
-      margin: 0,
-      display: explainerCollapsed ? 'none' : 'block'
-    },
-    gooeyTextContainer: {
-      position: 'fixed',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      zIndex: 3,
-      width: '80vw',
-      height: '20vh',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      pointerEvents: 'none'
-    } as React.CSSProperties
-  };
-
+  root: {
+    '--radius': config.radius,
+    '--invis-radius': config.invisRadius,
+    '--invis-offset': config.invisOffset,
+    '--offset': config.offset,
+    '--c-bg': config.cBg,
+    '--c-accent': config.cAccent,
+    '--c-text': config.cText,
+    '--item-opacity-default': config.itemOpacityDefault,
+    '--snap-height': config.snapHeight,
+    '--snap-count': config.snapCount
+  } as React.CSSProperties,
+  body: {
+    height: '100vh',
+    margin: 0,
+    padding: 0,
+    background: 'var(--c-bg)',
+    overflow: 'hidden',
+    minWidth: '320px'
+  } as React.CSSProperties,
+  scroller: {
+    scrollSnapType: 'y mandatory',
+    height: '100vh',
+    overflowY: 'scroll',
+    position: 'relative',
+    zIndex: 1,
+    scrollbarWidth: 'none'
+  } as React.CSSProperties,
+  buffer: {
+    height: '100vh',
+    scrollSnapAlign: 'start'
+  } as React.CSSProperties,
+  snap: {
+    height: 'var(--snap-height)',
+    scrollSnapAlign: 'end'
+  } as React.CSSProperties,
+  spinnerWrap: {
+    width: '100vw',
+    height: '100vh',
+    overflow: 'hidden',
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    pointerEvents: 'none'
+  } as React.CSSProperties,
+  spinner: {
+    position: 'absolute',
+    top: '-9999px',
+    bottom: '-9999px',
+    left: 'var(--invis-offset)',
+    width: 'calc(var(--radius) * 2)',
+    height: 'calc(var(--radius) * 2)',
+    margin: 'auto',
+    transformOrigin: '50% 50%'
+  } as React.CSSProperties,
+  dot: {
+    position: 'absolute',
+    top: 0,
+    left: 'calc(50vw - var(--invis-radius) + 3.5vw)',
+    bottom: 0,
+    margin: 'auto',
+    width: '3vw',
+    height: '3vw',
+    borderRadius: '50%',
+    backgroundColor: 'var(--c-accent)',
+    transition: 'transform 0.3s ease, opacity 0.3s ease'
+  } as React.CSSProperties,
+  itemWrap: {
+    position: 'absolute',
+    bottom: 0,
+    left: '50%',
+    top: 0,
+    margin: 'auto'
+  } as React.CSSProperties,
+  item: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    margin: 'auto',
+    height: '80px',
+    display: 'flex',
+    alignItems: 'center',
+    fontSize: 'min(7vw, 96px)',
+    whiteSpace: 'nowrap',
+    letterSpacing: '-0.02em',
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+    transformOrigin: '0 50%',
+    opacity: 'var(--item-opacity-default)',
+    cursor: 'pointer',
+    transition: 'opacity 0.3s ease'
+  } as React.CSSProperties,
+  activeItem: {
+    opacity: 1
+  } as React.CSSProperties,
+  explainer: {
+    position: 'absolute',
+    right: '16px',
+    top: '16px',
+    backgroundColor: explainerCollapsed ? 'transparent' : '#fff',
+    width: '300px',
+    padding: '24px',
+    paddingRight: '40px',
+    zIndex: 2,
+    fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace'
+  } as React.CSSProperties,
+  explainerToggle: {
+    position: 'absolute',
+    top: '8px',
+    right: '8px',
+    appearance: 'none',
+    width: '30px',
+    height: '30px'
+  } as React.CSSProperties,
+  explainerIcon: {
+    position: 'absolute',
+    top: '8px',
+    right: '8px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    pointerEvents: 'none',
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    borderRadius: '50%',
+    width: '30px',
+    height: '30px'
+  } as React.CSSProperties,
+  explainerText: {
+    fontSize: '12px',
+    lineHeight: '18px',
+    margin: 0,
+    display: explainerCollapsed ? 'none' : 'block'
+  } as React.CSSProperties,
+  gooeyTextContainer: {
+    position: 'fixed',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    zIndex: 3,
+    width: '80vw',
+    height: '20vh',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    pointerEvents: 'none'
+  } as React.CSSProperties
+};
   // Use the gooey text effect hook
   useEffect(() => {
     // Find the currently active item
