@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import React, { ReactElement } from 'react';
+
 
 // Ensure child is of type ReactElement with the expected props
 if (React.isValidElement<SimpleAccordionItemProps>(child) && (child.type as any).displayName === "SimpleAccordionItem") {
