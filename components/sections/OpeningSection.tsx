@@ -106,3 +106,5 @@ const OpeningSection: React.FC = () => {
     </section>
   );
 };
+
+export default OpeningSection;
