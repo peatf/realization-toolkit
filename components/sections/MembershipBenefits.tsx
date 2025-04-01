@@ -43,7 +43,7 @@ const SimpleAccordion: React.FC<SimpleAccordionProps> = ({
   return (
     <div className={className}>
       {React.Children.map(children, (child) => {
-        if (React.isValidElement(child) && child.type === SimpleAccordionItem) {
+        if (React.isValidElement(child) && (child.type as any).displayName === "SimpleAccordionItem") {
           return React.cloneElement(child, {
             isOpen: openValue === child.props.value,
             onToggle: () => handleTriggerClick(child.props.value),
@@ -76,9 +76,9 @@ const SimpleAccordionItem: React.FC<SimpleAccordionItemProps> = ({
 
   React.Children.forEach(children, (child) => {
     if (React.isValidElement(child)) {
-      if (child.type === SimpleAccordionTrigger) {
+      if ((child.type as any).displayName === "SimpleAccordionTrigger") {
         trigger = child;
-      } else if (child.type === SimpleAccordionContent) {
+      } else if ((child.type as any).displayName === "SimpleAccordionContent") {
         content = child;
       }
     }
@@ -91,6 +91,7 @@ const SimpleAccordionItem: React.FC<SimpleAccordionItemProps> = ({
     </div>
   );
 };
+SimpleAccordionItem.displayName = "SimpleAccordionItem";
 
 interface SimpleAccordionTriggerProps {
   isOpen?: boolean;
@@ -106,6 +107,7 @@ const SimpleAccordionTrigger: React.FC<SimpleAccordionTriggerProps> = ({ isOpen,
     </button>
   );
 };
+SimpleAccordionTrigger.displayName = "SimpleAccordionTrigger";
 
 interface SimpleAccordionContentProps {
   isOpen?: boolean;
@@ -119,6 +121,7 @@ const SimpleAccordionContent: React.FC<SimpleAccordionContentProps> = ({ isOpen,
     </div>
   );
 };
+SimpleAccordionContent.displayName = "SimpleAccordionContent";
 
 // --- Data for Accordion ---
 const items = [
@@ -158,27 +161,6 @@ const items = [
   },
 ];
 
-// --- Simple CSS via Tailwind Classes ---
-// The following class names match your provided HTML/CSS rules:
-//
-// accordion-container:
-//   max-width: 600px; margin: 2rem auto;
-//
-// accordion-trigger:
-//   flex, justify-between, items-center, py-4, text-left, font-semibold, border-b border-gray-200, cursor-pointer
-//
-// accordion-content:
-//   overflow-hidden, transition for max-height and opacity; initially max-h-0 and opacity-0; open => max-h-[1000px] and opacity-100
-//
-// accordion-content-text:
-//   pt-2 pb-4, text-sm, text-gray-600
-//
-// accordion-title-text:
-//   text-[15px], leading-6
-//
-// accordion-sub-text:
-//   text-sm, font-normal, text-gray-500
-
 // --- Main Accordion Content Component ---
 const ContentAccordion: React.FC = () => {
   return (
@@ -202,7 +184,12 @@ const ContentAccordion: React.FC = () => {
 };
 
 // --- Error Boundary ---
-class ErrorBoundary extends React.Component<{}, { hasError: boolean; error: any }> {
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error: any;
+}
+
+class ErrorBoundary extends React.Component<{}, ErrorBoundaryState> {
   constructor(props: {}) {
     super(props);
     this.state = { hasError: false, error: null };
