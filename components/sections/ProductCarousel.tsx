@@ -1,66 +1,17 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
-import { Product} from '../data/productData';
+import { Product } from '../data/productData';
 
 interface ProductCarouselProps {
-  products?: Product[];
+  products: Product[];
   title?: string;
   subtitle?: string;
 }
 
 const ProductCarousel: React.FC<ProductCarouselProps> = ({
-  products = [],
+  products,
   title = "Featured Tools",
   subtitle = "Explore our toolkit"
-}) => {
-  {
-    id: 1,
-    image: "/api/placeholder/500/500",
-    alt: "Cut citrus fruits.",
-    title: "Lorem Ipsum",
-    tip: "Citrus fruits are rich in vitamin C and antioxidants."
-  },
-  {
-    id: 2,
-    image: "/api/placeholder/500/500",
-    alt: "Sliced mango.",
-    title: "Dolor Sit",
-    tip: "Mangoes are packed with vitamins, minerals, and antioxidants."
-  },
-  {
-    id: 3,
-    image: "/api/placeholder/500/500",
-    alt: "A bunch of blueberries.",
-    title: "Amet Consectetur",
-    tip: "Blueberries are low in calories but high in nutrients."
-  },
-  {
-    id: 4,
-    image: "/api/placeholder/500/500",
-    alt: "A pineapple sitting on a table.",
-    title: "Adipiscing Elit",
-    tip: "Pineapples contain enzymes that can ease digestion."
-  },
-  {
-    id: 5,
-    image: "/api/placeholder/500/500",
-    alt: "Frozen raspberries.",
-    title: "Nunc Tortor",
-    tip: "Raspberries are high in fiber and vitamin C."
-  },
-  {
-    id: 6,
-    image: "/api/placeholder/500/500",
-    alt: "A sliced strawberry.",
-    title: "Metus Mollis",
-    tip: "Strawberries are nutritious and low in calories."
-  }
-];
-
-const ProductCarousel: React.FC<ProductCarouselProps> = ({
-  products = defaultProducts,
-  title = "Featured Products",
-  subtitle = "Explore our collection"
 }) => {
   const [activeTip, setActiveTip] = useState<number | null>(null);
   
