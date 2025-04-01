@@ -1,22 +1,16 @@
 import React from 'react';
 import type { AppProps } from 'next/app';
-import { Inter, Lora, JetBrains_Mono } from 'next/font/google';
+import { Inter, JetBrains_Mono } from 'next/font/google';
 import '../styles/globals.css';
 
-// Define fonts with lighter weights for our foggy, editorial aesthetic
+// Define fonts with lighter weights for minimalist aesthetic
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-sans',
   display: 'swap',
-  weight: ['100', '200', '300', '400', '500'] // Adding lighter weights
+  weight: ['200', '300', '400', '500'] // Focus on lighter weights
 });
 
-const lora = Lora({
-  subsets: ['latin'],
-  variable: '--font-editorial-serif',
-  display: 'swap',
-  weight: ['400', '500'] // Focus on lighter weights
-});
 
 const jetBrainsMono = JetBrains_Mono({
   subsets: ['latin'],
@@ -27,7 +21,7 @@ const jetBrainsMono = JetBrains_Mono({
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <main className={`${inter.variable} ${lora.variable} ${jetBrainsMono.variable}`}>
+    <main className={`${inter.variable} ${jetBrainsMono.variable}`}>
       <Component {...pageProps} />
     </main>
   );
