@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 
+interface SimpleAccordionItemProps {
+  value: string;
+  isOpen?: boolean;
+  onToggle?: () => void;
+  children: React.ReactNode;
+  className?: string;
+}
 
-
-
-// --- Chevron Icon ---
 const ChevronDownIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 15 15" {...props}>
     <path
@@ -14,8 +18,6 @@ const ChevronDownIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     />
   </svg>
 );
-
-// --- Simple Accordion Components ---
 
 interface SimpleAccordionProps {
   type?: "single" | "multiple";
@@ -46,8 +48,11 @@ const SimpleAccordion: React.FC<SimpleAccordionProps> = ({
   return (
     <div className={className}>
       {React.Children.map(children, (child) => {
-        if (React.isValidElement(child) && (child.type as any).displayName === "SimpleAccordionItem") {
-          return React.cloneElement(child, {
+        if (
+          React.isValidElement<SimpleAccordionItemProps>(child) &&
+          (child.type as any).displayName === "SimpleAccordionItem"
+        ) {
+          return React.cloneElement<SimpleAccordionItemProps>(child, {
             isOpen: openValue === child.props.value,
             onToggle: () => handleTriggerClick(child.props.value),
             className: child.props.className || "accordion-item",
@@ -58,14 +63,6 @@ const SimpleAccordion: React.FC<SimpleAccordionProps> = ({
     </div>
   );
 };
-
-interface SimpleAccordionItemProps {
-  value: string;
-  isOpen?: boolean;
-  onToggle?: () => void;
-  children: React.ReactNode;
-  className?: string;
-}
 
 const SimpleAccordionItem: React.FC<SimpleAccordionItemProps> = ({
   value,
@@ -126,45 +123,39 @@ const SimpleAccordionContent: React.FC<SimpleAccordionContentProps> = ({ isOpen,
 };
 SimpleAccordionContent.displayName = "SimpleAccordionContent";
 
-// --- Data for Accordion ---
 const items = [
   {
     id: "1",
     title: "Your Creative Journey",
     sub: null,
-    content:
-      "You've built a business or creative career that sometimes feels like a miracle, but it wasn't luck or a fluke. You created this. Your energy, your choices, and your identity have shaped your current level of progress and success (amazing job, I hope you're hearing roaring applause as you read this). Yet as you continue to carve out a business and career that is uniquely yours, moments of doubt are a natural occurrence. When that doubt becomes chronic or heavy that's because the status quo insists that progress comes only from correctness, obedience, and relentless sacrifice.",
+    content: "You've built a business or creative career that sometimes feels like a miracle...",
   },
   {
     id: "2",
     title: "Operating Beyond the Status Quo",
     sub: null,
-    content:
-      "Consider: the status quo is none of your business. You've chosen to be someone who operates from a different plane of reality, one where your desired business and career are continuously inevitable. In your reality (congrats on choosing this one btw, you have great taste), success unfolds on the way you want, and your livelihood is built on your terms and conditions. Your job is to stay connected to that reality and keep stepping into the person who brings this vision to life, over and over again.",
+    content: "Consider: the status quo is none of your business...",
   },
   {
     id: "3",
     title: "Who is the Toolkit for",
     sub: null,
-    content:
-      "The Realization ToolKit is the hub, a space designed by a creative like you, for creatives like you, the self-led and spirit-driven. It's where you'll find tools to that make it easy to operate from a frequency that transcends the norm so you can live and continue developing the business and career you want, the way you want. (Because what you want is divine and genius.)",
+    content: "The Realization ToolKit is the hub, a space designed by a creative like you...",
   },
   {
     id: "4",
     title: "Other Options",
     sub: null,
-    content:
-      "*I have also added the option to access either the Alchemical Tools, Power Tools or just the Refiner separately. You can see what's included in all options when you scroll to the bottom.*",
+    content: "*I have also added the option to access either the Alchemical Tools...",
   },
   {
     id: "5",
     title: "Enrollment Information",
     sub: null,
-    content: "Enrollment is open the first week of every month. See you inside.",
+    content: "Enrollment is open the first week of every month...",
   },
 ];
 
-// --- Main Accordion Content Component ---
 const ContentAccordion: React.FC = () => {
   return (
     <div className="accordion-container">
@@ -186,7 +177,6 @@ const ContentAccordion: React.FC = () => {
   );
 };
 
-// --- Error Boundary ---
 interface ErrorBoundaryState {
   hasError: boolean;
   error: any;
@@ -216,7 +206,6 @@ class ErrorBoundary extends React.Component<{}, ErrorBoundaryState> {
   }
 }
 
-// --- MembershipBenefits Component ---
 const MembershipBenefits: React.FC = () => {
   return (
     <ErrorBoundary>
