@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 
 // Interface for configuration
@@ -332,13 +333,13 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuWithGooeyTextProps> = ({
       minWidth: '320px'
     },
     scroller: {
-      scrollSnapType: 'y mandatory' as const,
+      scrollSnapType: 'y mandatory',
       height: '100vh',
-      overflowY: 'scroll' as const,
+      overflowY: 'scroll',
       position: 'relative',
       zIndex: 1,
-      scrollbarWidth: 'none' as const
-    },
+      scrollbarWidth: 'none'
+    } as React.CSSProperties,
     buffer: {
       height: '100vh',
       scrollSnapAlign: 'start'
@@ -354,8 +355,8 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuWithGooeyTextProps> = ({
       position: 'fixed',
       top: 0,
       left: 0,
-      pointerEvents: 'none' as const
-    },
+      pointerEvents: 'none'
+    } as React.CSSProperties,
     spinner: {
       position: 'absolute',
       top: '-9999px',
@@ -395,14 +396,14 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuWithGooeyTextProps> = ({
       display: 'flex',
       alignItems: 'center',
       fontSize: 'min(7vw, 96px)',
-      whiteSpace: 'nowrap' as const,
+      whiteSpace: 'nowrap',
       letterSpacing: '-0.02em',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
       transformOrigin: '0 50%',
       opacity: 'var(--item-opacity-default)',
       cursor: 'pointer',
       transition: 'opacity 0.3s ease'
-    },
+    } as React.CSSProperties,
     activeItem: {
       opacity: 1
     },
@@ -432,12 +433,12 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuWithGooeyTextProps> = ({
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      pointerEvents: 'none' as const,
+      pointerEvents: 'none',
       backgroundColor: 'rgba(0, 0, 0, 0.05)',
       borderRadius: '50%',
       width: '30px',
       height: '30px'
-    },
+    } as React.CSSProperties,
     explainerText: {
       fontSize: '12px',
       lineHeight: '18px',
@@ -455,8 +456,8 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuWithGooeyTextProps> = ({
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      pointerEvents: 'none' as const
-    }
+      pointerEvents: 'none'
+    } as React.CSSProperties
   };
 
   // Use the gooey text effect hook
