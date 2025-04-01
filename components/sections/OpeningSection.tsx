@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FloatingElement, GlassModule } from '../ui/NeumorphicUI';
+import { FloatingElement } from '../ui/NeumorphicUI';
 import CircularMenuWithGooeyText from './CircularMenuWithGooeyText';
 
 const OpeningSection: React.FC = () => {
@@ -56,37 +56,8 @@ const OpeningSection: React.FC = () => {
         </FloatingElement>
       </div>
       
-      {/* Main heading content */}
-      <div className="container mx-auto px-4 pt-16 text-center z-10 relative">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.5 }}
-          className="mb-8"
-        >
-          <span className="font-mono text-mist-700 tracking-widest uppercase text-sm">Begin Your Journey</span>
-        </motion.div>
-        
-        <h1 className="font-serif text-5xl md:text-7xl font-extralight text-mist-800 mb-8 leading-tight">
-          <span className="block ethereal-text">The Realization</span>
-          <span className="block text-transparent bg-clip-text bg-gradient-to-r from-sky-400/80 via-peach-300/80 to-sage-400/80">
-            Toolkit
-          </span>
-        </h1>
-        
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, delay: 0.5 }}
-          className="max-w-2xl mx-auto text-mist-700 text-lg mb-12 font-light"
-        >
-          Select a creative prompt from our carousel or use the arrow keys to navigate. 
-          Experience our immersive interface with smooth transitions and elegant text effects.
-        </motion.p>
-      </div>
-      
       {/* Circular Menu with Gooey Text */}
-      <div className="w-full h-[60vh] mt-8 overflow-hidden">
+      <div className="w-full h-screen flex items-center justify-center">
         <CircularMenuWithGooeyText 
           items={songPrompts} 
           customConfig={customConfig}
