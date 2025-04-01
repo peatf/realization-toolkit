@@ -182,7 +182,7 @@ interface ErrorBoundaryState {
   error: any;
 }
 
-class ErrorBoundary extends React.Component<{}, ErrorBoundaryState> {
+class ErrorBoundary extends React.Component<{ children?: React.ReactNode }, ErrorBoundaryState> {
   constructor(props: {}) {
     super(props);
     this.state = { hasError: false, error: null };
