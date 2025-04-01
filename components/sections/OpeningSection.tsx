@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { FloatingElement, GlassModule } from '../components/ui/NeumorphicUI';
+import { FloatingElement, GlassModule } from '.../components/ui/NeumorphicUI';
 import CircularMenuWithGooeyText from '../components/CircularMenuWithGooeyText';
 
 const OpeningSection: React.FC = () => {
