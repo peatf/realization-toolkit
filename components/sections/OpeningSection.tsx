@@ -4,32 +4,35 @@ import { FloatingElement } from '../ui/NeumorphicUI';
 import CircularMenuWithGooeyText from './CircularMenuWithGooeyText';
 
 const OpeningSection: React.FC = () => {
-  // Array of prompts for the circular menu
-  const songPrompts = [
-    "Make a song to be happy.",
-    "Make a song for a workout.",
-    "Make a song for a farewell.",
-    "Make a song for my friend Earl.",
-    "Make a song about the moon.",
-    "Make a song about mum's cooking.",
-    "Make a song for lunch.",
-    "Make a song for a road trip.",
+  // Menu items for the Realization Toolkit
+  const menuItems = [
+    '🌀Realization Toolkit', 
+    'Find Your Tools', 
+    'The Toolkit', 
+    'Enroll Now', 
+    'Testimonials', 
+    '🌀Realization Toolkit', 
+    'Find Your Tools', 
+    'Realization by Pea'
   ];
 
-  // Custom configuration for the circular menu to match project aesthetics
-  const customConfig = {
-    cBg: 'rgba(240, 242, 245, 0.4)', // Mist-100 with transparency
-    cAccent: 'rgba(138, 190, 255, 0.8)', // Sky-300 with transparency
-    cText: '#495057', // Mist-700
-    itemOpacityDefault: 0.3,
+  // Configuration for the circular menu with your theme colors
+  const menuConfig = {
+    degPerRotation: 10,
+    animationDuration: 600,
+    gooeyAnimationDuration: 1.2,
+    accentColor: '#8abeff', // Sky-300 from your theme
+    textColor: '#6c757d', // Mist-600 from your theme
+    activeTextColor: '#db2777', // Pink-600
+    indicatorSize: 16
   };
 
   return (
     <section className="min-h-screen relative overflow-hidden">
-      {/* Gradient background with foggy overlay */}
+      {/* Gradient background */}
       <div className="absolute inset-0 bg-gradient-to-b from-mist-200/40 via-sage-50/30 to-mist-100/60"></div>
       
-      {/* Soft blurred orbs in background */}
+      {/* Floating background elements */}
       <div className="absolute inset-0 opacity-40 pointer-events-none">
         <FloatingElement 
           className="absolute top-1/4 left-1/5 w-64 h-64 rounded-full bg-peach-100/30 blur-3xl"
@@ -56,15 +59,15 @@ const OpeningSection: React.FC = () => {
         </FloatingElement>
       </div>
       
-      {/* Circular Menu with Gooey Text */}
+      {/* Circular Menu Component */}
       <div className="w-full h-screen flex items-center justify-center">
         <CircularMenuWithGooeyText 
-          items={songPrompts} 
-          customConfig={customConfig}
+          items={menuItems} 
+          customConfig={menuConfig}
         />
       </div>
       
-      {/* Scroll indicator with ethereal animation */}
+      {/* Scroll indicator */}
       <motion.div 
         className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
         animate={{ y: [0, 8, 0] }}
@@ -74,6 +77,11 @@ const OpeningSection: React.FC = () => {
           <div className="w-1.5 h-3 bg-mist-400/50 rounded-full"></div>
         </div>
       </motion.div>
+      
+      {/* Instructions panel */}
+      <div className="absolute bottom-6 right-6 text-sm text-mist-600 bg-white/70 p-3 rounded-lg shadow-sm backdrop-blur-sm">
+        <p>Use arrow keys, mouse wheel, or click to navigate</p>
+      </div>
     </section>
   );
 };
