@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { FloatingElement, GlassModule } from '../ui/NeumorphicUI';
-import CircularMenuWithGooeyText from '../components/CircularMenuWithGooeyText';
+import CircularMenuWithGooeyText from './CircularMenuWithGooeyText';
 
 const OpeningSection: React.FC = () => {
   // Array of prompts for the circular menu
