@@ -4,18 +4,21 @@
 
 :root {
   /* Base colors */
-  --color-background: #f0f2f5;
-  --color-foreground: #495057;
-  --color-accent: rgba(58, 142, 255, 0.7);
-  --color-muted: rgba(173, 181, 189, 0.5);
+  --color-background: #FEFFFA;
+  --color-foreground: #1A1A1A;
+  --color-secondary: #5A5A5A;
+  --color-card: #EFEFEF;
   
-  /* Neumorphic effects */
-  --shadow-color: rgba(0, 0, 0, 0.05);
-  --highlight-color: rgba(255, 255, 255, 0.7);
+  /* Accent colors */
+  --color-accent-taupe: #D8D0C9;
+  --color-accent-green: #AFCEAE;
+  --color-accent-sand: #E5DED5;
+  --color-accent-lavender: #B0B7D8;
   
-  /* Fog effect parameters */
-  --fog-opacity: 0.3;
-  --fog-blur: 40px;
+  /* Glass effect parameters */
+  --glass-opacity: 0.7;
+  --glass-blur: 10px;
+  --glass-border: 1px solid rgba(255, 255, 255, 0.7);
 }
 
 html,
@@ -30,65 +33,116 @@ body {
   line-height: 1.6;
   font-weight: 300;
   letter-spacing: 0.01em;
+  position: relative;
+}
+
+/* Create a subtle background gradient blob */
+body::after {
+  content: "";
+  position: fixed;
+  width: 100vw;
+  height: 50vh;
+  left: 0;
+  bottom: 0;
+  background: radial-gradient(
+    ellipse at bottom center,
+    rgba(175, 206, 174, 0.15) 0%,
+    rgba(176, 183, 216, 0.08) 50%,
+    rgba(229, 222, 213, 0.03) 100%
+  );
+  filter: blur(80px);
+  opacity: 0.7;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Add subtle noise texture overlay */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.02;
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjc1IiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxwYXRoIGZpbHRlcj0idXJsKCNhKSIgb3BhY2l0eT0iLjA1IiBkPSJNMCAwaDMwMHYzMDBIMHoiLz48L3N2Zz4=');
+  pointer-events: none;
+  z-index: -1;
 }
 
 * {
   box-sizing: border-box;
 }
 
-/* Additional utility classes */
-.perspective-1000 {
-  perspective: 1000px;
+/* Typography styles */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 300;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
 }
 
-.preserve-3d {
-  transform-style: preserve-3d;
+h1 {
+  font-size: 3rem;
+  font-weight: 200;
 }
 
-/* Neumorphic effects */
-.neu-element {
-  @apply rounded-2xl bg-mist-100 shadow-neu-md;
-  position: relative;
-  overflow: hidden;
+h2 {
+  font-size: 2.25rem;
+  font-weight: 300;
 }
 
-.neu-button {
-  @apply rounded-full bg-mist-100 shadow-neu-sm px-6 py-3 text-mist-700 font-light transition-all duration-slow;
+h3 {
+  font-size: 1.5rem;
+  font-weight: 300;
 }
 
-.neu-button:hover {
-  @apply shadow-neu-lg text-mist-800 transform -translate-y-1;
+p {
+  font-weight: 300;
+  line-height: 1.6;
 }
 
-.neu-button:active {
-  @apply shadow-neu-inner transform translate-y-0;
+/* New glass card styles with more specific class names */
+.rt-glass-card {
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: var(--glass-border);
+  border-radius: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
 }
 
-/* Foggy glass effect */
-.foggy-glass {
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(var(--fog-blur));
-  -webkit-backdrop-filter: blur(var(--fog-blur));
+.rt-glass-card-dark {
+  background-color: rgba(26, 26, 26, 0.8);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+  border-radius: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  color: white;
 }
 
-/* Gradient overlay for misty effect */
-.misty-overlay {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  background: linear-gradient(
-    to bottom right,
-    rgba(255, 255, 255, 0.1),
-    rgba(240, 242, 245, 0.1),
-    rgba(222, 226, 230, 0.1)
-  );
-  pointer-events: none;
+/* Button styles */
+.btn {
+  padding: 0.75rem 1.5rem;
+  font-weight: 400;
+  font-size: 0.875rem;
+  border-radius: 20px;
+  transition: all 0.3s ease;
 }
 
+.btn-primary {
+  background-color: var(--color-foreground);
+  color: white;
+  border: none;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--color-foreground);
+  border: 1px solid var(--color-foreground);
+}
+
+/* Keep some of the existing styles for backward compatibility */
 /* Fog effect */
 .fog-container {
   position: absolute;
@@ -133,160 +187,67 @@ body {
   }
 }
 
-/* Ethereal text and soft animations */
-.ethereal-text {
-  @apply font-light tracking-wide opacity-90;
-  text-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
-}
-
-.float-element {
-  animation: floatAnimation 6s ease-in-out infinite;
-}
-
-@keyframes floatAnimation {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-/* Micro-interactions */
-.hover-lift {
-  transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1), 
-              box-shadow 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.hover-lift:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.05);
-}
-
-/* Pulse effect */
-.pulse-soft {
-  animation: pulseSoft 5s infinite ease-in-out;
-}
-
-@keyframes pulseSoft {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.03);
-  }
-}
-
-/* Transition delays for staggered animations */
-.delay-100 { transition-delay: 100ms; }
-.delay-200 { transition-delay: 200ms; }
-.delay-300 { transition-delay: 300ms; }
-.delay-400 { transition-delay: 400ms; }
-.delay-500 { transition-delay: 500ms; }
-.delay-600 { transition-delay: 600ms; }
-.delay-700 { transition-delay: 700ms; }
-.delay-800 { transition-delay: 800ms; }
-.delay-900 { transition-delay: 900ms; }
-.delay-1000 { transition-delay: 1000ms; }
-
-/* Dark mode adjustments (for interfaces that need darker backgrounds) */
-.dark-theme {
-  --color-background: #495057;
-  --color-foreground: #f0f2f5;
-  --shadow-color: rgba(0, 0, 0, 0.2);
-  --highlight-color: rgba(255, 255, 255, 0.1);
-}
-/* CSS for the Simple Accordion Component */
-
-/* Container (Optional - you might use Tailwind or other layout styles) */
+/* Add CSS for the accordion component (keeping this section) */
 .accordion-container {
-    max-width: 600px; /* Example: Limit width */
-    margin: 2rem auto; /* Example: Center */
-    /* Add any other container styles specific to your app */
+  max-width: 600px;
+  margin: 2rem auto;
 }
 
-/* Basic transition and initial state for accordion content */
 .accordion-content {
-   overflow: hidden;
-   transition: max-height 0.3s ease-out, opacity 0.3s ease-out, visibility 0.3s ease-out;
-   max-height: 0;
-   opacity: 0;
-   visibility: hidden; /* Ensure it's hidden when closed */
+  overflow: hidden;
+  transition: max-height 0.3s ease-out, opacity 0.3s ease-out, visibility 0.3s ease-out;
+  max-height: 0;
+  opacity: 0;
+  visibility: hidden;
 }
 
-/* Open state for accordion content */
 .accordion-content.open {
-   max-height: 1000px; /* Adjust if needed, large enough for content */
-   opacity: 1;
-   visibility: visible; /* Make visible when open */
+  max-height: 1000px;
+  opacity: 1;
+  visibility: visible;
 }
 
-/* Styling for the trigger button */
 .accordion-trigger {
-   display: flex;
-   justify-content: space-between;
-   align-items: center;
-   width: 100%;
-   padding: 1rem 0; /* Adjust padding as needed */
-   text-align: left;
-   font-weight: 600;
-   cursor: pointer;
-   border: none;
-   background: none;
-   border-bottom: 1px solid #e5e7eb; /* Example border color */
-   /* Add any other base styles for the trigger */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 1rem 0;
+  text-align: left;
+  font-weight: 400;
+  cursor: pointer;
+  border: none;
+  background: none;
+  border-bottom: 1px solid var(--color-card);
 }
 
-.accordion-trigger:hover {
-    /* Add hover styles if desired, e.g., text-decoration: underline; */
-    /* Example: background-color: #f9fafb; */
-}
-
-/* Styling for the icon within the trigger */
 .accordion-trigger svg {
-   flex-shrink: 0;
-   transition: transform 0.2s ease-out;
-   margin-left: 1rem; /* Space between text and icon */
-   opacity: 0.6; /* Example opacity */
-   width: 16px; /* Ensure consistent size */
-   height: 16px; /* Ensure consistent size */
+  flex-shrink: 0;
+  transition: transform 0.2s ease-out;
+  margin-left: 1rem;
+  opacity: 0.6;
+  width: 16px;
+  height: 16px;
 }
 
-/* Rotate icon when the trigger/content is open */
 .accordion-trigger.open svg {
-    transform: rotate(180deg);
+  transform: rotate(180deg);
 }
 
-/* Styling for the text container within the content */
 .accordion-content-text {
-    padding: 0.5rem 0 1rem 0; /* Adjust padding as needed (top, right, bottom, left) */
-    color: #4b5563; /* Example text color */
-    font-size: 0.875rem; /* Example font size */
-    line-height: 1.5; /* Example line height */
-    /* Add other text styles */
+  padding: 0.5rem 0 1rem 0;
+  color: var(--color-secondary);
+  font-size: 0.875rem;
+  line-height: 1.5;
 }
 
-/* Styling for the main title text within the trigger */
 .accordion-title-text {
-   font-size: 15px; /* Example size */
-   line-height: 1.5rem; /* Example leading */
-   /* Add other title styles */
+  font-size: 15px;
+  line-height: 1.5rem;
 }
 
-/* Styling for the sub-text within the trigger (if used) */
 .accordion-sub-text {
-    font-size: 0.875rem; /* Example size */
-    font-weight: 400; /* Example weight */
-    color: #6b7280; /* Example color */
-    /* Add other sub-text styles */
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--color-secondary);
 }
-
-/* Optional: Remove border from the last item's trigger */
-/* You might need to adjust the selector based on your final structure */
-/* .accordion-item:last-child .accordion-trigger { */
-/* border-bottom: none; */
-/* } */
-
-
