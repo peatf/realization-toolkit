@@ -1,7 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 
-// Star component (no changes)
-const Star = ({ isGlowing, delay }: { isGlowing: boolean; delay: number; }) => {
+// ---------- Star Component ----------
+interface StarProps {
+  isGlowing: boolean;
+  delay: number;
+}
+const Star: React.FC<StarProps> = ({ isGlowing, delay }) => {
   return (
     <div
       style={{
@@ -17,8 +21,8 @@ const Star = ({ isGlowing, delay }: { isGlowing: boolean; delay: number; }) => {
   );
 };
 
-// StarsBackground component (no changes)
-const StarsBackground = () => {
+// ---------- StarsBackground Component ----------
+const StarsBackground: React.FC = () => {
   const [glowingStars, setGlowingStars] = useState<number[]>([]);
   const stars = 50;
   useEffect(() => {
@@ -84,7 +88,7 @@ const StarsBackground = () => {
   );
 };
 
-// Product Data (using full data as provided)
+// ---------- Product Data ----------
 const products = [
   {
     id: 'rtk',
@@ -150,7 +154,7 @@ const products = [
   },
 ];
 
-// Safely reference window only in the client environment
+// ---------- UserAccountApi (Safe Access) ----------
 const getUserAccountApi = () => {
   if (typeof window !== 'undefined' && (window as any).UserAccountApi) {
     return (window as any).UserAccountApi;
@@ -163,7 +167,268 @@ const getUserAccountApi = () => {
   };
 };
 
-const PricingSection = () => {
+// ---------- MembershipCard Component ----------
+interface MembershipCardProps {
+  product: any;
+  isActive: boolean;
+  onSelect: (index: number) => void;
+  index: number;
+  activeIndex: number;
+  totalCards: number;
+  selectedInterval?: string;
+  onIntervalChange: (intervalKey: string) => void;
+}
+const MembershipCard: React.FC<MembershipCardProps> = ({
+  product,
+  isActive,
+  onSelect,
+  index,
+  activeIndex,
+  totalCards,
+  selectedInterval,
+  onIntervalChange,
+}) => {
+  const [hover, setHover] = useState(false);
+  const [buttonHover, setButtonHover] = useState(false);
+
+  // Stacking Logic
+  const relativeIndex = index - activeIndex;
+  let translateY = 0;
+  let scale = 1;
+  let cardZIndex = totalCards;
+  if (!isActive) {
+    const distance = Math.abs(relativeIndex);
+    if (relativeIndex > 0) {
+      translateY = relativeIndex * 30;
+      scale = 1 - relativeIndex * 0.05;
+    } else {
+      translateY = 0;
+      scale = 1 - distance * 0.03;
+    }
+    cardZIndex = totalCards - distance;
+    scale = Math.max(0.75, scale);
+    cardZIndex = Math.max(1, cardZIndex);
+  }
+  const transform = `translateX(-50%) translateY(${translateY}px) scale(${scale})`;
+
+  // Determine current price, interval text, and option ID
+  let currentPrice = product.price;
+  let currentIntervalText = product.interval;
+  let currentOptionId = product.pricingOptionId;
+  if (product.hasMultipleIntervals) {
+    const intervalData = product.intervals[selectedInterval || 'monthly'];
+    currentPrice = intervalData?.price;
+    currentIntervalText = intervalData?.interval;
+    currentOptionId = intervalData?.pricingOptionId;
+  }
+
+  const handleSignUpClick = () => {
+    const api = getUserAccountApi();
+    if (api && typeof api.joinPricingPlan === 'function') {
+      api.joinPricingPlan(product.pricingPlanId, currentOptionId);
+    } else {
+      console.error("UserAccountApi not found or joinPricingPlan is not a function.");
+      alert("Signup API is not available.");
+    }
+  };
+
+  const choosePlanBaseStyle = {
+    width: '80%',
+    padding: '12px 0',
+    borderRadius: '8px',
+    color: 'white',
+    fontWeight: '500',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
+    cursor: 'pointer',
+    fontSize: '16px',
+    transition: 'all 0.3s ease',
+    marginTop: 'auto',
+    alignSelf: 'center',
+    background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05))',
+    boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+  };
+
+  const choosePlanHoverStyle = {
+    background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.1))',
+    boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
+    transform: 'translateY(-1px)',
+  };
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        left: '50%',
+        top: 0,
+        width: '340px',
+        maxWidth: '90vw',
+        height: 'auto',
+        transform: transform,
+        zIndex: cardZIndex,
+        opacity: 1,
+        cursor: isActive ? 'default' : 'pointer',
+        transition: 'transform 0.5s ease, z-index 0.5s ease',
+      }}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      onClick={() => !isActive && onSelect(index)}
+    >
+      <div
+        style={{
+          position: 'relative',
+          width: '100%',
+          borderRadius: '16px',
+          overflow: 'hidden',
+          padding: '24px',
+          background: 'rgba(255, 255, 255, 0.08)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: hover
+            ? '0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22)'
+            : '0 4px 12px rgba(0, 0, 0, 0.15)',
+          transition: 'box-shadow 0.3s ease',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '400px',
+        }}
+      >
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '60%',
+            background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.1), transparent)',
+            transform: 'rotate(5deg) translateY(-50%) translateX(-10%)',
+            pointerEvents: 'none',
+          }}
+        />
+        <StarsBackground />
+        <div
+          style={{
+            position: 'relative',
+            zIndex: 2,
+            textAlign: 'center',
+            flexGrow: 1,
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          <h2 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '12px', color: 'white' }}>
+            {product.title}
+          </h2>
+          {product.hasMultipleIntervals && (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: '8px',
+                margin: '0 auto 15px auto',
+                background: 'rgba(0,0,0,0.1)',
+                padding: '4px',
+                borderRadius: '20px',
+                width: 'fit-content',
+              }}
+            >
+              {Object.keys(product.intervals).map((intervalKey) => (
+                <button
+                  key={intervalKey}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onIntervalChange(intervalKey);
+                  }}
+                  style={{
+                    background: selectedInterval === intervalKey ? 'rgba(255,255,255,0.2)' : 'none',
+                    border: 'none',
+                    padding: '6px 12px',
+                    borderRadius: '16px',
+                    color: selectedInterval === intervalKey ? 'white' : 'rgba(255,255,255,0.7)',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    fontSize: '13px',
+                    fontWeight: '500',
+                  }}
+                >
+                  {product.toggleLabels?.[intervalKey] ||
+                    intervalKey.charAt(0).toUpperCase() + intervalKey.slice(1)}
+                </button>
+              ))}
+            </div>
+          )}
+          <p style={{ fontSize: '40px', fontWeight: 'bold', marginBottom: '4px', color: 'white' }}>
+            ${currentPrice}
+          </p>
+          <p style={{ fontSize: '14px', marginBottom: '20px', color: 'rgba(255,255,255,0.7)' }}>
+            {currentIntervalText}
+          </p>
+          <ul
+            style={{
+              listStyle: 'none',
+              padding: 0,
+              margin: '0 auto 24px auto',
+              textAlign: 'left',
+              flexGrow: 1,
+              width: 'fit-content',
+            }}
+          >
+            {product.features.map((feature: string, fIndex: number) => (
+              <li
+                key={fIndex}
+                style={{
+                  fontSize: '15px',
+                  marginBottom: '10px',
+                  color: 'rgba(255,255,255,0.9)',
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <span style={{ marginRight: '10px', color: '#aaff80' }}>✓</span>
+                {feature}
+              </li>
+            ))}
+          </ul>
+          <button
+            style={{
+              ...choosePlanBaseStyle,
+              ...(buttonHover ? choosePlanHoverStyle : {}),
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleSignUpClick();
+            }}
+            onMouseEnter={() => setButtonHover(true)}
+            onMouseLeave={() => setButtonHover(false)}
+          >
+            Choose Plan
+          </button>
+        </div>
+      </div>
+      {!isActive && (
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '-10px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: '100px',
+            textAlign: 'center',
+            color: 'rgba(255,255,255,0.7)',
+            fontSize: '14px',
+            pointerEvents: 'none',
+            transition: 'opacity 0.3s ease',
+          }}
+        >
+          Click to view
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ---------- Main PricingSection Component ----------
+const PricingSection: React.FC = () => {
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [selectedIntervals, setSelectedIntervals] = useState(
     products.reduce((acc, product, index) => {
@@ -172,8 +437,6 @@ const PricingSection = () => {
     }, {} as { [key: number]: string })
   );
   const containerRef = useRef<HTMLDivElement>(null);
-  const [prevHover, setPrevHover] = useState(false);
-  const [nextHover, setNextHover] = useState(false);
 
   const handleSelectCard = (index: number) => setActiveCardIndex(index);
   const handleIntervalChange = (productIndex: number, intervalKey: string) => {
@@ -206,22 +469,13 @@ const PricingSection = () => {
         padding: '40px 20px',
         overflow: 'hidden',
         position: 'relative',
-        fontFamily:
-          '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
       }}
     >
-      <h1
-        style={{
-          color: 'white',
-          marginBottom: '80px',
-          textAlign: 'center',
-          fontSize: '32px',
-        }}
-      >
+      <h1 style={{ color: 'white', marginBottom: '80px', textAlign: 'center', fontSize: '32px' }}>
         Membership Options
       </h1>
 
-      {/* Card container - Placeholder for your MembershipCard implementation */}
       <div
         style={{
           position: 'relative',
@@ -233,19 +487,21 @@ const PricingSection = () => {
         }}
       >
         {products.map((plan, index) => (
-          <div key={plan.id || index}>{plan.title}</div>
+          <MembershipCard
+            key={plan.id || index}
+            product={plan}
+            isActive={index === activeCardIndex}
+            onSelect={handleSelectCard}
+            index={index}
+            activeIndex={activeCardIndex}
+            totalCards={products.length}
+            selectedInterval={selectedIntervals[index]}
+            onIntervalChange={(intervalKey) => handleIntervalChange(index, intervalKey)}
+          />
         ))}
       </div>
 
-      {/* Indicator dots */}
-      <div
-        style={{
-          display: 'flex',
-          marginTop: '30px',
-          gap: '10px',
-          justifyContent: 'center',
-        }}
-      >
+      <div style={{ display: 'flex', marginTop: '30px', gap: '10px', justifyContent: 'center' }}>
         {products.map((_, index) => (
           <button
             key={index}
@@ -254,8 +510,7 @@ const PricingSection = () => {
               width: '12px',
               height: '12px',
               borderRadius: '50%',
-              background:
-                index === activeCardIndex ? '#3b82f6' : 'rgba(255,255,255,0.3)',
+              background: index === activeCardIndex ? '#3b82f6' : 'rgba(255,255,255,0.3)',
               border: 'none',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
@@ -265,7 +520,6 @@ const PricingSection = () => {
         ))}
       </div>
 
-      {/* Navigation Buttons */}
       <div style={{ display: 'flex', marginTop: '20px', gap: '15px', justifyContent: 'center' }}>
         <button
           onClick={() => activeCardIndex > 0 && setActiveCardIndex(activeCardIndex - 1)}
