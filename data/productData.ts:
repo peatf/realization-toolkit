@@ -1,3 +1,6 @@
+// Moving the file from components/data/productData.ts to data/productData.ts
+// to match import statements throughout the codebase
+
 // data/productData.ts
 
 export interface Product {
