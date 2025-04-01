@@ -332,12 +332,12 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuWithGooeyTextProps> = ({
       minWidth: '320px'
     },
     scroller: {
-      scrollSnapType: 'y mandatory',
+      scrollSnapType: 'y mandatory' as const,
       height: '100vh',
-      overflowY: 'scroll',
+      overflowY: 'scroll' as const,
       position: 'relative',
       zIndex: 1,
-      scrollbarWidth: 'none' as 'none'
+      scrollbarWidth: 'none' as const
     },
     buffer: {
       height: '100vh',
@@ -354,7 +354,7 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuWithGooeyTextProps> = ({
       position: 'fixed',
       top: 0,
       left: 0,
-      pointerEvents: 'none' as 'none'
+      pointerEvents: 'none' as const
     },
     spinner: {
       position: 'absolute',
@@ -395,7 +395,7 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuWithGooeyTextProps> = ({
       display: 'flex',
       alignItems: 'center',
       fontSize: 'min(7vw, 96px)',
-      whiteSpace: 'nowrap' as 'nowrap',
+      whiteSpace: 'nowrap' as const,
       letterSpacing: '-0.02em',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
       transformOrigin: '0 50%',
@@ -432,7 +432,7 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuWithGooeyTextProps> = ({
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      pointerEvents: 'none' as 'none',
+      pointerEvents: 'none' as const,
       backgroundColor: 'rgba(0, 0, 0, 0.05)',
       borderRadius: '50%',
       width: '30px',
@@ -455,7 +455,7 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuWithGooeyTextProps> = ({
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      pointerEvents: 'none' as 'none'
+      pointerEvents: 'none' as const
     }
   };
 
