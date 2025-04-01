@@ -1,9 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { FloatingElement, GlassModule } from '../ui/NeumorphicUI';
-import CircularMenuWithGooeyText from './CircularMenuWithGooeyText';
+import { FloatingElement, GlassModule } from '../components/ui/NeumorphicUI';
+import SimplifiedCircularMenu from '../components/SimplifiedCircularMenuWithGooeyText';
 
-const OpeningSection: React.FC = () => {
+const SimpleOpeningSection: React.FC = () => {
   // Array of prompts for the circular menu
   const songPrompts = [
     "Make a song to be happy.",
@@ -73,27 +73,11 @@ const OpeningSection: React.FC = () => {
           className="max-w-2xl mx-auto text-mist-700 text-lg mb-16 font-light"
         >
           Select a creative prompt from our circular menu or use the arrow keys to navigate. 
-          Experience our immersive interface with smooth transitions and gooey text effects.
+          Experience our immersive interface with smooth transitions and elegant text effects.
         </motion.p>
         
-        {/* Circular Menu with Gooey Text Effect */}
-        <div className="relative w-full h-64 mx-auto mt-8">
-          <CircularMenuWithGooeyText 
-            items={songPrompts}
-            config={{
-              cText: "#495057", // Matching your mist-700 color
-              cAccent: "#8abeff", // Matching your sky color
-              cBg: "transparent", // Transparent to work with your gradient bg
-              gooeyTransitionDuration: 400, // Slightly longer for a more visible effect
-              radius: "10vw",
-              invisRadius: "40vw", // Slightly smaller than original
-              itemOpacityDefault: 0.2,
-              snapHeight: "40vh",
-              snapCount: songPrompts.length,
-              degPerRotation: 15, // Slightly larger rotation angle
-            }}
-          />
-        </div>
+        {/* Simplified Circular Menu */}
+        <SimplifiedCircularMenu items={songPrompts} />
       </GlassModule>
       
       {/* Scroll indicator with more ethereal animation */}
@@ -110,4 +94,4 @@ const OpeningSection: React.FC = () => {
   );
 };
 
-export default OpeningSection;
+export default SimpleOpeningSection;
