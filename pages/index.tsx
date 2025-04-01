@@ -11,7 +11,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 import { GlassModule } from '../components/ui/NeumorphicUI';
 import { motion } from 'framer-motion';
-import QuizSection from '@/components/sections/QuizSection';
+import QuizSection from '../components/sections/QuizSection';
 
 const Home: NextPage = () => {
   useEffect(() => {
