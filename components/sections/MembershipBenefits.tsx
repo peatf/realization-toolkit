@@ -1,86 +1,237 @@
-import React, { useEffect } from 'react';
+import React, { useState } from "react";
 
-const MembershipBenefits: React.FC = () => {
-  useEffect(() => {
-    const minHeight = 600;
-    const maxHeight = 2400; // Maximum allowed height
-    let lastHeight = minHeight;
-    let lastUpdateTime = 0;
-    const updateThrottle = 500; // Minimum ms between updates
+// --- Chevron Icon ---
+const ChevronDownIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 15 15" {...props}>
+    <path
+      fill="currentColor"
+      fillRule="evenodd"
+      d="M3.135 6.158a.5.5 0 0 1 .707-.023L7.5 9.565l3.658-3.43a.5.5 0 0 1 .684.73l-4 3.75a.5.5 0 0 1-.684 0l-4-3.75a.5.5 0 0 1-.023-.707"
+      clipRule="evenodd"
+    />
+  </svg>
+);
 
-    function resizeIframe(height: number) {
-      const now = Date.now();
-      if (now - lastUpdateTime < updateThrottle) return;
-      const wrapper = document.querySelector('.iframe-wrapper') as HTMLElement;
-      if (!wrapper) return;
-      const newHeight = Math.min(maxHeight, Math.max(minHeight, height));
-      if (Math.abs(lastHeight - newHeight) > 5) {
-        wrapper.style.height = `${newHeight}px`;
-        lastHeight = newHeight;
-        lastUpdateTime = now;
+// --- Simple Accordion Components ---
+
+interface SimpleAccordionProps {
+  type?: "single" | "multiple";
+  collapsible?: boolean;
+  children: React.ReactNode;
+  defaultValue?: string | null;
+  className?: string;
+}
+
+const SimpleAccordion: React.FC<SimpleAccordionProps> = ({
+  type = "single",
+  collapsible = true,
+  children,
+  defaultValue = null,
+  className = "",
+}) => {
+  const [openValue, setOpenValue] = useState<string | null>(defaultValue);
+
+  const handleTriggerClick = (value: string) => {
+    setOpenValue((prevValue) => {
+      if (prevValue === value && collapsible) {
+        return null;
       }
-    }
-
-    const messageHandler = (event: MessageEvent) => {
-      // Only accept messages from the expected origin
-      if (event.origin !== "https://alignment-cards.vercel.app") return;
-      if (event.data && typeof event.data.height === 'number') {
-        resizeIframe(event.data.height);
-      }
-    };
-
-    window.addEventListener("message", messageHandler);
-
-    // Set initial height for the wrapper
-    const wrapper = document.querySelector('.iframe-wrapper') as HTMLElement;
-    if (wrapper) {
-      wrapper.style.height = `${minHeight}px`;
-    }
-
-    return () => {
-      window.removeEventListener("message", messageHandler);
-    };
-  }, []);
+      return value;
+    });
+  };
 
   return (
-    <div id="quiz-section">
-      <div className="iframe-wrapper">
-        <iframe
-          src="https://alignment-cards.vercel.app"
-          title="Alignment Cards"
-          id="alignmentIframe"
-          allow="fullscreen"
-          scrolling="no"
-        ></iframe>
-      </div>
-      <style jsx>{`
-        .iframe-wrapper {
-          position: relative;
-          width: 100%;
-          max-width: 1100px;
-          margin: 0 auto;
-          border-radius: 15px;
-          overflow: hidden;
-          min-height: 600px;
-          transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          transform: translateZ(0);
-          -webkit-transform: translateZ(0);
-          will-change: height;
+    <div className={className}>
+      {React.Children.map(children, (child) => {
+        if (React.isValidElement(child) && child.type === SimpleAccordionItem) {
+          return React.cloneElement(child, {
+            isOpen: openValue === child.props.value,
+            onToggle: () => handleTriggerClick(child.props.value),
+            className: child.props.className || "accordion-item",
+          });
         }
-        #alignmentIframe {
-          width: 100%;
-          height: 100%;
-          border: none;
-          display: block;
-          border-radius: 15px;
-        }
-        @media (max-width: 768px) {
-          .iframe-wrapper {
-            min-height: 720px;
-          }
-        }
-      `}</style>
+        return child;
+      })}
     </div>
+  );
+};
+
+interface SimpleAccordionItemProps {
+  value: string;
+  isOpen?: boolean;
+  onToggle?: () => void;
+  children: React.ReactNode;
+  className?: string;
+}
+
+const SimpleAccordionItem: React.FC<SimpleAccordionItemProps> = ({
+  value,
+  isOpen,
+  onToggle,
+  children,
+  className = "",
+}) => {
+  let trigger = null;
+  let content = null;
+
+  React.Children.forEach(children, (child) => {
+    if (React.isValidElement(child)) {
+      if (child.type === SimpleAccordionTrigger) {
+        trigger = child;
+      } else if (child.type === SimpleAccordionContent) {
+        content = child;
+      }
+    }
+  });
+
+  return (
+    <div className={className}>
+      {trigger && React.cloneElement(trigger, { isOpen, onClick: onToggle })}
+      {content && React.cloneElement(content, { isOpen })}
+    </div>
+  );
+};
+
+interface SimpleAccordionTriggerProps {
+  isOpen?: boolean;
+  onClick?: () => void;
+  children: React.ReactNode;
+}
+
+const SimpleAccordionTrigger: React.FC<SimpleAccordionTriggerProps> = ({ isOpen, onClick, children }) => {
+  return (
+    <button type="button" onClick={onClick} className={`accordion-trigger ${isOpen ? "open" : ""}`}>
+      {children}
+      <ChevronDownIcon width={16} height={16} />
+    </button>
+  );
+};
+
+interface SimpleAccordionContentProps {
+  isOpen?: boolean;
+  children: React.ReactNode;
+}
+
+const SimpleAccordionContent: React.FC<SimpleAccordionContentProps> = ({ isOpen, children }) => {
+  return (
+    <div className={`accordion-content ${isOpen ? "open" : ""}`}>
+      <div className="accordion-content-text">{children}</div>
+    </div>
+  );
+};
+
+// --- Data for Accordion ---
+const items = [
+  {
+    id: "1",
+    title: "Your Creative Journey",
+    sub: null,
+    content:
+      "You've built a business or creative career that sometimes feels like a miracle, but it wasn't luck or a fluke. You created this. Your energy, your choices, and your identity have shaped your current level of progress and success (amazing job, I hope you're hearing roaring applause as you read this). Yet as you continue to carve out a business and career that is uniquely yours, moments of doubt are a natural occurrence. When that doubt becomes chronic or heavy that's because the status quo insists that progress comes only from correctness, obedience, and relentless sacrifice.",
+  },
+  {
+    id: "2",
+    title: "Operating Beyond the Status Quo",
+    sub: null,
+    content:
+      "Consider: the status quo is none of your business. You've chosen to be someone who operates from a different plane of reality, one where your desired business and career are continuously inevitable. In your reality (congrats on choosing this one btw, you have great taste), success unfolds on the way you want, and your livelihood is built on your terms and conditions. Your job is to stay connected to that reality and keep stepping into the person who brings this vision to life, over and over again.",
+  },
+  {
+    id: "3",
+    title: "Who is the Toolkit for",
+    sub: null,
+    content:
+      "The Realization ToolKit is the hub, a space designed by a creative like you, for creatives like you, the self-led and spirit-driven. It's where you'll find tools to that make it easy to operate from a frequency that transcends the norm so you can live and continue developing the business and career you want, the way you want. (Because what you want is divine and genius.)",
+  },
+  {
+    id: "4",
+    title: "Other Options",
+    sub: null,
+    content:
+      "*I have also added the option to access either the Alchemical Tools, Power Tools or just the Refiner separately. You can see what's included in all options when you scroll to the bottom.*",
+  },
+  {
+    id: "5",
+    title: "Enrollment Information",
+    sub: null,
+    content: "Enrollment is open the first week of every month. See you inside.",
+  },
+];
+
+// --- Simple CSS via Tailwind Classes ---
+// The following class names match your provided HTML/CSS rules:
+//
+// accordion-container:
+//   max-width: 600px; margin: 2rem auto;
+//
+// accordion-trigger:
+//   flex, justify-between, items-center, py-4, text-left, font-semibold, border-b border-gray-200, cursor-pointer
+//
+// accordion-content:
+//   overflow-hidden, transition for max-height and opacity; initially max-h-0 and opacity-0; open => max-h-[1000px] and opacity-100
+//
+// accordion-content-text:
+//   pt-2 pb-4, text-sm, text-gray-600
+//
+// accordion-title-text:
+//   text-[15px], leading-6
+//
+// accordion-sub-text:
+//   text-sm, font-normal, text-gray-500
+
+// --- Main Accordion Content Component ---
+const ContentAccordion: React.FC = () => {
+  return (
+    <div className="accordion-container">
+      <h2 className="text-xl font-bold mb-4 text-center">Realization ToolKit</h2>
+      <SimpleAccordion type="single" collapsible className="w-full">
+        {items.map((item) => (
+          <SimpleAccordionItem value={item.id} key={item.id}>
+            <SimpleAccordionTrigger>
+              <span className="flex flex-col space-y-1">
+                <span className="accordion-title-text">{item.title}</span>
+                {item.sub && <span className="accordion-sub-text">{item.sub}</span>}
+              </span>
+            </SimpleAccordionTrigger>
+            <SimpleAccordionContent>{item.content}</SimpleAccordionContent>
+          </SimpleAccordionItem>
+        ))}
+      </SimpleAccordion>
+    </div>
+  );
+};
+
+// --- Error Boundary ---
+class ErrorBoundary extends React.Component<{}, { hasError: boolean; error: any }> {
+  constructor(props: {}) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true, error: error };
+  }
+  componentDidCatch(error: any, errorInfo: any) {
+    console.error("Accordion rendering error:", error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ color: "red", padding: "1rem", border: "1px solid red", margin: "1rem" }}>
+          <h2>Something went wrong rendering the accordion.</h2>
+          <pre>{this.state.error?.message}</pre>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+// --- MembershipBenefits Component ---
+const MembershipBenefits: React.FC = () => {
+  return (
+    <ErrorBoundary>
+      <ContentAccordion />
+    </ErrorBoundary>
   );
 };
 
