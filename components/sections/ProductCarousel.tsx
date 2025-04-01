@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
-import { Product } from '../data/productData';
+import { Product} from '../data/productData';
 
 interface ProductCarouselProps {
   products?: Product[];
