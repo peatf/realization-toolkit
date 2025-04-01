@@ -128,33 +128,39 @@ const items = [
     id: "1",
     title: "Your Creative Journey",
     sub: null,
-    content: "You've built a business or creative career that sometimes feels like a miracle...",
+    content:
+      "You've built a business or creative career that sometimes feels like a miracle, but it wasn't luck or a fluke. You created this. Your energy, your choices, and your identity have shaped your current level of progress and success (amazing job, I hope you're hearing roaring applause as you read this). Yet as you continue to carve out a business and career that is uniquely yours, moments of doubt are a natural occurrence. When that doubt becomes chronic or heavy that's because the status quo insists that progress comes only from correctness, obedience, and relentless sacrifice.",
   },
   {
     id: "2",
     title: "Operating Beyond the Status Quo",
     sub: null,
-    content: "Consider: the status quo is none of your business...",
+    content:
+      "Consider: the status quo is none of your business. You've chosen to be someone who operates from a different plane of reality, one where your desired business and career are continuously inevitable. In your reality (congrats on choosing this one btw, you have great taste), success unfolds on the way you want, and your livelihood is built on your terms and conditions. Your job is to stay connected to that reality and keep stepping into the person who brings this vision to life, over and over again.",
   },
   {
     id: "3",
     title: "Who is the Toolkit for",
     sub: null,
-    content: "The Realization ToolKit is the hub, a space designed by a creative like you...",
+    content:
+      "The Realization ToolKit is the hub, a space designed by a creative like you, for creatives like you, the self-led and spirit-driven. It's where you'll find tools that make it easy to operate from a frequency that transcends the norm so you can live and continue developing the business and career you want, the way you want. (Because what you want is divine and genius.)",
   },
   {
     id: "4",
     title: "Other Options",
     sub: null,
-    content: "*I have also added the option to access either the Alchemical Tools...",
+    content:
+      "*I have also added the option to access either the Alchemical Tools, Power Tools or just the Refiner separately. You can see what's included in all options when you scroll to the bottom.*",
   },
   {
     id: "5",
     title: "Enrollment Information",
     sub: null,
-    content: "Enrollment is open the first week of every month...",
+    content:
+      "Enrollment is open the first week of every month. See you inside.",
   },
 ];
+
 
 const ContentAccordion: React.FC = () => {
   return (
