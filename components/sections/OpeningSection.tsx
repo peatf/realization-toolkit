@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FloatingElement, GlassModule } from '../components/ui/NeumorphicUI';
-import SimplifiedCircularMenu from '../components/SimplifiedCircularMenuWithGooeyText';
+import { FloatingElement, GlassModule } from '../ui/NeumorphicUI';
+import SimplifiedCircularMenu from './SimplifiedCircularMenuWithGooeyText';
 
 const SimpleOpeningSection: React.FC = () => {
   // Array of prompts for the circular menu
