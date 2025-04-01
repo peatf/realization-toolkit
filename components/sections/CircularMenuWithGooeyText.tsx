@@ -165,7 +165,8 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuWithGooeyTextProps> = ({
         return isCurrentlyScrolling;
       }
       
-      const delta = e.deltaY || e.detail || e.wheelDelta;
+      // Use only standard properties for TypeScript compatibility
+      const delta = e.deltaY || (e as any).detail;
       
       setCurrentIndex(currentIdx => {
         if (delta > 0 && currentIdx < config.snapCount - 1) {
