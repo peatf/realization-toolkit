@@ -1,5 +1,15 @@
 import React, { useState } from "react";
 
+import React, { ReactElement } from 'react';
+
+// Ensure child is of type ReactElement with the expected props
+if (React.isValidElement<SimpleAccordionItemProps>(child) && (child.type as any).displayName === "SimpleAccordionItem") {
+  return React.cloneElement<SimpleAccordionItemProps>(child, {
+    isOpen: openValue === child.props.value,
+    onToggle: () => handleTriggerClick(child.props.value),
+    className: child.props.className || "accordion-item",
+  });
+}
 // --- Chevron Icon ---
 const ChevronDownIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 15 15" {...props}>
