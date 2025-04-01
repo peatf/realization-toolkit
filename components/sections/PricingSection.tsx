@@ -150,12 +150,17 @@ const products = [
   },
 ];
 
-// Use a type cast here so TypeScript knows we may have a UserAccountApi on the window object.
-const UserAccountApi = (window as any).UserAccountApi || {
-  joinPricingPlan: (planId: string, optionId: string) => {
-    console.warn('UserAccountApi.joinPricingPlan called (mocked):', { planId, optionId });
-    alert(`Simulating signup for plan ${planId}, option ${optionId}`);
-  },
+// Safely reference window only in the client environment
+const getUserAccountApi = () => {
+  if (typeof window !== 'undefined' && (window as any).UserAccountApi) {
+    return (window as any).UserAccountApi;
+  }
+  return {
+    joinPricingPlan: (planId: string, optionId: string) => {
+      console.warn('UserAccountApi.joinPricingPlan called (mocked):', { planId, optionId });
+      alert(`Simulating signup for plan ${planId}, option ${optionId}`);
+    },
+  };
 };
 
 const PricingSection = () => {
@@ -216,7 +221,7 @@ const PricingSection = () => {
         Membership Options
       </h1>
 
-      {/* Card container - You would replace the placeholder with your full MembershipCard implementation */}
+      {/* Card container - Placeholder for your MembershipCard implementation */}
       <div
         style={{
           position: 'relative',
@@ -228,7 +233,7 @@ const PricingSection = () => {
         }}
       >
         {products.map((plan, index) => (
-          <div key={plan.id || index}>{plan.title}</div> // Placeholder content
+          <div key={plan.id || index}>{plan.title}</div>
         ))}
       </div>
 
