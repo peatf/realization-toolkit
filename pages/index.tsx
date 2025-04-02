@@ -12,6 +12,7 @@ import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 import { GlassModule } from '../components/ui/NeumorphicUI';
 import { motion } from 'framer-motion';
 import QuizSection from '../components/sections/QuizSection';
+import CircularMenuWithGooeyText from '../components/sections/CircularMenuWithGooeyText';
 
 const Home: NextPage = () => {
   useEffect(() => {
@@ -59,9 +60,20 @@ const Home: NextPage = () => {
   return (
     <Layout>
       <OpeningSection />
-       <QuizSection />
+      <QuizSection />
       <MembershipBenefits />
       <TestimonialCarousel />
+      
+      {/* Circular Menu */}
+      <CircularMenuWithGooeyText 
+        items={[
+          "Alchemical Tools",
+          "Power Tools", 
+          "Vision Coaching",
+          "Community",
+          "Resources"
+        ]} 
+      />
       
       {/* First Tool Carousel */}
       <ProductCarousel 

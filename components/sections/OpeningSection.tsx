@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import Section from '../layout/Section'; // Fixed the import path
+import Section from '../layout/Section';
 
 const OpeningSection: React.FC = () => {
   return (
@@ -14,7 +14,7 @@ const OpeningSection: React.FC = () => {
             className="mb-4"
           >
             <span className="font-mono text-[var(--color-secondary)] tracking-widest uppercase text-sm">
-              Welcome to the Toolkit
+              Realization
             </span>
           </motion.div>
           
@@ -24,31 +24,17 @@ const OpeningSection: React.FC = () => {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="font-sans text-5xl md:text-6xl text-[var(--color-foreground)] mb-6 font-light"
           >
-            Transform Your Experience
+            Tools for Transformation
           </motion.h1>
           
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="text-[var(--color-secondary)] text-lg max-w-xl mx-auto font-light"
+            className="text-[var(--color-secondary)] text-lg max-w-xl mx-auto font-light mb-8"
           >
-            Discover the tools and resources that will help you on your journey.
+            Access powerful techniques to realize your potential.
           </motion.p>
-          
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.9 }}
-            className="mt-10"
-          >
-            <a 
-              href="#get-started" 
-              className="inline-block px-8 py-3 bg-[var(--color-accent-green)] text-[var(--color-foreground)] rounded-lg hover:bg-[var(--color-accent-green)]/80 transition-colors font-medium"
-            >
-              Get Started
-            </a>
-          </motion.div>
         </div>
       </div>
     </Section>
