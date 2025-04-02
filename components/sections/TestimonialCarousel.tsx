@@ -5,6 +5,37 @@ import Section from '../layout/Section';
 // Placeholder image URL - replace if needed
 const PLACEHOLDER_IMAGE = 'https://placehold.co/300x200/e2e8f0/64748b?text=Image';
 
+// ---------- Interfaces and Default Data ----------
+interface Testimonial {
+  text: string;
+  name: string;
+  title?: string;
+  imageUrl?: string;
+}
+
+interface TestimonialCarouselProps {
+  testimonials?: Testimonial[];
+}
+
+// Default testimonials data
+const defaultTestimonials: Testimonial[] = [
+  {
+    text: "The toolkit has given me precise clarity. I'm now able to make better decisions with confidence.",
+    name: "Sarah Johnson",
+    title: "Entrepreneur"
+  },
+  {
+    text: "This approach revolutionized how I view my creative process. My productivity has doubled.",
+    name: "Michael Chen",
+    title: "Designer"
+  },
+  {
+    text: "I've found a new level of balance and purpose. These tools are life-changing.",
+    name: "Elena Rodriguez",
+    title: "Wellness Coach"
+  }
+];
+
 // ---------- Star Component ----------
 interface StarProps {
   isGlowing: boolean;
@@ -78,6 +109,7 @@ interface TestimonialCardProps {
     text: string;
     name: string;
     title?: string;
+    imageUrl?: string;
   };
 }
 const TestimonialCard: React.FC<TestimonialCardProps> = ({ testimonial }) => {
@@ -101,6 +133,9 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({ testimonial }) => {
         boxShadow: hover ? '0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22)' : '0 4px 12px rgba(0, 0, 0, 0.15)',
         transition: 'box-shadow 0.3s ease',
         minHeight: '300px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center'
       }}>
         {/* Background elements */}
         <div style={{ 
@@ -116,17 +151,31 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({ testimonial }) => {
         <StarsBackground />
         
         <div className="relative z-10">
-          <div className="mb-6">
-            <p className="text-[var(--color-foreground)] font-light mb-4">
-              "{testimonial.text}"
-            </p>
-          </div>
-          <div className="flex items-center">
-            <div className="ml-3">
-              <p className="text-[var(--color-foreground)] font-medium">{testimonial.name}</p>
-              <p className="text-[var(--color-secondary)] text-sm">{testimonial.title}</p>
+          {testimonial.imageUrl ? (
+            <div className="flex justify-center">
+              <img 
+                src={testimonial.imageUrl} 
+                alt="Testimonial" 
+                className="rounded-lg max-w-full max-h-64 object-contain"
+              />
             </div>
-          </div>
+          ) : (
+            <>
+              <div className="mb-6">
+                <p className="text-[var(--color-foreground)] font-light mb-4 text-center">
+                  "{testimonial.text}"
+                </p>
+              </div>
+              <div className="flex items-center justify-center">
+                <div className="text-center">
+                  <p className="text-[var(--color-foreground)] font-medium">{testimonial.name}</p>
+                  {testimonial.title && (
+                    <p className="text-[var(--color-secondary)] text-sm">{testimonial.title}</p>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
@@ -181,13 +230,13 @@ const ArrowButton: React.FC<ArrowButtonProps> = ({ direction, onClick, disabled 
 };
 
 // ---------- TestimonialCarousel Component ----------
-const TestimonialCarousel: React.FC = () => {
+const TestimonialCarousel: React.FC<TestimonialCarouselProps> = (props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const orbitRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  const testimonials = pearTestimonials;
+  const testimonials = props.testimonials || defaultTestimonials;
   const totalTestimonials = testimonials.length;
 
   const rotateCarousel = (direction: 'next' | 'prev') => {

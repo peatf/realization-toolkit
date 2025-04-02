@@ -13,6 +13,7 @@ import { GlassModule } from '../components/ui/NeumorphicUI';
 import { motion } from 'framer-motion';
 import QuizSection from '../components/sections/QuizSection';
 import CircularMenuWithGooeyText from '../components/sections/CircularMenuWithGooeyText';
+import { testimonials } from '../data/testimonialData';
 
 const Home: NextPage = () => {
   useEffect(() => {
@@ -74,7 +75,7 @@ const Home: NextPage = () => {
       
       <QuizSection />
       <MembershipBenefits />
-      <TestimonialCarousel />
+      <TestimonialCarousel testimonials={testimonials} />
       
       {/* First Tool Carousel */}
       <ProductCarousel 
