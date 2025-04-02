@@ -317,7 +317,7 @@ code, pre, .mono {
 }
 
 .opening-container > section + section {
-  margin-top: -3rem; /* Negative margin to pull them closer */
+  margin-top: -6rem; /* Increase from -3rem for tighter spacing */
 }
 
 /* Quiz and Benefits side-by-side layout */
@@ -326,6 +326,11 @@ code, pre, .mono {
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
   margin-bottom: 3rem;
+}
+.quiz-wrapper {
+  height: 100%; /* Ensure quiz wrapper takes full height */
+  display: flex;
+  flex-direction: column;
 }
 
 @media (max-width: 768px) {
@@ -342,4 +347,18 @@ code, pre, .mono {
 
 .product-carousels > section + section {
   padding-top: 0;
+}
+
+/* Product carousel section with tighter spacing - more specific selectors */
+.product-carousels {
+  margin-bottom: 2rem;
+}
+
+.product-carousels > div {
+  margin-bottom: 1rem !important;
+}
+
+.product-carousels > div > section {
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
 }

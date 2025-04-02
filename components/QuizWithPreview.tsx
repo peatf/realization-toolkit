@@ -1,8 +1,12 @@
+import React from 'react';
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion'; 
+import { motion, AnimatePresence } from 'framer-motion';
 import VisualPreview from './VisualPreview';
-// Fix this import path:
-import QuizSection from './sections/QuizSection';
+
+// Fix the import path - adjust based on your actual file structure
+import QuizSection from '../components/sections/QuizSection';
+// OR if it's directly in the sections folder at project root:
+// import QuizSection from '../sections/QuizSection';
 
 const QuizWithPreview = () => {
   const [showQuiz, setShowQuiz] = useState(false);
@@ -12,7 +16,7 @@ const QuizWithPreview = () => {
   };
   
   return (
-    <div className="quiz-wrapper">
+    <div className="quiz-wrapper relative h-full">
       <AnimatePresence mode="wait">
         {!showQuiz ? (
           <motion.div 
@@ -20,7 +24,7 @@ const QuizWithPreview = () => {
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={handlePreviewClick} 
-            className="cursor-pointer"
+            className="cursor-pointer h-full"
           >
             <VisualPreview />
           </motion.div>
@@ -29,8 +33,16 @@ const QuizWithPreview = () => {
             key="quiz"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
+            className="h-full"
           >
             <QuizSection />
+            {/* Add close button */}
+            <button 
+              onClick={() => setShowQuiz(false)} 
+              className="mt-4 text-sm text-center w-full py-2 text-gray-600 hover:text-gray-900"
+            >
+              ← Back to preview
+            </button>
           </motion.div>
         )}
       </AnimatePresence>

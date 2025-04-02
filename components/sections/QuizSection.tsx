@@ -5,6 +5,7 @@ import Section from '../layout/Section';
 const QuizSection: React.FC = memo(() => {
   const [iframeHeight, setIframeHeight] = useState(600);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   const lastUpdateTimeRef = useRef(0);
   
   useEffect(() => {
@@ -45,39 +46,17 @@ const QuizSection: React.FC = memo(() => {
   
   return (
     <Section id="quiz-section">
-      <div 
-        ref={wrapperRef}
-        className="iframe-wrapper"
-        style={{ 
-          height: `${iframeHeight}px`,
-          position: 'relative',
-          width: '100%',
-          maxWidth: '1100px',
-          margin: '0 auto',
-          borderRadius: '15px',
-          overflow: 'hidden',
-          minHeight: '600px',
-          transition: 'height 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-          transform: 'translateZ(0)',
-          WebkitTransform: 'translateZ(0)',
-          willChange: 'height'
-        }}
-      >
-        <iframe
-          src="https://alignment-cards.vercel.app"
-          title="Alignment Cards"
-          id="alignmentIframe"
-          allow="fullscreen"
-          scrolling="no"
-          style={{
-            width: '100%',
-            height: '100%',
-            border: 'none',
-            display: 'block',
-            borderRadius: '15px'
-          }}
-          loading="lazy" // Add lazy loading for iframe
-        />
+      <div className="w-full px-4 mx-auto"> {/* Add padding and center alignment */}
+        <div className="max-w-4xl mx-auto"> {/* Center content with max width */}
+          <iframe
+            ref={iframeRef}
+            src="https://alignment-cards.vercel.app"
+            width="100%"
+            height={iframeHeight}
+            style={{ border: "none", borderRadius: "8px" }}
+            title="Alignment Cards"
+          />
+        </div>
       </div>
     </Section>
   );
