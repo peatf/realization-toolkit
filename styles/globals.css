@@ -30,7 +30,7 @@
 }
 
 body, html {
-  background-color: var(--color-background) !important;
+  background-color: var(--color-background); /* Using light background without !important */
 }
 
 html,
@@ -48,7 +48,6 @@ body {
   position: relative;
 }
 
-/* Replace the existing body::after with this code */
 body::after {
   content: "";
   position: fixed;
@@ -84,7 +83,6 @@ body::after {
   animation: gradientMove 15s ease-in-out infinite alternate;
 }
 
-/* Add this animation keyframes section if not already present */
 @keyframes gradientMove {
   0% {
     background-position: 
@@ -108,7 +106,6 @@ body::after {
   }
 }
 
-/* Add subtle noise texture overlay */
 body::before {
   content: "";
   position: fixed;
@@ -126,7 +123,6 @@ body::before {
   box-sizing: border-box;
 }
 
-/* Typography styles */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-sans); /* Using sans instead of serif */
   font-weight: 300;
@@ -158,7 +154,6 @@ code, pre, .mono {
   font-family: var(--font-mono);
 }
 
-/* New glass card styles with more specific class names */
 .rt-glass-card {
   background-color: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(var(--glass-blur));
@@ -180,7 +175,6 @@ code, pre, .mono {
   color: white;
 }
 
-/* Button styles */
 .btn {
   padding: 0.75rem 1.5rem;
   font-weight: 400;
@@ -201,8 +195,6 @@ code, pre, .mono {
   border: 1px solid var(--color-foreground);
 }
 
-/* Keep some of the existing styles for backward compatibility */
-/* Fog effect */
 .fog-container {
   position: absolute;
   width: 100%;
@@ -246,7 +238,6 @@ code, pre, .mono {
   }
 }
 
-/* Add CSS for the accordion component (keeping this section) */
 .accordion-container {
   max-width: 600px;
   margin: 2rem auto;
@@ -311,80 +302,37 @@ code, pre, .mono {
   color: var(--color-secondary);
 }
 
-/* Opening section with tighter spacing */
+/* Consolidated opening container styles */
 .opening-container {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 2rem;
   position: relative;
-}
-
-.opening-container > section + section {
-  margin-top: -9rem !important; /* Using !important to override any competing styles */
+  margin-bottom: 0;
 }
 
 .opening-container > section:nth-child(2) {
   position: relative;
-  top: -7rem; /* Pull up the carousel section */
+  top: -9rem !important; /* Keep the extreme pull-up value */
+  margin-bottom: -9rem !important;
 }
 
-/* TEMPORARY: Debug visualization - remove after fixing layout */
-.opening-container {
-  border: 2px solid blue;
-}
-.quiz-benefits-row {
-  border: 2px solid green;
-}
-.quiz-benefits-row > * {
-  border: 2px dashed green;
-}
-.product-carousels {
-  border: 2px solid purple;
-}
-.product-carousels > div {
-  border: 2px dashed purple;
-}
-/* End temporary debug CSS */
-
-/* Fix alignment between quiz and benefits */
+/* Consolidated quiz-benefits row styles */
 .quiz-benefits-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 2rem;
-  margin-bottom: 3rem;
-  align-items: flex-start;
   width: 100%;
+  margin: 0 auto 3rem;
+  align-items: flex-start;
 }
 
-/* Ensure both child elements have consistent spacing */
 .quiz-benefits-row > * {
   margin: 0 !important;
   padding: 0 !important;
   width: 100% !important;
 }
 
-/* Consistent card styling */
 .quiz-wrapper,
 .membership-benefits {
   height: 100%;
-}
-
-.rt-glass-card {
-  height: 100%;
-  width: 100%;
-}
-
-/* Quiz and Benefits side-by-side layout */
-.quiz-benefits-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  margin-bottom: 3rem;
-}
-.quiz-wrapper {
-  height: 100%; /* Ensure quiz wrapper takes full height */
-  display: flex;
-  flex-direction: column;
 }
 
 @media (max-width: 768px) {
@@ -393,41 +341,34 @@ code, pre, .mono {
   }
 }
 
-/* Product carousel section with tighter spacing */
-.product-carousels > section {
-  padding-top: 2rem;
-  padding-bottom: 2rem;
-}
-
-.product-carousels > section + section {
-  padding-top: 0;
-}
-
-/* Product carousel section with tighter spacing - more specific selectors */
+/* Consolidated product carousel styles */
 .product-carousels {
   margin-bottom: 2rem;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
 }
 
-.product-carousels > div {
-  margin-bottom: 1rem !important;
-}
-
-.product-carousels > div > section {
-  padding-top: 1rem !important;
-  padding-bottom: 1rem !important;
-}
-
-/* More aggressive product carousel spacing fixes */
 .product-carousels > div,
-.product-carousel-wrapper > div,
-section[class*="product"] {
+.product-carousels > section,
+.product-carousel-wrapper,
+.carousel-container {
   margin-top: 0 !important;
   margin-bottom: 1rem !important;
   padding-top: 1rem !important;
   padding-bottom: 1rem !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
 }
 
-/* Target the section title and subtitle specifically */
+.product-carousel {
+  display: flex;
+  flex-wrap: nowrap;
+  width: 100%;
+  max-width: 100vw;
+}
+
 .section-title {
   margin-bottom: 0.5rem !important;
 }
@@ -436,20 +377,82 @@ section[class*="product"] {
   margin-bottom: 1rem !important;
 }
 
-/* Fix horizontal scrollbars */
-.product-carousels,
-.product-carousels > div,
-.product-carousel-wrapper,
-.carousel-container {
-  width: 100% !important;
-  max-width: 100% !important;
-  overflow-x: hidden !important;
+/* Add the CSS animation styles for quiz preview */
+.quiz-preview-container {
+  position: relative;
 }
 
-/* Fix any potential flex issues causing overflow */
-.product-carousel {
+.quiz-animation-container {
+  position: absolute;
+  inset: 0;
   display: flex;
-  flex-wrap: nowrap;
-  width: 100%;
-  max-width: 100vw;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.quiz-circle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.7;
+}
+
+.quiz-circle-1 {
+  width: 120px;
+  height: 120px;
+  background: rgba(26, 26, 26, 0.9);
+  animation: pulse1 4s infinite alternate;
+}
+
+.quiz-circle-2 {
+  width: 80px;
+  height: 80px;
+  background: rgba(90, 90, 90, 0.7);
+  animation: pulse2 5s infinite alternate;
+}
+
+.quiz-circle-3 {
+  width: 50px;
+  height: 50px;
+  background: rgba(26, 26, 26, 0.8);
+  animation: pulse3 6s infinite alternate;
+}
+
+.quiz-circle-4 {
+  width: 35px;
+  height: 35px;
+  background: rgba(90, 90, 90, 0.6);
+  animation: pulse4 4.5s infinite alternate;
+}
+
+.quiz-circle-5 {
+  width: 25px;
+  height: 25px;
+  background: rgba(26, 26, 26, 0.7);
+  animation: pulse5 3.5s infinite alternate;
+}
+
+@keyframes pulse1 {
+  0% { transform: translate(-30px, -20px) scale(1); }
+  100% { transform: translate(20px, 30px) scale(1.2); }
+}
+
+@keyframes pulse2 {
+  0% { transform: translate(20px, 15px) scale(1.1); }
+  100% { transform: translate(-15px, -25px) scale(0.9); }
+}
+
+@keyframes pulse3 {
+  0% { transform: translate(-15px, 25px) scale(0.9); }
+  100% { transform: translate(25px, -10px) scale(1.2); }
+}
+
+@keyframes pulse4 {
+  0% { transform: translate(10px, -20px) scale(1); }
+  100% { transform: translate(-30px, 15px) scale(1.1); }
+}
+
+@keyframes pulse5 {
+  0% { transform: translate(-5px, -10px) scale(0.9); }
+  100% { transform: translate(15px, 20px) scale(1.2); }
 }
