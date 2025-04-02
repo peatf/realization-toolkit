@@ -1,11 +1,32 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Section from '../layout/Section';
 
-// ---------- Star Component ----------
+// Define proper TypeScript interfaces
+interface IntervalData {
+  price: string;
+  interval: string;
+  pricingOptionId: string;
+}
+
+interface Plan {
+  id: string;
+  name: string;
+  price?: string;
+  interval?: string;
+  pricingOptionId?: string;
+  pricingPlanId?: string;
+  hasMultipleIntervals?: boolean;
+  intervals?: Record<string, IntervalData>;
+  toggleLabels?: Record<string, string>;
+  features: string[];
+}
+
 interface StarProps {
   isGlowing: boolean;
   delay: number;
 }
+
+// Star component
 const Star: React.FC<StarProps> = ({ isGlowing, delay }) => {
   return (
     <div
@@ -18,17 +39,18 @@ const Star: React.FC<StarProps> = ({ isGlowing, delay }) => {
         position: 'relative',
         zIndex: 1,
       }}
-    ></div>
+    />
   );
 };
 
-// ---------- StarsBackground Component ----------
+// StarsBackground component
 const StarsBackground: React.FC = () => {
   const [glowingStars, setGlowingStars] = useState<number[]>([]);
   const stars = 50;
+  
   useEffect(() => {
     const interval = setInterval(() => {
-      const newGlowingStars = Array.from({ length: 5 }, () => Math.floor(Math.random() * stars));
+      const newGlowingStars: number[] = Array.from({ length: 5 }, () => Math.floor(Math.random() * stars));
       setGlowingStars(newGlowingStars);
     }, 2000);
     return () => clearInterval(interval);
@@ -52,6 +74,7 @@ const StarsBackground: React.FC = () => {
         const left = Math.random() * 100;
         const top = Math.random() * 100;
         const delay = (index % 10) * 0.1;
+        
         return (
           <div
             key={`star-${index}`}
@@ -89,98 +112,20 @@ const StarsBackground: React.FC = () => {
   );
 };
 
-// ---------- Product Data ----------
-const products = [
-  {
-    id: 'rtk',
-    title: "Realization Toolkit ꩜",
-    hasMultipleIntervals: true,
-    intervals: {
-      monthly: {
-        price: "376.00",
-        interval: "Every month",
-        pricingOptionId: "25c4487a-6156-469c-a69c-fe8920e9ec29",
-      },
-      weekly: {
-        price: "188.00",
-        interval: "Every 2 weeks",
-        pricingOptionId: "9bed5f13-3739-4c68-946f-de79b88f46b7",
-      },
-    },
-    toggleLabels: { monthly: "Monthly", weekly: "2 Weeks" },
-    pricingPlanId: "fc0ee596-0820-4e2d-ae7f-8762360121ba",
-    features: [
-      "Access to Alchemical Tools",
-      "Access to Power Tools",
-      "Access to Live Vision Coaching Calls",
-      "Access to Vision Coaching Call Replays",
-      "Access to 1:1 Booking",
-    ],
-  },
-  {
-    id: 'ap-tools',
-    title: "Alchemical + Power Tools",
-    price: "96.00",
-    interval: "Every month",
-    pricingPlanId: "c8a2ed11-3bee-4456-9e25-54ace2d47267",
-    pricingOptionId: "51646566-212a-480d-83d4-fe70f664958d",
-    features: [
-      "Access to Realization: Alchemical Tools",
-      "Access to Realization: Power Tools",
-      "Access to one Monthly Vision Coaching Call recording",
-    ],
-  },
-  {
-    id: 'refiner',
-    title: "The Refiner 𓂀",
-    hasMultipleIntervals: true,
-    intervals: {
-      monthly: {
-        price: "34.00",
-        interval: "Every month",
-        pricingOptionId: "6e23e623-a4dd-4269-8bb9-24d79dc02da5",
-      },
-      weekly: {
-        price: "8.50",
-        interval: "Every week",
-        pricingOptionId: "1dd0b7cd-69c7-4f1f-85bb-1bb347110ee8",
-      },
-    },
-    toggleLabels: { monthly: "Monthly", weekly: "Weekly" },
-    pricingPlanId: "6e1c0811-d0c3-4e0d-8579-bc65cc83b41f",
-    features: [
-      "Unlimited Access to the Refiner",
-      "Bonus: Access to Tension to Form Tool",
-    ],
-  },
-];
-
-// ---------- UserAccountApi (Safe Access) ----------
-const getUserAccountApi = () => {
-  if (typeof window !== 'undefined' && (window as any).UserAccountApi) {
-    return (window as any).UserAccountApi;
-  }
-  return {
-    joinPricingPlan: (planId: string, optionId: string) => {
-      console.warn('UserAccountApi.joinPricingPlan called (mocked):', { planId, optionId });
-      alert(`Simulating signup for plan ${planId}, option ${optionId}`);
-    },
-  };
-};
-
-// ---------- MembershipCard Component ----------
 interface MembershipCardProps {
-  product: any;
+  plan: Plan;
   isActive: boolean;
-  onSelect: (index: number) => void;
+  onSelect: () => void;
   index: number;
   activeIndex: number;
   totalCards: number;
   selectedInterval?: string;
-  onIntervalChange: (intervalKey: string) => void;
+  onIntervalChange: (interval: string) => void;
 }
+
+// MembershipCard component
 const MembershipCard: React.FC<MembershipCardProps> = ({
-  product,
+  plan,
   isActive,
   onSelect,
   index,
@@ -192,11 +137,15 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
   const [hover, setHover] = useState(false);
   const [buttonHover, setButtonHover] = useState(false);
 
-  // Stacking Logic
+  // Rest of the component stays the same
+  // ...
+
+  // Rest of your existing MembershipCard component code
   const relativeIndex = index - activeIndex;
   let translateY = 0;
   let scale = 1;
   let cardZIndex = totalCards;
+  
   if (!isActive) {
     const distance = Math.abs(relativeIndex);
     if (relativeIndex > 0) {
@@ -210,34 +159,28 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
     scale = Math.max(0.75, scale);
     cardZIndex = Math.max(1, cardZIndex);
   }
+  
   const transform = `translateX(-50%) translateY(${translateY}px) scale(${scale})`;
 
   // Determine current price, interval text, and option ID
-  let currentPrice = product.price;
-  let currentIntervalText = product.interval;
-  let currentOptionId = product.pricingOptionId;
-  if (product.hasMultipleIntervals) {
-    const intervalData = product.intervals[selectedInterval || 'monthly'];
-    currentPrice = intervalData?.price;
-    currentIntervalText = intervalData?.interval;
-    currentOptionId = intervalData?.pricingOptionId;
+  let currentPrice = plan.price || '';
+  let currentIntervalText = plan.interval || '';
+  let currentOptionId = plan.pricingOptionId || '';
+  
+  if (plan.hasMultipleIntervals && plan.intervals) {
+    const intervalData = plan.intervals[selectedInterval || 'monthly'];
+    if (intervalData) {
+      currentPrice = intervalData.price;
+      currentIntervalText = intervalData.interval;
+      currentOptionId = intervalData.pricingOptionId;
+    }
   }
 
-  const handleSignUpClick = () => {
-    const api = getUserAccountApi();
-    if (api && typeof api.joinPricingPlan === 'function') {
-      api.joinPricingPlan(product.pricingPlanId, currentOptionId);
-    } else {
-      console.error("UserAccountApi not found or joinPricingPlan is not a function.");
-      alert("Signup API is not available.");
-    }
-  };
-
+  // Button styles
   const choosePlanBaseStyle = {
     width: '80%',
     padding: '12px 0',
     borderRadius: '8px',
-    color: 'white',
     fontWeight: '500',
     border: '1px solid rgba(255, 255, 255, 0.2)',
     cursor: 'pointer',
@@ -247,12 +190,20 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
     alignSelf: 'center',
     background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05))',
     boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+    fontFamily: 'var(--font-sans)',
+    color: 'var(--color-foreground)',
   };
 
   const choosePlanHoverStyle = {
     background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.1))',
     boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
     transform: 'translateY(-1px)',
+  };
+
+  const handlePurchaseClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // Handle purchase logic here
+    console.log(`Purchase plan: ${plan.name}, option: ${currentOptionId}`);
   };
 
   return (
@@ -272,27 +223,172 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
       }}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      onClick={() => !isActive && onSelect(index)}
+      onClick={() => !isActive && onSelect()}
     >
-      <div 
-        className="relative rounded-2xl overflow-hidden"
+      <div
         style={{
-          background: 'rgba(255, 255, 255, 0.1)',
+          position: 'relative',
+          width: '100%',
+          borderRadius: '16px',
+          overflow: 'hidden',
+          padding: '24px',
+          background: 'rgba(255, 255, 255, 0.08)',
           backdropFilter: 'blur(10px)',
           WebkitBackdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.17)'
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: hover
+            ? '0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22)'
+            : '0 4px 12px rgba(0, 0, 0, 0.15)',
+          transition: 'box-shadow 0.3s ease',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '400px',
         }}
       >
-        <div className="p-6">
-          <h3 className="font-sans text-xl font-medium text-[var(--color-foreground)]">
-            {product.title}
+        {/* Background effect */}
+        <div 
+          style={{ 
+            position: 'absolute', 
+            top: 0, 
+            left: 0, 
+            right: 0, 
+            height: '60%', 
+            background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.1), transparent)', 
+            transform: 'rotate(5deg) translateY(-50%) translateX(-10%)', 
+            pointerEvents: 'none' 
+          }} 
+        />
+        
+        <StarsBackground />
+        
+        <div
+          style={{
+            position: 'relative',
+            zIndex: 2,
+            textAlign: 'center',
+            flexGrow: 1,
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          <h3
+            style={{
+              fontSize: '28px',
+              marginBottom: '12px',
+              fontFamily: 'var(--font-sans)',
+              fontWeight: '300',
+              color: 'var(--color-foreground)',
+            }}
+          >
+            {plan.name}
           </h3>
-          <div className="text-[var(--color-secondary)] mt-2">
-            {product.features.join(', ')}
-          </div>
+
+          {plan.hasMultipleIntervals && plan.intervals && (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: '8px',
+                margin: '0 auto 15px auto',
+                background: 'rgba(0,0,0,0.1)',
+                padding: '4px',
+                borderRadius: '20px',
+                width: 'fit-content',
+              }}
+            >
+              {Object.keys(plan.intervals).map((intervalKey) => (
+                <button
+                  key={intervalKey}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onIntervalChange(intervalKey);
+                  }}
+                  style={{
+                    background: selectedInterval === intervalKey ? 'rgba(255,255,255,0.2)' : 'none',
+                    border: 'none',
+                    padding: '6px 12px',
+                    borderRadius: '16px',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    fontSize: '13px',
+                    fontFamily: 'var(--font-sans)',
+                    fontWeight: '300',
+                    color: 'var(--color-foreground)',
+                  }}
+                >
+                  {plan.toggleLabels?.[intervalKey] ||
+                    intervalKey.charAt(0).toUpperCase() + intervalKey.slice(1)}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <p
+            style={{
+              fontSize: '40px',
+              marginBottom: '4px',
+              fontFamily: 'var(--font-sans)',
+              fontWeight: '300',
+              color: 'var(--color-foreground)',
+            }}
+          >
+            ${currentPrice}
+          </p>
+
+          <p
+            style={{
+              fontSize: '14px',
+              marginBottom: '20px',
+              fontFamily: 'var(--font-sans)',
+              color: 'var(--color-secondary)',
+            }}
+          >
+            {currentIntervalText}
+          </p>
+
+          <ul
+            style={{
+              listStyle: 'none',
+              padding: 0,
+              margin: '0 auto 24px auto',
+              textAlign: 'left',
+              flexGrow: 1,
+              width: 'fit-content',
+            }}
+          >
+            {plan.features && plan.features.map((feature, fIndex) => (
+              <li
+                key={fIndex}
+                style={{
+                  fontSize: '15px',
+                  marginBottom: '10px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  fontFamily: 'var(--font-sans)',
+                  fontWeight: '300',
+                  color: 'var(--color-foreground)',
+                }}
+              >
+                <span style={{ marginRight: '10px', color: 'var(--color-accent-green)' }}>✓</span>
+                {feature}
+              </li>
+            ))}
+          </ul>
+
+          <button
+            style={{
+              ...choosePlanBaseStyle,
+              ...(buttonHover ? choosePlanHoverStyle : {}),
+            }}
+            onClick={handlePurchaseClick}
+            onMouseEnter={() => setButtonHover(true)}
+            onMouseLeave={() => setButtonHover(false)}
+          >
+            Choose Plan
+          </button>
         </div>
       </div>
+
       {!isActive && (
         <div
           style={{
@@ -302,163 +398,67 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
             transform: 'translateX(-50%)',
             width: '100px',
             textAlign: 'center',
-            color: 'rgba(255,255,255,0.7)',
             fontSize: '14px',
             pointerEvents: 'none',
+            opacity: hover ? 1 : 0,
             transition: 'opacity 0.3s ease',
+            fontFamily: 'var(--font-sans)',
+            color: 'var(--color-secondary)',
           }}
         >
           Click to view
         </div>
       )}
-      {isActive && (
-        <button
-          className={`mt-4 w-full py-3 rounded-lg font-medium transition-all
-            ${product.featured ? 
-              'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-blue-600 hover:to-indigo-700' : 
-              'bg-white/20 hover:bg-white/30 text-white'}`}
-          onClick={handleSignUpClick}
-        >
-          Choose Plan
-        </button>
-      )}
     </div>
   );
 };
 
-// ---------- Main PricingSection Component ----------
-const PricingSection: React.FC = () => {
+interface PricingSectionProps {
+  plans: Plan[];
+}
+
+// Main PricingSection component
+const PricingSection: React.FC<PricingSectionProps> = ({ plans = [] }) => {
   const [activeCardIndex, setActiveCardIndex] = useState(0);
-  const [selectedIntervals, setSelectedIntervals] = useState(
-    products.reduce((acc, product, index) => {
-      if (product.hasMultipleIntervals) acc[index] = 'monthly';
-      return acc;
-    }, {} as { [key: number]: string })
-  );
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const handleSelectCard = (index: number) => setActiveCardIndex(index);
-  const handleIntervalChange = (productIndex: number, intervalKey: string) => {
-    setSelectedIntervals((prev) => ({ ...prev, [productIndex]: intervalKey }));
-  };
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowUp' && activeCardIndex > 0) {
-        setActiveCardIndex(activeCardIndex - 1);
-      } else if (e.key === 'ArrowDown' && activeCardIndex < products.length - 1) {
-        setActiveCardIndex(activeCardIndex + 1);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeCardIndex]);
+  const [selectedIntervals, setSelectedIntervals] = useState<Record<number, string>>({});
 
   return (
     <Section id="pricing-section" className="overflow-hidden">
-      <div
-        ref={containerRef}
-        style={{
-          width: '100%',
-          minHeight: '100vh',
-          background: 'rgba(255, 255, 255, 0.05)',
-          backdropFilter: 'blur(8px)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '40px 20px',
-          overflow: 'hidden',
-          position: 'relative',
-          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-        }}
-      >
-        <h1 style={{ color: 'white', marginBottom: '80px', textAlign: 'center', fontSize: '32px' }}>
+      <div className="container mx-auto px-4 py-8">
+        <h2 className="font-sans text-4xl md:text-5xl text-[var(--color-foreground)] mb-6 font-light text-center">
           Membership Options
-        </h1>
+        </h2>
 
-        <div
-          style={{
-            position: 'relative',
-            width: '100%',
-            height: '500px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'flex-start',
-          }}
-        >
-          {products.map((plan, index) => (
+        <div className="relative w-full h-[500px] mt-16 flex justify-center items-start">
+          {plans.map((plan, index) => (
             <MembershipCard
               key={plan.id || index}
-              product={plan}
+              plan={plan}
               isActive={index === activeCardIndex}
-              onSelect={handleSelectCard}
+              onSelect={() => setActiveCardIndex(index)}
               index={index}
               activeIndex={activeCardIndex}
-              totalCards={products.length}
+              totalCards={plans.length}
               selectedInterval={selectedIntervals[index]}
-              onIntervalChange={(intervalKey) => handleIntervalChange(index, intervalKey)}
+              onIntervalChange={(intervalKey) => {
+                setSelectedIntervals((prev) => ({ ...prev, [index]: intervalKey }));
+              }}
             />
           ))}
         </div>
 
-        <div style={{ display: 'flex', marginTop: '30px', gap: '10px', justifyContent: 'center' }}>
-          {products.map((_, index) => (
+        <div className="flex mt-8 gap-2 justify-center">
+          {plans.map((_, index) => (
             <button
               key={index}
               onClick={() => setActiveCardIndex(index)}
+              className="w-3 h-3 rounded-full transition-all duration-300"
               style={{
-                width: '12px',
-                height: '12px',
-                borderRadius: '50%',
                 background: index === activeCardIndex ? '#3b82f6' : 'rgba(255,255,255,0.3)',
-                border: 'none',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
               }}
-              aria-label={`View ${products[index].title} plan`}
+              aria-label={`View ${plans[index].name} plan`}
             />
           ))}
-        </div>
-
-        <div style={{ display: 'flex', marginTop: '20px', gap: '15px', justifyContent: 'center' }}>
-          <button
-            onClick={() => activeCardIndex > 0 && setActiveCardIndex(activeCardIndex - 1)}
-            disabled={activeCardIndex === 0}
-            style={{
-              padding: '10px 18px',
-              background: 'rgba(255, 255, 255, 0.08)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              borderRadius: '8px',
-              color: 'white',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              backdropFilter: 'blur(4px)',
-              fontSize: '14px',
-              opacity: activeCardIndex === 0 ? 0.5 : 1,
-            }}
-          >
-            Previous
-          </button>
-          <button
-            onClick={() => activeCardIndex < products.length - 1 && setActiveCardIndex(activeCardIndex + 1)}
-            disabled={activeCardIndex === products.length - 1}
-            style={{
-              padding: '10px 18px',
-              background: 'rgba(255, 255, 255, 0.08)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              borderRadius: '8px',
-              color: 'white',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              backdropFilter: 'blur(4px)',
-              fontSize: '14px',
-              opacity: activeCardIndex === products.length - 1 ? 0.5 : 1,
-            }}
-          >
-            Next
-          </button>
         </div>
       </div>
     </Section>

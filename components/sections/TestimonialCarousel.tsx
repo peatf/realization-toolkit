@@ -238,21 +238,10 @@ const TestimonialCarousel: React.FC = () => {
   };
 
   return (
-    <Section id="testimonials-section" className="relative">
-      <div
-        style={{
-          width: '100%',
-          minHeight: '100vh',
-          background: 'linear-gradient(45deg, #0f172a, #1e293b)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          padding: '40px 20px',
-          overflow: 'hidden',
-          position: 'relative',
-          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-        }}
-      >
+    <Section id="testimonials-section">
+      <div className="container mx-auto px-4" style={{ 
+        position: 'relative',
+      }}>
         {/* Section header */}
         <div style={{ textAlign: 'center', marginBottom: '30px', maxWidth: '800px', zIndex: 5 }}>
           <motion.div
