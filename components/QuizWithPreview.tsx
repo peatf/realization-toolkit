@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion'; // Add AnimatePresence
+import { motion, AnimatePresence } from 'framer-motion'; 
 import VisualPreview from './VisualPreview';
-import QuizSection from './QuizSection';
+// Fix this import path:
+import QuizSection from './sections/QuizSection';
 
 const QuizWithPreview = () => {
   const [showQuiz, setShowQuiz] = useState(false);
