@@ -77,7 +77,54 @@ const Home: NextPage = () => {
         subtitle="Collective Consciousness Toolkit"
       />
       
-      <PricingSection />
+      <PricingSection plans={[
+        {
+          id: 'rtk',
+          name: "Realization Toolkit ꩜", 
+          hasMultipleIntervals: true,
+          intervals: {
+            monthly: { price: "376.00", interval: "Every month", pricingOptionId: "25c4487a-6156-469c-a69c-fe8920e9ec29" },
+            weekly: { price: "188.00", interval: "Every 2 weeks", pricingOptionId: "9bed5f13-3739-4c68-946f-de79b88f46b7" }
+          },
+          toggleLabels: { monthly: "Monthly", weekly: "2 Weeks" },
+          pricingPlanId: "fc0ee596-0820-4e2d-ae7f-8762360121ba",
+          features: [ 
+            "Access to Alchemical Tools", 
+            "Access to Power Tools", 
+            "Access to Live Vision Coaching Calls", 
+            "Access to Vision Coaching Call Replays", 
+            "Access to 1:1 Booking" 
+          ]
+        },
+        {
+          id: 'ap-tools', 
+          name: "Alchemical + Power Tools", 
+          price: "96.00", 
+          interval: "Every month",
+          pricingPlanId: "c8a2ed11-3bee-4456-9e25-54ace2d47267", 
+          pricingOptionId: "51646566-212a-480d-83d4-fe70f664958d",
+          features: [ 
+            "Access to Realization: Alchemical Tools", 
+            "Access to Realization: Power Tools", 
+            "Access to one Monthly Vision Coaching Call recording" 
+          ]
+        },
+        {
+          id: 'refiner', 
+          name: "The Refiner 𓂀", 
+          hasMultipleIntervals: true,
+          intervals: {
+            monthly: { price: "34.00", interval: "Every month", pricingOptionId: "6e23e623-a4dd-4269-8bb9-24d79dc02da5" },
+            weekly: { price: "8.50", interval: "Every week", pricingOptionId: "1dd0b7cd-69c7-4f1f-85bb-1bb347110ee8" }
+          },
+          toggleLabels: { monthly: "Monthly", weekly: "Weekly" },
+          pricingPlanId: "6e1c0811-d0c3-4e0d-8579-bc65cc83b41f",
+          features: [ 
+            "Unlimited Access to the Refiner", 
+            "Bonus: Access to Tension to Form Tool" 
+          ]
+        }
+      ]} />
     </Layout>
   );
 };
