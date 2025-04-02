@@ -29,6 +29,10 @@
   --background-secondary: #1e293b;
 }
 
+body, html {
+  background-color: var(--color-background) !important;
+}
+
 html,
 body {
   padding: 0;

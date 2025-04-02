@@ -277,9 +277,11 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
       <div 
         className="relative rounded-2xl overflow-hidden"
         style={{
-          background: 'var(--color-card)',
-          boxShadow: '0 10px 25px rgba(0,0,0,0.07)',
-          border: '1px solid rgba(0,0,0,0.03)'
+          background: 'rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.17)'
         }}
       >
         <div className="p-6">
@@ -308,6 +310,17 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
         >
           Click to view
         </div>
+      )}
+      {isActive && (
+        <button
+          className={`mt-4 w-full py-3 rounded-lg font-medium transition-all
+            ${product.featured ? 
+              'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-blue-600 hover:to-indigo-700' : 
+              'bg-white/20 hover:bg-white/30 text-white'}`}
+          onClick={handleSignUpClick}
+        >
+          Choose Plan
+        </button>
       )}
     </div>
   );

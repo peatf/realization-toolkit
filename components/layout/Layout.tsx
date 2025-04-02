@@ -176,7 +176,6 @@ const Layout: React.FC<LayoutProps> = ({
       </Head>
       
       <GlobalBackground />
-      <CustomCursor />
       
       <main className="relative z-0">
         {children}
