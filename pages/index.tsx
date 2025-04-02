@@ -58,13 +58,10 @@ const Home: NextPage = () => {
   }, []);
 
   return (
-    <Layout>
+    <Layout title="Realization Toolkit">
       <OpeningSection />
-      <QuizSection />
-      <MembershipBenefits />
-      <TestimonialCarousel />
       
-      {/* Circular Menu */}
+      {/* Move the CircularMenuWithGooeyText here */}
       <CircularMenuWithGooeyText 
         items={[
           "Alchemical Tools",
@@ -72,8 +69,12 @@ const Home: NextPage = () => {
           "Vision Coaching",
           "Community",
           "Resources"
-        ]} 
+        ]}
       />
+      
+      <QuizSection />
+      <MembershipBenefits />
+      <TestimonialCarousel />
       
       {/* First Tool Carousel */}
       <ProductCarousel 

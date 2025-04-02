@@ -460,6 +460,31 @@ const PricingSection: React.FC<PricingSectionProps> = ({ plans = [] }) => {
             />
           ))}
         </div>
+
+        <div className="flex mt-4 gap-4 justify-center">
+          <button
+            onClick={() => activeCardIndex > 0 && setActiveCardIndex(activeCardIndex - 1)}
+            disabled={activeCardIndex === 0}
+            className="px-4 py-2 rounded-lg border border-[var(--color-foreground-muted)] 
+                       text-[var(--color-foreground)] hover:bg-[var(--color-foreground-muted)]
+                       transition-colors disabled:opacity-30 disabled:cursor-not-allowed
+                       backdrop-blur-sm bg-transparent"
+            aria-label="Previous plan"
+          >
+            Previous
+          </button>
+          <button
+            onClick={() => activeCardIndex < plans.length - 1 && setActiveCardIndex(activeCardIndex + 1)}
+            disabled={activeCardIndex === plans.length - 1}
+            className="px-4 py-2 rounded-lg border border-[var(--color-foreground-muted)] 
+                       text-[var(--color-foreground)] hover:bg-[var(--color-foreground-muted)]
+                       transition-colors disabled:opacity-30 disabled:cursor-not-allowed
+                       backdrop-blur-sm bg-transparent"
+            aria-label="Next plan"
+          >
+            Next
+          </button>
+        </div>
       </div>
     </Section>
   );

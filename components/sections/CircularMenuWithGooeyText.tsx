@@ -356,7 +356,7 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuWithGooeyTextProps> = ({
   }, [animationTrigger, currentIndex, prevIndex, items]);
   
   return (
-    <div className="relative w-full h-screen font-sans bg-gradient-to-br from-mist-100/60 to-mist-100/40 overflow-hidden" onWheel={handleWheel}>
+    <div className="relative w-full h-screen font-sans overflow-hidden" onWheel={handleWheel}>
       {/* Container for curved menu */}
       <div className="absolute w-full h-full overflow-hidden">
         {/* Spinner - rotates to position items */}
