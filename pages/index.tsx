@@ -11,7 +11,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 import { GlassModule } from '../components/ui/NeumorphicUI';
 import { motion } from 'framer-motion';
-import QuizSection from '../components/sections/QuizSection';
+import QuizWithPreview from '../components/QuizWithPreview';
 import CircularMenuWithGooeyText from '../components/sections/CircularMenuWithGooeyText';
 import { testimonials } from '../data/testimonialData';
 
@@ -60,36 +60,42 @@ const Home: NextPage = () => {
 
   return (
     <Layout title="Realization Toolkit">
-      <OpeningSection />
+      {/* Wrap these in a container with reduced spacing */}
+      <div className="opening-container">
+        <OpeningSection />
+        <CircularMenuWithGooeyText 
+          items={[
+            "Alchemical Tools",
+            "Power Tools", 
+            "Vision Coaching",
+            "Community",
+            "Resources"
+          ]}
+        />
+      </div>
       
-      {/* Move the CircularMenuWithGooeyText here */}
-      <CircularMenuWithGooeyText 
-        items={[
-          "Alchemical Tools",
-          "Power Tools", 
-          "Vision Coaching",
-          "Community",
-          "Resources"
-        ]}
-      />
+      {/* Replace QuizSection with QuizWithPreview */}
+      <div className="quiz-benefits-row">
+        <QuizWithPreview />
+        <MembershipBenefits />
+      </div>
       
-      <QuizSection />
-      <MembershipBenefits />
       <TestimonialCarousel testimonials={testimonials} />
       
-      {/* First Tool Carousel */}
-      <ProductCarousel 
-        products={personalToolsProducts} 
-        title="Personal Transformation Tools" 
-        subtitle="Inner Journey Toolkit"
-      />
-      
-      {/* Second Tool Carousel */}
-      <ProductCarousel 
-        products={communityToolsProducts} 
-        title="Community Connection Tools" 
-        subtitle="Collective Consciousness Toolkit"
-      />
+      {/* Tighter spacing for product carousels */}
+      <div className="product-carousels">
+        <ProductCarousel 
+          products={personalToolsProducts} 
+          title="Personal Transformation Tools" 
+          subtitle="Inner Journey Toolkit"
+        />
+        
+        <ProductCarousel 
+          products={communityToolsProducts} 
+          title="Community Connection Tools" 
+          subtitle="Collective Consciousness Toolkit"
+        />
+      </div>
       
       <PricingSection plans={[
         {

@@ -48,24 +48,64 @@ body {
   position: relative;
 }
 
-/* Create a subtle background gradient blob */
+/* Replace the existing body::after with this code */
 body::after {
   content: "";
   position: fixed;
   width: 100vw;
-  height: 50vh;
+  height: 100vh;
   left: 0;
-  bottom: 0;
-  background: radial-gradient(
-    ellipse at bottom center,
-    rgba(175, 206, 174, 0.15) 0%,
-    rgba(176, 183, 216, 0.08) 50%,
-    rgba(229, 222, 213, 0.03) 100%
-  );
-  filter: blur(80px);
-  opacity: 0.7;
-  z-index: -1;
+  top: 0;
+  background-image: 
+    /* Green grid lines (horizontal and vertical) */
+    repeating-linear-gradient(0deg, 
+      transparent, 
+      transparent 24px, 
+      rgba(175, 206, 174, 0.17) 24px, 
+      rgba(175, 206, 174, 0.17) 25px
+    ),
+    repeating-linear-gradient(90deg, 
+      transparent, 
+      transparent 24px, 
+      rgba(175, 206, 174, 0.17) 24px, 
+      rgba(175, 206, 174, 0.17) 25px
+    ),
+    /* Blue-only gradient */
+    radial-gradient(
+      ellipse at center,
+      rgba(176, 183, 216, 0.25) 0%,
+      rgba(176, 183, 216, 0.15) 40%,
+      rgba(176, 183, 216, 0.075) 70%,
+      transparent 100%
+    );
+  opacity: 0.8;
+  z-index: -2; /* Changed from -1 to prevent conflicts with other elements */
   pointer-events: none;
+  animation: gradientMove 15s ease-in-out infinite alternate;
+}
+
+/* Add this animation keyframes section if not already present */
+@keyframes gradientMove {
+  0% {
+    background-position: 
+      0 0,
+      0 0,
+      center center;
+    background-size:
+      25px 25px,
+      25px 25px,
+      100% 100%;
+  }
+  100% {
+    background-position: 
+      0 25px,
+      25px 0,
+      center center;
+    background-size:
+      25px 25px,
+      25px 25px,
+      120% 120%;
+  }
 }
 
 /* Add subtle noise texture overlay */
@@ -267,4 +307,39 @@ code, pre, .mono {
   font-size: 0.875rem;
   font-weight: 400;
   color: var(--color-secondary);
+}
+
+/* Opening section with tighter spacing */
+.opening-container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2rem;
+}
+
+.opening-container > section + section {
+  margin-top: -3rem; /* Negative margin to pull them closer */
+}
+
+/* Quiz and Benefits side-by-side layout */
+.quiz-benefits-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+@media (max-width: 768px) {
+  .quiz-benefits-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Product carousel section with tighter spacing */
+.product-carousels > section {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.product-carousels > section + section {
+  padding-top: 0;
 }
