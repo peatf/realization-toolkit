@@ -166,6 +166,8 @@ code, pre, .mono {
   border: var(--glass-border);
   border-radius: 24px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  height: 100%;
+  width: 100%;
 }
 
 .rt-glass-card-dark {
@@ -314,10 +316,62 @@ code, pre, .mono {
   display: flex;
   flex-direction: column;
   margin-bottom: 2rem;
+  position: relative;
 }
 
 .opening-container > section + section {
-  margin-top: -6rem; /* Increase from -3rem for tighter spacing */
+  margin-top: -9rem !important; /* Using !important to override any competing styles */
+}
+
+.opening-container > section:nth-child(2) {
+  position: relative;
+  top: -7rem; /* Pull up the carousel section */
+}
+
+/* TEMPORARY: Debug visualization - remove after fixing layout */
+.opening-container {
+  border: 2px solid blue;
+}
+.quiz-benefits-row {
+  border: 2px solid green;
+}
+.quiz-benefits-row > * {
+  border: 2px dashed green;
+}
+.product-carousels {
+  border: 2px solid purple;
+}
+.product-carousels > div {
+  border: 2px dashed purple;
+}
+/* End temporary debug CSS */
+
+/* Fix alignment between quiz and benefits */
+.quiz-benefits-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 3rem;
+  align-items: flex-start;
+  width: 100%;
+}
+
+/* Ensure both child elements have consistent spacing */
+.quiz-benefits-row > * {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+}
+
+/* Consistent card styling */
+.quiz-wrapper,
+.membership-benefits {
+  height: 100%;
+}
+
+.rt-glass-card {
+  height: 100%;
+  width: 100%;
 }
 
 /* Quiz and Benefits side-by-side layout */
@@ -361,4 +415,41 @@ code, pre, .mono {
 .product-carousels > div > section {
   padding-top: 1rem !important;
   padding-bottom: 1rem !important;
+}
+
+/* More aggressive product carousel spacing fixes */
+.product-carousels > div,
+.product-carousel-wrapper > div,
+section[class*="product"] {
+  margin-top: 0 !important;
+  margin-bottom: 1rem !important;
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
+}
+
+/* Target the section title and subtitle specifically */
+.section-title {
+  margin-bottom: 0.5rem !important;
+}
+
+.section-subtitle {
+  margin-bottom: 1rem !important;
+}
+
+/* Fix horizontal scrollbars */
+.product-carousels,
+.product-carousels > div,
+.product-carousel-wrapper,
+.carousel-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+/* Fix any potential flex issues causing overflow */
+.product-carousel {
+  display: flex;
+  flex-wrap: nowrap;
+  width: 100%;
+  max-width: 100vw;
 }

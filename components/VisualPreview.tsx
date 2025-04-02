@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 // Enhanced Gooey Filter with stronger effect
@@ -25,6 +25,11 @@ const GooeyFilter = ({ id = "goo-filter" }) => {
 };
 
 const VisualPreview = () => {
+  // Add console log to verify component is rendering
+  useEffect(() => {
+    console.log("VisualPreview component mounted");
+  }, []);
+
   // Generate a grid of dots
   const gridSize = 20;
   const dots = useMemo(() => Array.from({ length: gridSize * gridSize }).map((_, index) => {
