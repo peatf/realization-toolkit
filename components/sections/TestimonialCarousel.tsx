@@ -1,46 +1,14 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Section from '../layout/Section';
+import { Testimonial } from '../../data/testimonialData';
 
-// Placeholder image URL - replace if needed
-const PLACEHOLDER_IMAGE = 'https://placehold.co/300x200/e2e8f0/64748b?text=Image';
-
-// ---------- Interfaces and Default Data ----------
-interface Testimonial {
-  text: string;
-  name: string;
-  title?: string;
-  imageUrl?: string;
-}
-
-interface TestimonialCarouselProps {
-  testimonials?: Testimonial[];
-}
-
-// Default testimonials data
-const defaultTestimonials: Testimonial[] = [
-  {
-    text: "The toolkit has given me precise clarity. I'm now able to make better decisions with confidence.",
-    name: "Sarah Johnson",
-    title: "Entrepreneur"
-  },
-  {
-    text: "This approach revolutionized how I view my creative process. My productivity has doubled.",
-    name: "Michael Chen",
-    title: "Designer"
-  },
-  {
-    text: "I've found a new level of balance and purpose. These tools are life-changing.",
-    name: "Elena Rodriguez",
-    title: "Wellness Coach"
-  }
-];
-
-// ---------- Star Component ----------
+// Star component (same as in PricingSection)
 interface StarProps {
   isGlowing: boolean;
   delay: number;
 }
+
 const Star: React.FC<StarProps> = ({ isGlowing, delay }) => {
   return (
     <div
@@ -53,11 +21,11 @@ const Star: React.FC<StarProps> = ({ isGlowing, delay }) => {
         position: 'relative',
         zIndex: 1,
       }}
-    ></div>
+    />
   );
 };
 
-// ---------- StarsBackground Component ----------
+// StarsBackground component
 const StarsBackground: React.FC = () => {
   const [glowingStars, setGlowingStars] = useState<number[]>([]);
   const stars = 50;
@@ -70,32 +38,55 @@ const StarsBackground: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const starPositions = useMemo(() => {
-    return Array.from({ length: stars }, () => ({
-      left: Math.random() * 100,
-      top: Math.random() * 100,
-      delay: Math.random() * 0.5
-    }));
-  }, [stars]);
-
   return (
-    <div className="stars-container absolute inset-0 overflow-hidden pointer-events-none">
-      {starPositions.map((pos, index) => {
+    <div
+      className="stars-container"
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        overflow: 'hidden',
+        pointerEvents: 'none',
+      }}
+    >
+      {Array.from({ length: stars }).map((_, index) => {
         const isGlowing = glowingStars.includes(index);
+        const left = Math.random() * 100;
+        const top = Math.random() * 100;
+        const delay = (index % 10) * 0.1;
+        
         return (
           <div
             key={`star-${index}`}
-            className="absolute"
             style={{
-              left: `${pos.left}%`,
-              top: `${pos.top}%`,
+              position: 'absolute',
+              left: `${left}%`,
+              top: `${top}%`,
               opacity: isGlowing ? 1 : 0.5,
               transform: `scale(${isGlowing ? 1.5 : 1})`,
-              transition: `all 2s ease-in-out ${pos.delay}s`,
-              willChange: 'transform, opacity'
+              transition: `all 2s ease-in-out ${delay}s`,
             }}
           >
-            <Star isGlowing={isGlowing} delay={pos.delay} />
+            <Star isGlowing={isGlowing} delay={delay} />
+            {isGlowing && (
+              <div
+                style={{
+                  position: 'absolute',
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '50%',
+                  background: 'rgba(59, 130, 246, 0.6)',
+                  filter: 'blur(2px)',
+                  top: '-2px',
+                  left: '-2px',
+                  boxShadow:
+                    '0 0 8px 2px rgba(59, 130, 246, 0.6), 0 0 12px 4px rgba(59, 130, 246, 0.4)',
+                  zIndex: 0,
+                }}
+              />
+            )}
           </div>
         );
       })}
@@ -103,21 +94,17 @@ const StarsBackground: React.FC = () => {
   );
 };
 
-// ---------- TestimonialCard Component ----------
+// Testimonial Card
 interface TestimonialCardProps {
-  testimonial: {
-    text: string;
-    name: string;
-    title?: string;
-    imageUrl?: string;
-  };
+  testimonial: Testimonial;
 }
+
 const TestimonialCard: React.FC<TestimonialCardProps> = ({ testimonial }) => {
   const [hover, setHover] = useState(false);
   
   return (
     <div 
-      className="relative"
+      className="relative w-full"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
@@ -163,7 +150,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({ testimonial }) => {
             <>
               <div className="mb-6">
                 <p className="text-[var(--color-foreground)] font-light mb-4 text-center">
-                  "{testimonial.text}"
+                  {testimonial.text}
                 </p>
               </div>
               <div className="flex items-center justify-center">
@@ -182,12 +169,37 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({ testimonial }) => {
   );
 };
 
-// ---------- CarouselIndicators Component ----------
+// Arrow Button
+interface ArrowButtonProps {
+  direction: 'prev' | 'next';
+  onClick: () => void;
+  disabled?: boolean;
+}
+
+const ArrowButton: React.FC<ArrowButtonProps> = ({ direction, onClick, disabled }) => {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`absolute top-1/2 transform -translate-y-1/2 ${direction === 'prev' ? 'left-2 md:left-6' : 'right-2 md:right-6'} 
+                z-10 p-2 md:p-3 rounded-full bg-transparent border border-[var(--color-foreground-muted)] 
+                text-[var(--color-foreground)] hover:bg-[var(--color-foreground-muted)] 
+                transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-accent-blue)] 
+                disabled:opacity-30 disabled:cursor-not-allowed`}
+      aria-label={direction === 'prev' ? 'Previous testimonial' : 'Next testimonial'}
+    >
+      {direction === 'prev' ? '←' : '→'}
+    </button>
+  );
+};
+
+// Carousel Indicators
 interface IndicatorProps {
   count: number;
   current: number;
   setCurrent: (index: number) => void;
 }
+
 const CarouselIndicators: React.FC<IndicatorProps> = ({ count, current, setCurrent }) => {
   return (
     <div className="flex justify-center mt-6 space-x-2">
@@ -206,134 +218,116 @@ const CarouselIndicators: React.FC<IndicatorProps> = ({ count, current, setCurre
   );
 };
 
-// ---------- ArrowButton Component ----------
-interface ArrowButtonProps {
-  direction: 'prev' | 'next';
-  onClick: () => void;
-  disabled: boolean;
+// Main Testimonial Carousel Component
+interface TestimonialCarouselProps {
+  testimonials?: Testimonial[];
 }
-const ArrowButton: React.FC<ArrowButtonProps> = ({ direction, onClick, disabled }) => {
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      className={`absolute top-1/2 transform -translate-y-1/2 ${direction === 'prev' ? 'left-2' : 'right-2'} 
-                z-10 p-2 rounded-full bg-transparent border border-[var(--color-foreground-muted)] 
-                text-[var(--color-foreground)] hover:bg-[var(--color-foreground-muted)] 
-                transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-accent-blue)] 
-                disabled:opacity-30 disabled:cursor-not-allowed`}
-      aria-label={direction === 'prev' ? 'Previous testimonial' : 'Next testimonial'}
-    >
-      {direction === 'prev' ? '←' : '→'}
-    </button>
-  );
-};
 
-// ---------- TestimonialCarousel Component ----------
-const TestimonialCarousel: React.FC<TestimonialCarouselProps> = (props) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const orbitRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
+const defaultTestimonials: Testimonial[] = [
+  {
+    text: "The toolkit has given me precise clarity. I'm now able to make better decisions with confidence.",
+    name: "Sarah Johnson",
+    title: "Entrepreneur"
+  }
+];
 
-  const testimonials = props.testimonials || defaultTestimonials;
-  const totalTestimonials = testimonials.length;
-
-  const rotateCarousel = (direction: 'next' | 'prev') => {
-    if (isAnimating || totalTestimonials === 0) return;
-    setIsAnimating(true);
-    const newIndex =
-      direction === 'next'
-        ? (activeIndex + 1) % totalTestimonials
-        : (activeIndex - 1 + totalTestimonials) % totalTestimonials;
-    setActiveIndex(newIndex);
-    setTimeout(() => setIsAnimating(false), 800);
+const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({ testimonials = defaultTestimonials }) => {
+  const [current, setCurrent] = useState(0);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const [autoplayPaused, setAutoplayPaused] = useState(false);
+  
+  // Autoplay functionality
+  useEffect(() => {
+    if (autoplayPaused) return;
+    
+    const interval = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % testimonials.length);
+    }, 8000); // 8 seconds per slide
+    
+    return () => clearInterval(interval);
+  }, [testimonials.length, autoplayPaused]);
+  
+  // Touch handlers for mobile swiping
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
   };
-
-  const goToSlide = (index: number) => {
-    if (!isAnimating && index !== activeIndex && totalTestimonials > 0) {
-      setIsAnimating(true);
-      setActiveIndex(index);
-      setTimeout(() => setIsAnimating(false), 800);
+  
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+  
+  const handleTouchEnd = () => {
+    if (touchStart - touchEnd > 100) {
+      // Swipe left
+      nextSlide();
+    }
+    
+    if (touchStart - touchEnd < -100) {
+      // Swipe right
+      prevSlide();
     }
   };
+  
+  const nextSlide = () => {
+    setCurrent((prev) => (prev + 1) % testimonials.length);
+  };
+  
+  const prevSlide = () => {
+    setCurrent((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+  };
+  
+  // Pause autoplay on hover
+  const handleMouseEnter = () => {
+    setAutoplayPaused(true);
+  };
+  
+  const handleMouseLeave = () => {
+    setAutoplayPaused(false);
+  };
 
   return (
-    <Section id="testimonials-section">
-      <div className="container mx-auto px-4" style={{ position: 'relative' }}>
-        {/* Section header */}
-        <div style={{ textAlign: 'center', marginBottom: '30px', maxWidth: '800px', zIndex: 5 }}>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.2 }}
-            style={{ marginBottom: '16px' }}
-          >
-            <span
-              style={{
-                fontFamily: 'monospace',
-                color: 'rgba(255, 255, 255, 0.7)',
-                letterSpacing: '0.2em',
-                textTransform: 'uppercase',
-                fontSize: '14px',
-              }}
-            >
-              Testimonials
-            </span>
-          </motion.div>
-          <h2 style={{ fontFamily: 'serif', fontSize: '36px', color: 'white', marginBottom: '24px', fontWeight: '200' }}>
-            Transformative Experiences
-          </h2>
-          <p
-            style={{
-              color: 'rgba(255, 255, 255, 0.8)',
-              fontSize: '18px',
-              maxWidth: '600px',
-              margin: '0 auto',
-              fontWeight: '300',
-            }}
-          >
-            Hear from our members about their journey and the impact it's had.
-          </p>
-        </div>
-
-        {/* 3D Carousel Container */}
-        <div
-          ref={containerRef}
-          style={{
-            position: 'relative',
-            width: '100%',
-            maxWidth: '1200px',
-            height: '500px',
-            perspective: '1200px',
-            marginBottom: '64px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
+    <Section id="testimonials" className="overflow-hidden">
+      <div className="container mx-auto px-4 py-12">
+        <h2 className="font-sans text-4xl md:text-5xl text-[var(--color-foreground)] mb-12 font-light text-center">
+          Transformational Results
+        </h2>
+        
+        <div 
+          className="relative max-w-4xl mx-auto px-12"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
-          {/* Navigation buttons */}
-          <ArrowButton direction="prev" onClick={() => rotateCarousel('prev')} disabled={isAnimating} />
-          <ArrowButton direction="next" onClick={() => rotateCarousel('next')} disabled={isAnimating} />
-
-          {/* Central orbit display */}
-          <div
-            ref={orbitRef}
-            style={{
-              width: '100%',
-              height: '100%',
-              position: 'relative',
-              transformStyle: 'preserve-3d',
-            }}
-          >
-            {testimonials.map((testimonial, index) => (
-              <TestimonialCard key={index} testimonial={testimonial} />
-            ))}
+          <ArrowButton direction="prev" onClick={prevSlide} />
+          
+          <div className="overflow-hidden">
+            <div className="relative" style={{ height: '400px' }}>
+              <AnimatePresence mode="wait">
+                <motion.div 
+                  key={current}
+                  initial={{ opacity: 0, x: 100 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -100 }}
+                  transition={{ duration: 0.5 }}
+                  className="absolute top-0 left-0 w-full"
+                >
+                  <TestimonialCard testimonial={testimonials[current]} />
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </div>
+          
+          <ArrowButton direction="next" onClick={nextSlide} />
+          
+          <CarouselIndicators 
+            count={testimonials.length} 
+            current={current}
+            setCurrent={setCurrent}
+          />
         </div>
-
-        {/* Indicator dots */}
-        <CarouselIndicators count={totalTestimonials} current={activeIndex} setCurrent={goToSlide} />
       </div>
     </Section>
   );
