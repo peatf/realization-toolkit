@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Section from '../layout/Section';
 
 interface SimpleAccordionItemProps {
   value: string;
@@ -71,8 +72,9 @@ const SimpleAccordionItem: React.FC<SimpleAccordionItemProps> = ({
   children,
   className = "",
 }) => {
-  let trigger = null;
-  let content = null;
+  // Update the type declarations to accept React elements or null
+  let trigger: React.ReactElement | null = null;
+  let content: React.ReactElement | null = null;
 
   React.Children.forEach(children, (child) => {
     if (React.isValidElement(child)) {
@@ -164,22 +166,24 @@ const items = [
 
 const ContentAccordion: React.FC = () => {
   return (
-    <div className="accordion-container">
-      <h2 className="text-xl font-bold mb-4 text-center">Realization ToolKit</h2>
-      <SimpleAccordion type="single" collapsible className="w-full">
-        {items.map((item) => (
-          <SimpleAccordionItem value={item.id} key={item.id}>
-            <SimpleAccordionTrigger>
-              <span className="flex flex-col space-y-1">
-                <span className="accordion-title-text">{item.title}</span>
-                {item.sub && <span className="accordion-sub-text">{item.sub}</span>}
-              </span>
-            </SimpleAccordionTrigger>
-            <SimpleAccordionContent>{item.content}</SimpleAccordionContent>
-          </SimpleAccordionItem>
-        ))}
-      </SimpleAccordion>
-    </div>
+    <Section>
+      <div className="accordion-container">
+        <h2 className="text-xl font-bold mb-4 text-center">Realization ToolKit</h2>
+        <SimpleAccordion type="single" collapsible className="w-full">
+          {items.map((item) => (
+            <SimpleAccordionItem value={item.id} key={item.id}>
+              <SimpleAccordionTrigger>
+                <span className="flex flex-col space-y-1">
+                  <span className="accordion-title-text">{item.title}</span>
+                  {item.sub && <span className="accordion-sub-text">{item.sub}</span>}
+                </span>
+              </SimpleAccordionTrigger>
+              <SimpleAccordionContent>{item.content}</SimpleAccordionContent>
+            </SimpleAccordionItem>
+          ))}
+        </SimpleAccordion>
+      </div>
+    </Section>
   );
 };
 

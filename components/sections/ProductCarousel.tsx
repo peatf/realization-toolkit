@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { Product } from '../../data/productData';
+import Section from '../layout/Section';
 
 interface ProductCarouselProps {
   products: Product[];
@@ -24,14 +25,14 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
   };
 
   return (
-    <section className="relative py-24">
+    <Section className="overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
         {/* Section header */}
         <div className="max-w-3xl mx-auto text-center mb-16">
           <span className="font-mono text-mist-600 tracking-widest uppercase text-sm block mb-4">
             {subtitle}
           </span>
-          <h2 className="font-serif text-4xl md:text-5xl text-mist-800 mb-6 font-extralight">
+          <h2 className="font-sans text-4xl md:text-5xl text-mist-800 mb-6 font-extralight">
             {title}
           </h2>
         </div>
@@ -141,7 +142,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
           `}</style>
         </div>
       </div>
-    </section>
+    </Section>
   );
 };
 

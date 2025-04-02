@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { FloatingElement } from '../ui/NeumorphicUI';
 import CircularMenuWithGooeyText from './CircularMenuWithGooeyText';
+import Section from '../layout/Section';
 
 const OpeningSection: React.FC = () => {
   // Menu items for the Realization Toolkit
@@ -28,7 +29,7 @@ const OpeningSection: React.FC = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <Section fullHeight className="flex items-center justify-center overflow-hidden">
       {/* Make floating elements more transparent */}
       <div className="absolute top-1/4 left-1/5 w-64 h-64 rounded-full bg-peach-100/10 blur-3xl"></div>
       <div className="absolute bottom-1/3 right-1/4 w-80 h-80 rounded-full bg-sky-100/10 blur-3xl"></div>
@@ -57,7 +58,7 @@ const OpeningSection: React.FC = () => {
       <div className="absolute bottom-6 right-6 text-sm text-mist-600 bg-white/70 p-3 rounded-lg shadow-sm backdrop-blur-sm">
         <p>Use arrow keys, mouse wheel, or click to navigate</p>
       </div>
-    </section>
+    </Section>
   );
 };
 

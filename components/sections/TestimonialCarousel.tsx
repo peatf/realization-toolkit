@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
+import Section from '../layout/Section';
 
 // Placeholder image URL - replace if needed
 const PLACEHOLDER_IMAGE = 'https://placehold.co/300x200/e2e8f0/64748b?text=Image';
@@ -237,292 +238,294 @@ const TestimonialCarousel: React.FC = () => {
   };
 
   return (
-    <div
-      style={{
-        width: '100%',
-        minHeight: '100vh',
-        background: 'linear-gradient(45deg, #0f172a, #1e293b)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        padding: '40px 20px',
-        overflow: 'hidden',
-        position: 'relative',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-      }}
-    >
-      {/* Section header */}
-      <div style={{ textAlign: 'center', marginBottom: '30px', maxWidth: '800px', zIndex: 5 }}>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.2 }}
-          style={{ marginBottom: '16px' }}
-        >
-          <span
-            style={{
-              fontFamily: 'monospace',
-              color: 'rgba(255, 255, 255, 0.7)',
-              letterSpacing: '0.2em',
-              textTransform: 'uppercase',
-              fontSize: '14px',
-            }}
-          >
-            Testimonials
-          </span>
-        </motion.div>
-        <h2 style={{ fontFamily: 'serif', fontSize: '36px', color: 'white', marginBottom: '24px', fontWeight: '200' }}>
-          Transformative Experiences
-        </h2>
-        <p
-          style={{
-            color: 'rgba(255, 255, 255, 0.8)',
-            fontSize: '18px',
-            maxWidth: '600px',
-            margin: '0 auto',
-            fontWeight: '300',
-          }}
-        >
-          Hear from our members about their journey and the impact it's had.
-        </p>
-      </div>
-
-      {/* 3D Carousel Container */}
+    <Section id="testimonials-section" className="relative">
       <div
-        ref={containerRef}
         style={{
-          position: 'relative',
           width: '100%',
-          maxWidth: '1200px',
-          height: '500px',
-          perspective: '1200px',
-          marginBottom: '64px',
+          minHeight: '100vh',
+          background: 'linear-gradient(45deg, #0f172a, #1e293b)',
           display: 'flex',
-          justifyContent: 'center',
+          flexDirection: 'column',
           alignItems: 'center',
+          padding: '40px 20px',
+          overflow: 'hidden',
+          position: 'relative',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
         }}
       >
-        {/* Navigation buttons */}
-        <div style={{ position: 'absolute', top: '50%', left: '20px', transform: 'translateY(-50%)', zIndex: 110 }}>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.98 }}
-            transition={{ duration: 0.7, ease: [0.34, 1.56, 0.64, 1] }}
-            onClick={() => rotateCarousel('prev')}
-            disabled={isAnimating}
-            style={{
-              width: '50px',
-              height: '50px',
-              borderRadius: '50%',
-              background: 'rgba(255, 255, 255, 0.08)',
-              backdropFilter: 'blur(10px)',
-              WebkitBackdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              fontSize: '20px',
-              cursor: isAnimating ? 'not-allowed' : 'pointer',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-            }}
+        {/* Section header */}
+        <div style={{ textAlign: 'center', marginBottom: '30px', maxWidth: '800px', zIndex: 5 }}>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.2 }}
+            style={{ marginBottom: '16px' }}
           >
-            ←
-          </motion.button>
-        </div>
-        <div style={{ position: 'absolute', top: '50%', right: '20px', transform: 'translateY(-50%)', zIndex: 110 }}>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.98 }}
-            transition={{ duration: 0.7, ease: [0.34, 1.56, 0.64, 1] }}
-            onClick={() => rotateCarousel('next')}
-            disabled={isAnimating}
-            style={{
-              width: '50px',
-              height: '50px',
-              borderRadius: '50%',
-              background: 'rgba(255, 255, 255, 0.08)',
-              backdropFilter: 'blur(10px)',
-              WebkitBackdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              fontSize: '20px',
-              cursor: isAnimating ? 'not-allowed' : 'pointer',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-            }}
-          >
-            →
-          </motion.button>
-        </div>
-
-        {/* Central orbit display */}
-        <div
-          ref={orbitRef}
-          style={{
-            width: '100%',
-            height: '100%',
-            position: 'relative',
-            transformStyle: 'preserve-3d',
-          }}
-        >
-          {/* Map over the subset of slides */}
-          {slidesToRender.map((testimonial) => (
-            <div
-              key={testimonial.id}
-              className="testimonial-card"
-              onMouseEnter={() => setHover(testimonial.originalIndex)}
-              onMouseLeave={() => setHover(null)}
+            <span
               style={{
-                position: 'absolute',
-                width: '340px',
-                minHeight: '250px',
-                top: '50%',
-                left: '50%',
-                transformStyle: 'preserve-3d',
-                backfaceVisibility: 'hidden',
-                opacity: 0, // Start hidden; positioning effect will update opacity
+                fontFamily: 'monospace',
+                color: 'rgba(255, 255, 255, 0.7)',
+                letterSpacing: '0.2em',
+                textTransform: 'uppercase',
+                fontSize: '14px',
               }}
             >
+              Testimonials
+            </span>
+          </motion.div>
+          <h2 style={{ fontFamily: 'serif', fontSize: '36px', color: 'white', marginBottom: '24px', fontWeight: '200' }}>
+            Transformative Experiences
+          </h2>
+          <p
+            style={{
+              color: 'rgba(255, 255, 255, 0.8)',
+              fontSize: '18px',
+              maxWidth: '600px',
+              margin: '0 auto',
+              fontWeight: '300',
+            }}
+          >
+            Hear from our members about their journey and the impact it's had.
+          </p>
+        </div>
+
+        {/* 3D Carousel Container */}
+        <div
+          ref={containerRef}
+          style={{
+            position: 'relative',
+            width: '100%',
+            maxWidth: '1200px',
+            height: '500px',
+            perspective: '1200px',
+            marginBottom: '64px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          {/* Navigation buttons */}
+          <div style={{ position: 'absolute', top: '50%', left: '20px', transform: 'translateY(-50%)', zIndex: 110 }}>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.7, ease: [0.34, 1.56, 0.64, 1] }}
+              onClick={() => rotateCarousel('prev')}
+              disabled={isAnimating}
+              style={{
+                width: '50px',
+                height: '50px',
+                borderRadius: '50%',
+                background: 'rgba(255, 255, 255, 0.08)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                fontSize: '20px',
+                cursor: isAnimating ? 'not-allowed' : 'pointer',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+              }}
+            >
+              ←
+            </motion.button>
+          </div>
+          <div style={{ position: 'absolute', top: '50%', right: '20px', transform: 'translateY(-50%)', zIndex: 110 }}>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.7, ease: [0.34, 1.56, 0.64, 1] }}
+              onClick={() => rotateCarousel('next')}
+              disabled={isAnimating}
+              style={{
+                width: '50px',
+                height: '50px',
+                borderRadius: '50%',
+                background: 'rgba(255, 255, 255, 0.08)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                fontSize: '20px',
+                cursor: isAnimating ? 'not-allowed' : 'pointer',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+              }}
+            >
+              →
+            </motion.button>
+          </div>
+
+          {/* Central orbit display */}
+          <div
+            ref={orbitRef}
+            style={{
+              width: '100%',
+              height: '100%',
+              position: 'relative',
+              transformStyle: 'preserve-3d',
+            }}
+          >
+            {/* Map over the subset of slides */}
+            {slidesToRender.map((testimonial) => (
               <div
+                key={testimonial.id}
+                className="testimonial-card"
+                onMouseEnter={() => setHover(testimonial.originalIndex)}
+                onMouseLeave={() => setHover(null)}
                 style={{
-                  position: 'relative',
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: '16px',
-                  overflow: 'hidden',
-                  padding: '24px',
-                  background: 'rgba(255, 255, 255, 0.08)',
-                  backdropFilter: 'blur(10px)',
-                  WebkitBackdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  boxShadow:
-                    hover === testimonial.originalIndex
-                      ? '0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22)'
-                      : '0 4px 12px rgba(0, 0, 0, 0.15)',
-                  transition: 'box-shadow 0.3s ease',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  textAlign: 'center',
+                  position: 'absolute',
+                  width: '340px',
+                  minHeight: '250px',
+                  top: '50%',
+                  left: '50%',
+                  transformStyle: 'preserve-3d',
+                  backfaceVisibility: 'hidden',
+                  opacity: 0, // Start hidden; positioning effect will update opacity
                 }}
               >
                 <div
                   style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: '60%',
-                    background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.1), transparent)',
-                    transform: 'rotate(5deg) translateY(-50%) translateX(-10%)',
-                    pointerEvents: 'none',
+                    position: 'relative',
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '16px',
+                    overflow: 'hidden',
+                    padding: '24px',
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    backdropFilter: 'blur(10px)',
+                    WebkitBackdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    boxShadow:
+                      hover === testimonial.originalIndex
+                        ? '0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22)'
+                        : '0 4px 12px rgba(0, 0, 0, 0.15)',
+                    transition: 'box-shadow 0.3s ease',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    textAlign: 'center',
                   }}
-                />
-                <StarsBackground />
-                <div style={{ position: 'relative', zIndex: 2, width: '100%' }}>
-                  {testimonial.type === 'text' ? (
-                    <>
-                      <p
-                        style={{
-                          color: 'rgba(255, 255, 255, 0.9)',
-                          fontStyle: 'italic',
-                          marginBottom: '16px',
-                          fontWeight: '300',
-                          lineHeight: '1.5',
-                          fontSize: '16px',
-                          maxHeight: '150px',
-                          overflowY: 'auto',
-                          paddingRight: '5px',
-                        }}
-                      >
-                        "{testimonial.quote}"
-                      </p>
-                      {testimonial.author && (
-                        <h4
+                >
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: '60%',
+                      background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.1), transparent)',
+                      transform: 'rotate(5deg) translateY(-50%) translateX(-10%)',
+                      pointerEvents: 'none',
+                    }}
+                  />
+                  <StarsBackground />
+                  <div style={{ position: 'relative', zIndex: 2, width: '100%' }}>
+                    {testimonial.type === 'text' ? (
+                      <>
+                        <p
                           style={{
-                            color: 'white',
-                            fontWeight: '400',
-                            fontSize: '14px',
-                            margin: '10px 0 0 0',
+                            color: 'rgba(255, 255, 255, 0.9)',
+                            fontStyle: 'italic',
+                            marginBottom: '16px',
+                            fontWeight: '300',
+                            lineHeight: '1.5',
+                            fontSize: '16px',
+                            maxHeight: '150px',
+                            overflowY: 'auto',
+                            paddingRight: '5px',
                           }}
                         >
-                          - {testimonial.author}
-                        </h4>
-                      )}
-                    </>
-                  ) : (
-                    <img
-                      src={testimonial.src}
-                      alt={testimonial.alt || 'Testimonial Image'}
-                      onError={handleImageError}
-                      style={{
-                        maxWidth: '100%',
-                        maxHeight: '200px',
-                        height: 'auto',
-                        borderRadius: '8px',
-                        objectFit: 'contain',
-                        margin: 'auto',
-                      }}
-                    />
-                  )}
-                </div>
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: '16px',
-                    right: '16px',
-                    color: 'rgba(255, 255, 255, 0.1)',
-                    fontSize: '32px',
-                    fontFamily: 'serif',
-                    zIndex: 1,
-                  }}
-                >
-                  ❝
-                </div>
-                <div
-                  style={{
-                    position: 'absolute',
-                    bottom: '16px',
-                    left: '16px',
-                    color: 'rgba(255, 255, 255, 0.1)',
-                    fontSize: '32px',
-                    fontFamily: 'serif',
-                    zIndex: 1,
-                  }}
-                >
-                  ❞
+                          "{testimonial.quote}"
+                        </p>
+                        {testimonial.author && (
+                          <h4
+                            style={{
+                              color: 'white',
+                              fontWeight: '400',
+                              fontSize: '14px',
+                              margin: '10px 0 0 0',
+                            }}
+                          >
+                            - {testimonial.author}
+                          </h4>
+                        )}
+                      </>
+                    ) : (
+                      <img
+                        src={testimonial.src}
+                        alt={testimonial.alt || 'Testimonial Image'}
+                        onError={handleImageError}
+                        style={{
+                          maxWidth: '100%',
+                          maxHeight: '200px',
+                          height: 'auto',
+                          borderRadius: '8px',
+                          objectFit: 'contain',
+                          margin: 'auto',
+                        }}
+                      />
+                    )}
+                  </div>
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '16px',
+                      right: '16px',
+                      color: 'rgba(255, 255, 255, 0.1)',
+                      fontSize: '32px',
+                      fontFamily: 'serif',
+                      zIndex: 1,
+                    }}
+                  >
+                    ❝
+                  </div>
+                  <div
+                    style={{
+                      position: 'absolute',
+                      bottom: '16px',
+                      left: '16px',
+                      color: 'rgba(255, 255, 255, 0.1)',
+                      fontSize: '32px',
+                      fontFamily: 'serif',
+                      zIndex: 1,
+                    }}
+                  >
+                    ❞
+                  </div>
                 </div>
               </div>
-            </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Indicator dots */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', zIndex: 5 }}>
+          {testimonials.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              style={{
+                transition: 'all 0.4s ease',
+                width: index === activeIndex ? '40px' : '8px',
+                height: '8px',
+                background: index === activeIndex ? '#3b82f6' : 'rgba(255, 255, 255, 0.3)',
+                borderRadius: '999px',
+                border: 'none',
+                cursor: 'pointer',
+                padding: 0,
+              }}
+              aria-label={`Go to testimonial ${index + 1}`}
+            />
           ))}
         </div>
       </div>
-
-      {/* Indicator dots */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', zIndex: 5 }}>
-        {testimonials.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => goToSlide(index)}
-            style={{
-              transition: 'all 0.4s ease',
-              width: index === activeIndex ? '40px' : '8px',
-              height: '8px',
-              background: index === activeIndex ? '#3b82f6' : 'rgba(255, 255, 255, 0.3)',
-              borderRadius: '999px',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-            }}
-            aria-label={`Go to testimonial ${index + 1}`}
-          />
-        ))}
-      </div>
-    </div>
+    </Section>
   );
 };
 

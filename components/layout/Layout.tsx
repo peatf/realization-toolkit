@@ -137,70 +137,50 @@ const CustomCursor: React.FC = () => {
   );
 };
 
+// Main Layout component
 const Layout: React.FC<LayoutProps> = ({ 
   children, 
   title = 'Realization Toolkit', 
   description = 'Discover tools for personal transformation through our immersive digital experience.' 
 }) => {
-  // Initialize smooth scrolling with Lenis
+  // Setup Lenis smooth scrolling
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 0.8, // Even shorter duration
+      duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       touchMultiplier: 1.5,
       wheelMultiplier: 0.8,
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
       smoothWheel: true,
     });
 
-    // Only update ScrollTrigger when necessary
-    let lastScrollTop = 0;
-    const scrollThreshold = 5; // Only update if scrolled more than 5px
-    
-    const scrollFn = ({ scroll }: { scroll: number }) => {
-      if (Math.abs(scroll - lastScrollTop) > scrollThreshold) {
-        ScrollTrigger.update();
-        lastScrollTop = scroll;
-      }
-    };
-    lenis.on('scroll', scrollFn);
-
-    // More efficient way to link with requestAnimationFrame
     function raf(time: number) {
       lenis.raf(time);
       requestAnimationFrame(raf);
     }
     requestAnimationFrame(raf);
     
+    // Link with GSAP ScrollTrigger
+    lenis.on('scroll', ScrollTrigger.update);
+
     return () => {
-      lenis.off('scroll', scrollFn);
       lenis.destroy();
     };
   }, []);
-  
+
   return (
     <>
       <Head>
         <title>{title}</title>
         <meta name="description" content={description} />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-        
-        {/* Add Inter font for the light weight typography */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500&display=swap"
-          rel="stylesheet"
-        />
+        {/* Other head elements */}
       </Head>
       
       <GlobalBackground />
-      
-      {/* Minimal custom cursor */}
       <CustomCursor />
       
-      {/* Main content */}
-      <main className="relative z-10">{children}</main>
+      <main className="relative z-0">
+        {children}
+      </main>
     </>
   );
 };

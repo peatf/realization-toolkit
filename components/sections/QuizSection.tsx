@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef, memo } from 'react';
+import Section from '../layout/Section';
 
 // Use memo to prevent unnecessary re-renders
 const QuizSection: React.FC = memo(() => {
@@ -43,7 +44,7 @@ const QuizSection: React.FC = memo(() => {
   }, []);
   
   return (
-    <section id="quiz-section" className="py-16">
+    <Section id="quiz-section">
       <div 
         ref={wrapperRef}
         className="iframe-wrapper"
@@ -78,7 +79,7 @@ const QuizSection: React.FC = memo(() => {
           loading="lazy" // Add lazy loading for iframe
         />
       </div>
-    </section>
+    </Section>
   );
 });
 

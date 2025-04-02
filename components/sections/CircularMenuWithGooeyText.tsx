@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Section from '../layout/Section';
 
 // Interface for configuration options
 interface CircularMenuConfig {
@@ -26,9 +27,9 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuWithGooeyTextProps> = ({
     degPerRotation: 10,
     animationDuration: 600,
     gooeyAnimationDuration: 1.2,
-    accentColor: '#8abeff', // Sky-300 color
-    textColor: '#6c757d', // Mist-600
-    activeTextColor: '#db2777', // Pink-600
+    accentColor: 'var(--color-accent-green)', // Use your color variable
+    textColor: 'var(--color-secondary)', // Use secondary color
+    activeTextColor: 'var(--color-foreground)', // Use main text color
     indicatorSize: 16,
     ...customConfig
   };
@@ -355,89 +356,91 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuWithGooeyTextProps> = ({
   }, [animationTrigger, currentIndex, prevIndex, items]);
   
   return (
-    <div 
-      className="relative w-full h-screen overflow-hidden" 
-      onWheel={handleWheel}
-    >
-      {/* Optional: Add subtle section-specific elements */}
-      <div className="absolute inset-0 opacity-30 pointer-events-none">
-        <div className="absolute top-1/4 left-1/5 w-64 h-64 rounded-full bg-white/5 blur-3xl"></div>
-        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 rounded-full bg-white/5 blur-3xl"></div>
-      </div>
-      
-      {/* Container for curved menu */}
-      <div className="absolute w-full h-full overflow-hidden">
-        {/* Spinner - rotates to position items */}
-        <div 
-          ref={spinnerRef} 
-          className="absolute top-0 bottom-0 left-0 m-auto h-full transition-all duration-500 ease-in-out"
-          style={{ 
-            transformOrigin: 'center',
-            transform: `rotate(${currentIndex * -config.degPerRotation}deg)`,
-            transitionDuration: `${config.animationDuration}ms`
-          }}
-        >
-          {/* Item wrapper */}
-          <div className="relative h-full">
-            {items.map((text, i) => (
-              <div
-                key={`item-${i}`}
-                ref={(el) => setItemRef(el, i)}
-                className={`absolute whitespace-nowrap transition-all duration-300 cursor-pointer text-lg
-                  ${i === currentIndex ? 
-                    'active text-2xl font-bold' : 
-                    'hover:text-mist-700'}`}
-                style={{
-                  top: '50%',
-                  left: 0,
-                  transform: `rotate(${i * config.degPerRotation}deg) translateX(35vw) translateY(-50%)`,
-                  transformOrigin: 'left center',
-                  color: i === currentIndex ? config.activeTextColor : config.textColor,
-                  filter: i === currentIndex ? 'drop-shadow(0 0 6px rgba(219, 39, 119, 0.5))' : 'none'
-                }}
-                onClick={() => handleItemClick(i)}
-              >
-                {text}
-              </div>
-            ))}
-          </div>
+    <Section fullHeight className="p-0 overflow-hidden">
+      <div 
+        className="relative w-full h-full overflow-hidden" 
+        onWheel={handleWheel}
+      >
+        {/* Optional: Add subtle section-specific elements */}
+        <div className="absolute inset-0 opacity-30 pointer-events-none">
+          <div className="absolute top-1/4 left-1/5 w-64 h-64 rounded-full bg-white/5 blur-3xl"></div>
+          <div className="absolute bottom-1/3 right-1/4 w-80 h-80 rounded-full bg-white/5 blur-3xl"></div>
         </div>
         
-        {/* Indicator dot */}
-        <div 
-          ref={dotRef}
-          className="absolute rounded-full top-1/2 left-20 transform -translate-y-1/2 transition-all duration-500 shadow-lg"
-          style={{
-            backgroundColor: config.accentColor,
-            height: `${config.indicatorSize}px`,
-            width: `${config.indicatorSize}px`,
-            transform: `translateY(calc(-50% + ${currentIndex * 0.5}px))`,
-            transitionDuration: `${config.animationDuration}ms`
-          }}
-        ></div>
+        {/* Container for curved menu */}
+        <div className="absolute w-full h-full overflow-hidden">
+          {/* Spinner - rotates to position items */}
+          <div 
+            ref={spinnerRef} 
+            className="absolute top-0 bottom-0 left-0 m-auto h-full transition-all duration-500 ease-in-out"
+            style={{ 
+              transformOrigin: 'center',
+              transform: `rotate(${currentIndex * -config.degPerRotation}deg)`,
+              transitionDuration: `${config.animationDuration}ms`
+            }}
+          >
+            {/* Item wrapper */}
+            <div className="relative h-full">
+              {items.map((text, i) => (
+                <div
+                  key={`item-${i}`}
+                  ref={(el) => setItemRef(el, i)}
+                  className={`absolute whitespace-nowrap transition-all duration-300 cursor-pointer text-lg font-sans
+                    ${i === currentIndex ? 
+                      'active text-2xl font-bold' : 
+                      'hover:text-mist-700'}`}
+                  style={{
+                    top: '50%',
+                    left: 0,
+                    transform: `rotate(${i * config.degPerRotation}deg) translateX(35vw) translateY(-50%)`,
+                    transformOrigin: 'left center',
+                    color: i === currentIndex ? config.activeTextColor : config.textColor,
+                    filter: i === currentIndex ? 'drop-shadow(0 0 6px rgba(219, 39, 119, 0.5))' : 'none'
+                  }}
+                  onClick={() => handleItemClick(i)}
+                >
+                  {text}
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {/* Indicator dot */}
+          <div 
+            ref={dotRef}
+            className="absolute rounded-full top-1/2 left-20 transform -translate-y-1/2 transition-all duration-500 shadow-lg"
+            style={{
+              backgroundColor: config.accentColor,
+              height: `${config.indicatorSize}px`,
+              width: `${config.indicatorSize}px`,
+              transform: `translateY(calc(-50% + ${currentIndex * 0.5}px))`,
+              transitionDuration: `${config.animationDuration}ms`
+            }}
+          ></div>
+        </div>
+        
+        {/* CSS for animations */}
+        <style jsx>{`
+          .pulse {
+            animation: dotPulse 0.8s ease-out;
+          }
+          
+          @keyframes dotPulse {
+            0% { transform: translateY(-50%) scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(138, 190, 255, 0.7); }
+            50% { transform: translateY(-50%) scale(1.4); opacity: 0.7; box-shadow: 0 0 0 10px rgba(138, 190, 255, 0); }
+            100% { transform: translateY(-50%) scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(138, 190, 255, 0); }
+          }
+          
+          .item {
+            transition: all 0.3s ease, filter 0.3s ease, transform 0.5s ease, color 0.3s ease, font-size 0.3s ease;
+          }
+          
+          .item.active {
+            z-index: 10;
+          }
+        `}</style>
       </div>
-      
-      {/* CSS for animations */}
-      <style jsx>{`
-        .pulse {
-          animation: dotPulse 0.8s ease-out;
-        }
-        
-        @keyframes dotPulse {
-          0% { transform: translateY(-50%) scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(138, 190, 255, 0.7); }
-          50% { transform: translateY(-50%) scale(1.4); opacity: 0.7; box-shadow: 0 0 0 10px rgba(138, 190, 255, 0); }
-          100% { transform: translateY(-50%) scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(138, 190, 255, 0); }
-        }
-        
-        .item {
-          transition: all 0.3s ease, filter 0.3s ease, transform 0.5s ease, color 0.3s ease, font-size 0.3s ease;
-        }
-        
-        .item.active {
-          z-index: 10;
-        }
-      `}</style>
-    </div>
+    </Section>
   );
 };
 

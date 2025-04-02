@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import Section from '../layout/Section';
 
 // ---------- Star Component ----------
 interface StarProps {
@@ -273,136 +274,21 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
       onMouseLeave={() => setHover(false)}
       onClick={() => !isActive && onSelect(index)}
     >
-      <div
+      <div 
+        className="relative rounded-2xl overflow-hidden"
         style={{
-          position: 'relative',
-          width: '100%',
-          borderRadius: '16px',
-          overflow: 'hidden',
-          padding: '24px',
-          background: 'rgba(255, 255, 255, 0.08)',
-          backdropFilter: 'blur(10px)',
-          WebkitBackdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          boxShadow: hover
-            ? '0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22)'
-            : '0 4px 12px rgba(0, 0, 0, 0.15)',
-          transition: 'box-shadow 0.3s ease',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '400px',
+          background: 'var(--color-card)',
+          boxShadow: '0 10px 25px rgba(0,0,0,0.07)',
+          border: '1px solid rgba(0,0,0,0.03)'
         }}
       >
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: '60%',
-            background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.1), transparent)',
-            transform: 'rotate(5deg) translateY(-50%) translateX(-10%)',
-            pointerEvents: 'none',
-          }}
-        />
-        <StarsBackground />
-        <div
-          style={{
-            position: 'relative',
-            zIndex: 2,
-            textAlign: 'center',
-            flexGrow: 1,
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          <h2 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '12px', color: 'white' }}>
+        <div className="p-6">
+          <h3 className="font-sans text-xl font-medium text-[var(--color-foreground)]">
             {product.title}
-          </h2>
-          {product.hasMultipleIntervals && (
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                gap: '8px',
-                margin: '0 auto 15px auto',
-                background: 'rgba(0,0,0,0.1)',
-                padding: '4px',
-                borderRadius: '20px',
-                width: 'fit-content',
-              }}
-            >
-              {Object.keys(product.intervals).map((intervalKey) => (
-                <button
-                  key={intervalKey}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onIntervalChange(intervalKey);
-                  }}
-                  style={{
-                    background: selectedInterval === intervalKey ? 'rgba(255,255,255,0.2)' : 'none',
-                    border: 'none',
-                    padding: '6px 12px',
-                    borderRadius: '16px',
-                    color: selectedInterval === intervalKey ? 'white' : 'rgba(255,255,255,0.7)',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    fontSize: '13px',
-                    fontWeight: '500',
-                  }}
-                >
-                  {product.toggleLabels?.[intervalKey] ||
-                    intervalKey.charAt(0).toUpperCase() + intervalKey.slice(1)}
-                </button>
-              ))}
-            </div>
-          )}
-          <p style={{ fontSize: '40px', fontWeight: 'bold', marginBottom: '4px', color: 'white' }}>
-            ${currentPrice}
-          </p>
-          <p style={{ fontSize: '14px', marginBottom: '20px', color: 'rgba(255,255,255,0.7)' }}>
-            {currentIntervalText}
-          </p>
-          <ul
-            style={{
-              listStyle: 'none',
-              padding: 0,
-              margin: '0 auto 24px auto',
-              textAlign: 'left',
-              flexGrow: 1,
-              width: 'fit-content',
-            }}
-          >
-            {product.features.map((feature: string, fIndex: number) => (
-              <li
-                key={fIndex}
-                style={{
-                  fontSize: '15px',
-                  marginBottom: '10px',
-                  color: 'rgba(255,255,255,0.9)',
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-                <span style={{ marginRight: '10px', color: '#aaff80' }}>✓</span>
-                {feature}
-              </li>
-            ))}
-          </ul>
-          <button
-            style={{
-              ...choosePlanBaseStyle,
-              ...(buttonHover ? choosePlanHoverStyle : {}),
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleSignUpClick();
-            }}
-            onMouseEnter={() => setButtonHover(true)}
-            onMouseLeave={() => setButtonHover(false)}
-          >
-            Choose Plan
-          </button>
+          </h3>
+          <div className="text-[var(--color-secondary)] mt-2">
+            {product.features.join(', ')}
+          </div>
         </div>
       </div>
       {!isActive && (
@@ -456,111 +342,113 @@ const PricingSection: React.FC = () => {
   }, [activeCardIndex]);
 
   return (
-    <div
-      ref={containerRef}
-      style={{
-        width: '100%',
-        minHeight: '100vh',
-        background: 'rgba(255, 255, 255, 0.05)',
-        backdropFilter: 'blur(8px)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '40px 20px',
-        overflow: 'hidden',
-        position: 'relative',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-      }}
-    >
-      <h1 style={{ color: 'white', marginBottom: '80px', textAlign: 'center', fontSize: '32px' }}>
-        Membership Options
-      </h1>
-
+    <Section id="pricing-section" className="overflow-hidden">
       <div
+        ref={containerRef}
         style={{
-          position: 'relative',
           width: '100%',
-          height: '500px',
+          minHeight: '100vh',
+          background: 'rgba(255, 255, 255, 0.05)',
+          backdropFilter: 'blur(8px)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
           display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
           justifyContent: 'center',
-          alignItems: 'flex-start',
+          padding: '40px 20px',
+          overflow: 'hidden',
+          position: 'relative',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
         }}
       >
-        {products.map((plan, index) => (
-          <MembershipCard
-            key={plan.id || index}
-            product={plan}
-            isActive={index === activeCardIndex}
-            onSelect={handleSelectCard}
-            index={index}
-            activeIndex={activeCardIndex}
-            totalCards={products.length}
-            selectedInterval={selectedIntervals[index]}
-            onIntervalChange={(intervalKey) => handleIntervalChange(index, intervalKey)}
-          />
-        ))}
-      </div>
+        <h1 style={{ color: 'white', marginBottom: '80px', textAlign: 'center', fontSize: '32px' }}>
+          Membership Options
+        </h1>
 
-      <div style={{ display: 'flex', marginTop: '30px', gap: '10px', justifyContent: 'center' }}>
-        {products.map((_, index) => (
+        <div
+          style={{
+            position: 'relative',
+            width: '100%',
+            height: '500px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'flex-start',
+          }}
+        >
+          {products.map((plan, index) => (
+            <MembershipCard
+              key={plan.id || index}
+              product={plan}
+              isActive={index === activeCardIndex}
+              onSelect={handleSelectCard}
+              index={index}
+              activeIndex={activeCardIndex}
+              totalCards={products.length}
+              selectedInterval={selectedIntervals[index]}
+              onIntervalChange={(intervalKey) => handleIntervalChange(index, intervalKey)}
+            />
+          ))}
+        </div>
+
+        <div style={{ display: 'flex', marginTop: '30px', gap: '10px', justifyContent: 'center' }}>
+          {products.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setActiveCardIndex(index)}
+              style={{
+                width: '12px',
+                height: '12px',
+                borderRadius: '50%',
+                background: index === activeCardIndex ? '#3b82f6' : 'rgba(255,255,255,0.3)',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+              }}
+              aria-label={`View ${products[index].title} plan`}
+            />
+          ))}
+        </div>
+
+        <div style={{ display: 'flex', marginTop: '20px', gap: '15px', justifyContent: 'center' }}>
           <button
-            key={index}
-            onClick={() => setActiveCardIndex(index)}
+            onClick={() => activeCardIndex > 0 && setActiveCardIndex(activeCardIndex - 1)}
+            disabled={activeCardIndex === 0}
             style={{
-              width: '12px',
-              height: '12px',
-              borderRadius: '50%',
-              background: index === activeCardIndex ? '#3b82f6' : 'rgba(255,255,255,0.3)',
-              border: 'none',
+              padding: '10px 18px',
+              background: 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              borderRadius: '8px',
+              color: 'white',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
+              backdropFilter: 'blur(4px)',
+              fontSize: '14px',
+              opacity: activeCardIndex === 0 ? 0.5 : 1,
             }}
-            aria-label={`View ${products[index].title} plan`}
-          />
-        ))}
+          >
+            Previous
+          </button>
+          <button
+            onClick={() => activeCardIndex < products.length - 1 && setActiveCardIndex(activeCardIndex + 1)}
+            disabled={activeCardIndex === products.length - 1}
+            style={{
+              padding: '10px 18px',
+              background: 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              borderRadius: '8px',
+              color: 'white',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              backdropFilter: 'blur(4px)',
+              fontSize: '14px',
+              opacity: activeCardIndex === products.length - 1 ? 0.5 : 1,
+            }}
+          >
+            Next
+          </button>
+        </div>
       </div>
-
-      <div style={{ display: 'flex', marginTop: '20px', gap: '15px', justifyContent: 'center' }}>
-        <button
-          onClick={() => activeCardIndex > 0 && setActiveCardIndex(activeCardIndex - 1)}
-          disabled={activeCardIndex === 0}
-          style={{
-            padding: '10px 18px',
-            background: 'rgba(255, 255, 255, 0.08)',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-            borderRadius: '8px',
-            color: 'white',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            backdropFilter: 'blur(4px)',
-            fontSize: '14px',
-            opacity: activeCardIndex === 0 ? 0.5 : 1,
-          }}
-        >
-          Previous
-        </button>
-        <button
-          onClick={() => activeCardIndex < products.length - 1 && setActiveCardIndex(activeCardIndex + 1)}
-          disabled={activeCardIndex === products.length - 1}
-          style={{
-            padding: '10px 18px',
-            background: 'rgba(255, 255, 255, 0.08)',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-            borderRadius: '8px',
-            color: 'white',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            backdropFilter: 'blur(4px)',
-            fontSize: '14px',
-            opacity: activeCardIndex === products.length - 1 ? 0.5 : 1,
-          }}
-        >
-          Next
-        </button>
-      </div>
-    </div>
+    </Section>
   );
 };
 

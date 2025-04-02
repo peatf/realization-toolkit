@@ -17,7 +17,7 @@ const Section: React.FC<SectionProps> = ({
     <section 
       id={id}
       className={`
-        relative z-0 px-4 md:px-8
+        relative 
         ${fullHeight ? 'min-h-screen' : 'py-16 md:py-24'} 
         ${className}
       `}
