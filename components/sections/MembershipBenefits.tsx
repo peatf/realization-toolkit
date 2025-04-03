@@ -72,7 +72,6 @@ const SimpleAccordionItem: React.FC<SimpleAccordionItemProps> = ({
   children,
   className = "",
 }) => {
-  // Update the type declarations to accept React elements or null
   let trigger: React.ReactElement | null = null;
   let content: React.ReactElement | null = null;
 
@@ -163,75 +162,42 @@ const items = [
   },
 ];
 
+interface MembershipBenefitsProps {
+  id?: string;
+  hideTitle?: boolean;
+}
 
-const ContentAccordion: React.FC = () => {
+const MembershipBenefits: React.FC<MembershipBenefitsProps> = ({ 
+  id, 
+  hideTitle = false 
+}) => {
   return (
-    <Section>
+    <Section id={id} className="">
       <div className="accordion-container">
-        <h2 className="font-sans text-4xl md:text-5xl text-[var(--color-foreground)] mb-6 font-light text-center">
-          Realization Toolkit?
-        </h2>
+        {!hideTitle && (
+          <h2 
+            className="font-sans text-4xl md:text-5xl text-[var(--color-foreground)] mb-6 font-light" 
+            style={{ textAlign: "center" }}
+          >
+            About Realization Toolkit
+          </h2>
+        )}
         <SimpleAccordion type="single" collapsible className="w-full">
           {items.map((item) => (
-            <SimpleAccordionItem value={item.id} key={item.id}>
+            <SimpleAccordionItem key={item.id} value={item.id} className="accordion-item">
               <SimpleAccordionTrigger>
-                <span className="flex flex-col space-y-1">
-                  <span className="accordion-title-text">{item.title}</span>
-                  {item.sub && <span className="accordion-sub-text">{item.sub}</span>}
-                </span>
+                <div>
+                  <div className="accordion-title-text">{item.title}</div>
+                  {item.sub && <div className="accordion-sub-text">{item.sub}</div>}
+                </div>
               </SimpleAccordionTrigger>
               <SimpleAccordionContent>
-                <h3 className="text-xl md:text-2xl font-semibold mb-3 text-foreground">{item.title}</h3>
-                <p className="text-base text-secondary leading-relaxed">{item.content}</p>
-                <button className="btn btn-primary hover:bg-opacity-90 transition-all">Learn More</button>
+                {item.content}
               </SimpleAccordionContent>
             </SimpleAccordionItem>
           ))}
         </SimpleAccordion>
       </div>
-    </Section>
-  );
-};
-
-interface ErrorBoundaryState {
-  hasError: boolean;
-  error: any;
-}
-
-class ErrorBoundary extends React.Component<{ children?: React.ReactNode }, ErrorBoundaryState> {
-  constructor(props: {}) {
-    super(props);
-    this.state = { hasError: false, error: null };
-  }
-  static getDerivedStateFromError(error: any) {
-    return { hasError: true, error: error };
-  }
-  componentDidCatch(error: any, errorInfo: any) {
-    console.error("Accordion rendering error:", error, errorInfo);
-  }
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div style={{ color: "red", padding: "1rem", border: "1px solid red", margin: "1rem" }}>
-          <h2>Something went wrong rendering the accordion.</h2>
-          <pre>{this.state.error?.message}</pre>
-        </div>
-      );
-    }
-    return this.props.children;
-  }
-}
-
-interface MembershipBenefitsProps {
-  id?: string;
-}
-
-const MembershipBenefits: React.FC<MembershipBenefitsProps> = ({ id }) => {
-  return (
-    <Section id={id} className="py-16">
-      <ErrorBoundary>
-        <ContentAccordion />
-      </ErrorBoundary>
     </Section>
   );
 };

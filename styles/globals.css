@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Root Variables */
 :root {
   /* Font families */
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
@@ -29,20 +30,20 @@
   --background-secondary: #1e293b;
 }
 
+/* Global Styles */
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  position: relative;
 }
 
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  
-  /* Better iOS scrolling - this significantly improves touch scrolling */
   -webkit-overflow-scrolling: touch;
-}
-
-body, html {
+  overflow-x: hidden;
+  position: relative;
   padding: 0;
   margin: 0;
   font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
@@ -52,10 +53,45 @@ body, html {
   line-height: 1.6;
   font-weight: 300;
   letter-spacing: 0.01em;
-  position: relative;
 }
 
-/* Grid pattern - using background color for grid lines and green gradient blobs */
+/* Universal Box-Sizing & Visibility */
+* {
+  box-sizing: border-box;
+  -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
+  -ms-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+h1 {
+  font-size: 3rem;
+  font-weight: 200;
+}
+h2 {
+  font-size: 2.25rem;
+}
+h3 {
+  font-size: 1.5rem;
+}
+
+/* Text Elements */
+p {
+  font-weight: 300;
+  line-height: 1.6;
+}
+code, pre, .mono {
+  font-family: var(--font-mono);
+}
+
+/* Background Grid & Animation */
 body::after {
   content: "";
   position: fixed;
@@ -70,25 +106,23 @@ body::after {
     repeating-linear-gradient(0deg, transparent, transparent 24px, rgba(254, 255, 250, 0.3) 24px, rgba(254, 255, 250, 0.3) 25px),
     repeating-linear-gradient(90deg, transparent, transparent 24px, rgba(254, 255, 250, 0.3) 24px, rgba(254, 255, 250, 0.3) 25px),
     
-    /* Even smaller green blobs with much greater spacing */
+    /* Green gradient blobs */
     radial-gradient(circle at 12% 18%, rgba(175, 206, 174, 0.35) 0%, rgba(175, 206, 174, 0.2) 5%, transparent 15%),
     radial-gradient(circle at 78% 72%, rgba(175, 206, 174, 0.38) 0%, rgba(175, 206, 174, 0.22) 6%, transparent 18%),
     radial-gradient(circle at 32% 88%, rgba(175, 206, 174, 0.32) 0%, rgba(175, 206, 174, 0.18) 4%, transparent 12%),
     radial-gradient(circle at 88% 12%, rgba(175, 206, 174, 0.36) 0%, rgba(175, 206, 174, 0.21) 5%, transparent 15%),
     
-    /* Additional tiny blobs moved farther apart */
+    /* Additional tiny blobs */
     radial-gradient(circle at 52% 35%, rgba(175, 206, 174, 0.3) 0%, rgba(175, 206, 174, 0.15) 3%, transparent 10%),
     radial-gradient(circle at 22% 65%, rgba(175, 206, 174, 0.28) 0%, rgba(175, 206, 174, 0.12) 4%, transparent 12%),
     
-    /* A few extra tiny spots of color */
+    /* Extra tiny spots */
     radial-gradient(circle at 65% 52%, rgba(175, 206, 174, 0.25) 0%, rgba(175, 206, 174, 0.12) 2%, transparent 8%),
     radial-gradient(circle at 42% 45%, rgba(175, 206, 174, 0.22) 0%, rgba(175, 206, 174, 0.1) 2%, transparent 6%);
-    
   opacity: 1;
   animation: gradientMove 25s ease-in-out infinite alternate;
 }
 
-/* Enhanced animation for more organic movement */
 @keyframes gradientMove {
   0% {
     background-position: 0% 0%;
@@ -112,46 +146,7 @@ body::after {
   }
 }
 
-* {
-  box-sizing: border-box;
-  /* Helps with the "sticky" feeling */
-  -webkit-backface-visibility: hidden;
-  -moz-backface-visibility: hidden;
-  -ms-backface-visibility: hidden;
-  backface-visibility: hidden;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-sans); /* Using sans instead of serif */
-  font-weight: 300;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
-}
-
-h1 {
-  font-size: 3rem;
-  font-weight: 200;
-}
-
-h2 {
-  font-size: 2.25rem;
-  font-weight: 300;
-}
-
-h3 {
-  font-size: 1.5rem;
-  font-weight: 300;
-}
-
-p {
-  font-weight: 300;
-  line-height: 1.6;
-}
-
-code, pre, .mono {
-  font-family: var(--font-mono);
-}
-
+/* Glass Card Components */
 .rt-glass-card {
   background-color: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(var(--glass-blur));
@@ -162,7 +157,6 @@ code, pre, .mono {
   height: 100%;
   width: 100%;
 }
-
 .rt-glass-card-dark {
   background-color: rgba(26, 26, 26, 0.8);
   backdrop-filter: blur(var(--glass-blur));
@@ -173,6 +167,7 @@ code, pre, .mono {
   color: white;
 }
 
+/* Button Styles */
 .btn {
   padding: 0.75rem 1.5rem;
   font-weight: 400;
@@ -180,19 +175,18 @@ code, pre, .mono {
   border-radius: 20px;
   transition: all 0.3s ease;
 }
-
 .btn-primary {
   background-color: var(--color-foreground);
   color: white;
   border: none;
 }
-
 .btn-secondary {
   background-color: transparent;
   color: var(--color-foreground);
   border: 1px solid var(--color-foreground);
 }
 
+/* Fog Effects */
 .fog-container {
   position: absolute;
   width: 100%;
@@ -203,7 +197,6 @@ code, pre, .mono {
   pointer-events: none;
   z-index: 0;
 }
-
 .fog {
   position: absolute;
   height: 100vh;
@@ -218,7 +211,6 @@ code, pre, .mono {
   filter: blur(var(--fog-blur));
   animation: fogAnimation 60s linear infinite;
 }
-
 .fog-2 {
   height: 100vh;
   width: 300vw;
@@ -226,7 +218,6 @@ code, pre, .mono {
   animation: fogAnimation 45s linear infinite;
   animation-delay: -10s;
 }
-
 @keyframes fogAnimation {
   0% {
     transform: translateX(-150vw);
@@ -236,11 +227,14 @@ code, pre, .mono {
   }
 }
 
+/* Accordion */
 .accordion-container {
   max-width: 600px;
   margin: 2rem auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
-
 .accordion-content {
   overflow: hidden;
   transition: max-height 0.3s ease-out, opacity 0.3s ease-out, visibility 0.3s ease-out;
@@ -248,13 +242,11 @@ code, pre, .mono {
   opacity: 0;
   visibility: hidden;
 }
-
 .accordion-content.open {
   max-height: 1000px;
   opacity: 1;
   visibility: visible;
 }
-
 .accordion-trigger {
   display: flex;
   justify-content: space-between;
@@ -268,7 +260,6 @@ code, pre, .mono {
   background: none;
   border-bottom: 1px solid var(--color-card);
 }
-
 .accordion-trigger svg {
   flex-shrink: 0;
   transition: transform 0.2s ease-out;
@@ -277,91 +268,70 @@ code, pre, .mono {
   width: 16px;
   height: 16px;
 }
-
 .accordion-trigger.open svg {
   transform: rotate(180deg);
 }
-
 .accordion-content-text {
-  padding: 0.5rem 0 1rem 0;
+  padding: 0.5rem 0 1rem;
   color: var(--color-secondary);
   font-size: 0.875rem;
   line-height: 1.5;
 }
-
 .accordion-title-text {
   font-size: 15px;
   line-height: 1.5rem;
 }
-
 .accordion-sub-text {
   font-size: 0.875rem;
   font-weight: 400;
   color: var(--color-secondary);
 }
 
-/* Opening section - direct targeting with higher specificity */
+/* Opening Section */
 .opening-container {
   position: relative;
   margin-bottom: 0;
 }
-
 .opening-container > section + section {
-  margin-top: -8rem; /* Aggressive negative margin */
+  margin-top: -8rem;
 }
 
-/* Quiz/Benefits row - clean grid system */
+/* Quiz Benefits Row (Consolidated) */
 .quiz-benefits-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 2rem;
-  margin: 2rem auto;
-}
-
-/* Product carousel spacing */
-.product-carousels > section {
-  padding-top: 1rem !important;
-  padding-bottom: 1rem !important;
-  margin-bottom: 1rem;
-}
-
-/* Consolidated quiz-benefits row styles */
-.quiz-benefits-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 2rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3rem;
+  max-width: 1200px;
   width: 100%;
   margin: 0 auto 3rem;
   align-items: flex-start;
 }
-
 .quiz-benefits-row > * {
   margin: 0 !important;
   padding: 0 !important;
   width: 100% !important;
 }
-
 .quiz-wrapper,
 .membership-benefits {
-  height: 100%;
+  height: auto;
+  flex-grow: 1;
 }
-
 @media (max-width: 768px) {
   .quiz-benefits-row {
     grid-template-columns: 1fr;
+    gap: 4rem;
   }
 }
 
-/* Consolidated product carousel styles */
+/* Product Carousel (Consolidated) */
 .product-carousels {
   margin-bottom: 2rem;
   width: 100% !important;
   max-width: 100% !important;
   overflow-x: hidden !important;
 }
-
-.product-carousels > div,
 .product-carousels > section,
+.product-carousels > div,
 .product-carousel-wrapper,
 .carousel-container {
   margin-top: 0 !important;
@@ -373,26 +343,21 @@ code, pre, .mono {
   overflow-x: hidden !important;
 }
 
-.product-carousel {
-  display: flex;
-  flex-wrap: nowrap;
-  width: 100%;
-  max-width: 100vw;
-}
-
+/* Section Titles */
 .section-title {
   margin-bottom: 0.5rem !important;
 }
-
 .section-subtitle {
   margin-bottom: 1rem !important;
 }
 
-/* Add the CSS animation styles for quiz preview */
+/* Quiz Preview Animation */
 .quiz-preview-container {
   position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
-
 .quiz-animation-container {
   position: absolute;
   inset: 0;
@@ -401,89 +366,248 @@ code, pre, .mono {
   justify-content: center;
   overflow: hidden;
 }
-
 .quiz-circle {
   position: absolute;
   border-radius: 50%;
   opacity: 0.7;
 }
-
 .quiz-circle-1 {
   width: 120px;
   height: 120px;
   background: rgba(26, 26, 26, 0.9);
   animation: pulse1 4s infinite alternate;
 }
-
 .quiz-circle-2 {
   width: 80px;
   height: 80px;
   background: rgba(90, 90, 90, 0.7);
   animation: pulse2 5s infinite alternate;
 }
-
 .quiz-circle-3 {
   width: 50px;
   height: 50px;
   background: rgba(26, 26, 26, 0.8);
   animation: pulse3 6s infinite alternate;
 }
-
 .quiz-circle-4 {
   width: 35px;
   height: 35px;
   background: rgba(90, 90, 90, 0.6);
   animation: pulse4 4.5s infinite alternate;
 }
-
 .quiz-circle-5 {
   width: 25px;
   height: 25px;
   background: rgba(26, 26, 26, 0.7);
   animation: pulse5 3.5s infinite alternate;
 }
-
 @keyframes pulse1 {
   0% { transform: translate(-30px, -20px) scale(1); }
   100% { transform: translate(20px, 30px) scale(1.2); }
 }
-
 @keyframes pulse2 {
   0% { transform: translate(20px, 15px) scale(1.1); }
   100% { transform: translate(-15px, -25px) scale(0.9); }
 }
-
 @keyframes pulse3 {
   0% { transform: translate(-15px, 25px) scale(0.9); }
   100% { transform: translate(25px, -10px) scale(1.2); }
 }
-
 @keyframes pulse4 {
   0% { transform: translate(10px, -20px) scale(1); }
   100% { transform: translate(-30px, 15px) scale(1.1); }
 }
-
 @keyframes pulse5 {
   0% { transform: translate(-5px, -10px) scale(0.9); }
   100% { transform: translate(15px, 20px) scale(1.2); }
 }
 
-/* Add these utility classes */
+/* Utility Classes */
 .will-change-transform {
   will-change: transform;
 }
-
 .will-change-opacity {
   will-change: opacity;
 }
-
 .will-change-scroll {
   will-change: scroll-position;
 }
-
-/* Use sparingly - only for critical animations */
 .hardware-accelerated {
   transform: translateZ(0);
   backface-visibility: hidden;
   perspective: 1000px;
+}
+
+/* Negative Margin Helpers */
+.-mt-screen {
+  margin-top: calc(-100vh);
+}
+.-mt-half-screen {
+  margin-top: calc(-50vh);
+}
+
+/* Membership & Quiz Sections */
+.membership-quiz-section {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  display: flex;
+  align-items: baseline;
+}
+.membership-quiz-section.visible {
+  opacity: 1;
+}
+.glass-pricing-section {
+  display: flex;
+  align-items: baseline;
+}
+
+/* Grid Utilities */
+.grid {
+  display: grid;
+}
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+@media (min-width: 1024px) {
+  .lg\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.items-start {
+  align-items: flex-start;
+}
+.gap-12 {
+  gap: 3rem;
+}
+.h-full {
+  height: 100%;
+}
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Section Padding */
+.py-16 {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+.py-20 {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+@media (min-width: 768px) {
+  .md\:px-8 {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* Global Section Styles */
+section {
+  position: relative;
+  transition: opacity 0.5s ease;
+}
+
+/* Gooey Carousel */
+.gooey-carousel-section {
+  min-height: 100vh;
+  width: 100%;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+}
+
+/* Stacking Context */
+.relative {
+  position: relative;
+}
+.z-0 {
+  z-index: 0;
+}
+.z-10 {
+  z-index: 10;
+}
+
+/* Membership Benefits Container for Larger Screens */
+@media (min-width: 1024px) {
+  .membership-quiz-section .container {
+    max-width: 1200px;
+  }
+}
+
+/* Add these styles for better alignment */
+.quiz-container, 
+.accordion-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ensure both components have similar padding */
+.quiz-container, 
+.accordion-container {
+  padding: 0;
+}
+
+/* Remove any existing height restrictions if necessary */
+.quiz-wrapper,
+.membership-benefits {
+  height: auto;
+  flex-grow: 1;
+}
+
+/* Make sure both section titles align perfectly */
+.flex-col > h2 {
+  margin-top: 0;
+  height: 3rem; /* Ensure consistent header height */
+  display: flex;
+  align-items: center;
+}
+
+/* Add these near the end of your file */
+.flex-grow {
+  flex: 1;
+}
+
+/* Ensure both components have consistent height */
+.accordion-container,
+.quiz-preview-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Make both section titles perfectly aligned */
+.flex-col > h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+/* Add these styles to the end of your globals.css file */
+.testimonial-card,
+.pricing-card {
+  /* Ensure the parent containers have relative positioning */
+  position: relative;
+  z-index: 1;
+}
+
+/* High-performance animations */
+.organic-animation {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+/* Glass effect enhancement */
+.glass-morphism {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
 }

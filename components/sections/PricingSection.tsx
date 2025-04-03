@@ -1,6 +1,21 @@
+declare global {
+  interface Window {
+    UserAccountApi?: {
+      joinPricingPlan: (
+        planId: string, 
+        optionId: string, 
+        couponCode: string, 
+        isGift: boolean, 
+        source: string
+      ) => void;
+    }
+  }
+}
+
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import Section from '../layout/Section';
+import OrganicBackgroundEffect from '../animations/OrganicBackgroundEffect';
 
 // Define proper TypeScript interfaces
 interface IntervalData {
@@ -22,141 +37,67 @@ interface Plan {
   features: string[];
 }
 
-// Improved Star component with individual lifecycle
-interface StarProps {
-  id: number;
-  left: number; 
-  top: number;
+interface PricingSectionProps {
+  plans: Plan[];
+  id?: string;
 }
 
-const Star: React.FC<StarProps> = ({ id, left, top }) => {
-  const [isGlowing, setIsGlowing] = useState(false);
-  const [intensity, setIntensity] = useState(0);
-  
-  // Random duration between 5-10 seconds for each star's lifecycle
-  const duration = useMemo(() => 5000 + Math.random() * 5000, []);
-  
-  // Random delay for staggered animation starts (0-15 seconds)
-  const initialDelay = useMemo(() => Math.random() * 15000, []);
-  
-  // Control the star's glow cycle
-  useEffect(() => {
-    // Initial delay before starting the animation cycle
-    const startTimeout = setTimeout(() => {
-      const glowCycle = () => {
-        // Glow up
-        setIsGlowing(true);
-        
-        // Randomly vary the intensity for each cycle
-        setIntensity(0.6 + Math.random() * 0.4); // between 0.6-1.0
-        
-        // Schedule glow down
-        const glowDuration = duration * (0.3 + Math.random() * 0.4); // 30-70% of total duration
-        const dimTimeout = setTimeout(() => {
-          setIsGlowing(false);
-          
-          // Schedule next glow with a small pause
-          const pauseDuration = duration * (0.5 + Math.random() * 0.3); // Increased pause between glows
-          const pauseTimeout = setTimeout(glowCycle, pauseDuration);
-          
-          return () => clearTimeout(pauseTimeout);
-        }, glowDuration);
-        
-        return () => clearTimeout(dimTimeout);
-      };
-      
-      glowCycle();
-    }, initialDelay);
-    
-    return () => clearTimeout(startTimeout);
-  }, [duration, initialDelay]);
-  
-  return (
-    <div
-      className="absolute"
-      style={{
-        left: `${left}%`,
-        top: `${top}%`,
-      }}
-    >
-      {/* Base star dot - always visible */}
-      <div
-        className="absolute"
-        style={{
-          width: '2px',
-          height: '2px',
-          borderRadius: '50%',
-          background: isGlowing ? '#fff' : '#666',
-          opacity: isGlowing ? 1 : 0.5,
-          transform: `scale(${isGlowing ? 1.2 : 1})`,
-          transition: 'all 1.5s cubic-bezier(0.4, 0, 0.2, 1)',
-          zIndex: 1,
-        }}
-      />
-      
-      {/* Glow effect with smooth transitions */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.5 }}
-        animate={{ 
-          opacity: isGlowing ? intensity : 0,
-          scale: isGlowing ? 1 + intensity : 0.5
-        }}
-        transition={{
-          duration: 1.5,
-          ease: "easeInOut"
-        }}
-        className="absolute"
-        style={{
-          width: '6px',
-          height: '6px',
-          borderRadius: '50%',
-          background: 'rgba(59, 130, 246, 0.6)',
-          filter: 'blur(2px)',
-          top: '-2px',
-          left: '-2px',
-          boxShadow:
-            '0 0 8px 2px rgba(59, 130, 246, 0.6), 0 0 12px 4px rgba(59, 130, 246, 0.4)',
-          zIndex: 0,
-        }}
-      />
-    </div>
-  );
-};
-
-// Improved StarsBackground component
-const StarsBackground: React.FC = () => {
-  // Generate fixed star positions once
-  const starPositions = useMemo(() => {
-    const totalStars = 15; // Significantly reduced for better performance
-    return Array.from({ length: totalStars }).map((_, index) => ({
-      id: index,
-      left: Math.random() * 100,
-      top: Math.random() * 100
-    }));
-  }, []);
+// Render pricing card function
+const renderPricingCard = (plan: Plan, isPrimary: boolean, interval: string) => {
+  const price = plan.hasMultipleIntervals ? plan.intervals[interval].price : plan.price;
+  const intervalText = plan.hasMultipleIntervals ? plan.intervals[interval].interval : plan.interval;
 
   return (
-    <div
-      className="stars-container"
+    <motion.div
+      key={plan.id}
+      className={`pricing-card relative rounded-xl overflow-hidden ${
+        isPrimary ? 'transform hover:-translate-y-2' : 'hover:bg-opacity-10'
+      }`}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
       style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        overflow: 'hidden',
-        pointerEvents: 'none',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
       }}
     >
-      {starPositions.map((star) => (
-        <Star
-          key={`star-${star.id}`}
-          id={star.id}
-          left={star.left}
-          top={star.top}
-        />
-      ))}
-    </div>
+      <OrganicBackgroundEffect
+        intensity={isPrimary ? 'medium' : 'subtle'}
+        colorScheme={isPrimary ? 'contrast' : 'cool'}
+      />
+
+      <div className="relative z-10 p-6">
+        <div className="mb-4">
+          <h3 className="text-xl font-medium">{plan.name}</h3>
+        </div>
+
+        <div className="mb-6">
+          <div className="flex items-baseline">
+            <span className="text-3xl font-bold">{price}</span>
+            <span className="text-sm ml-2 opacity-70">{intervalText}</span>
+          </div>
+        </div>
+
+        <ul className="mb-6 space-y-2">
+          {plan.features.map((feature, index) => (
+            <li key={index} className="flex items-start">
+              <span className="mr-2 text-emerald-500">✓</span>
+              <span>{feature}</span>
+            </li>
+          ))}
+        </ul>
+
+        <button
+          className={`w-full py-3 rounded-lg font-medium ${
+            isPrimary
+              ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white'
+              : 'bg-white bg-opacity-10 hover:bg-opacity-20'
+          }`}
+        >
+          Choose Plan
+        </button>
+      </div>
+    </motion.div>
   );
 };
 
@@ -185,46 +126,42 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
   const [hover, setHover] = useState(false);
   const [buttonHover, setButtonHover] = useState(false);
 
-  // Rest of the component stays the same
-  // ...
-
-  // Rest of your existing MembershipCard component code
   const relativeIndex = index - activeIndex;
   let translateY = 0;
   let scale = 1;
   let cardZIndex = totalCards;
-  
+
   if (!isActive) {
     const distance = Math.abs(relativeIndex);
     if (relativeIndex > 0) {
-      translateY = relativeIndex * 30;
+      // Change from pushing cards down to moving them up
+      translateY = -relativeIndex * 30; // Negative value moves cards up
       scale = 1 - relativeIndex * 0.05;
     } else {
-      translateY = 0;
+      // Cards before the active one also move up
+      translateY = relativeIndex * 30; // This will be negative since relativeIndex is negative
       scale = 1 - distance * 0.03;
     }
     cardZIndex = totalCards - distance;
     scale = Math.max(0.75, scale);
     cardZIndex = Math.max(1, cardZIndex);
   }
-  
+
   const transform = `translateX(-50%) translateY(${translateY}px) scale(${scale})`;
 
-  // Determine current price, interval text, and option ID
   let currentPrice = plan.price || '';
   let currentIntervalText = plan.interval || '';
-  let currentOptionId = plan.pricingOptionId || '';
-  
+  let currentOptionId = plan.pricingOptionId || ''; // This preserves the pricing ID
+
   if (plan.hasMultipleIntervals && plan.intervals) {
     const intervalData = plan.intervals[selectedInterval || 'monthly'];
     if (intervalData) {
       currentPrice = intervalData.price;
       currentIntervalText = intervalData.interval;
-      currentOptionId = intervalData.pricingOptionId;
+      currentOptionId = intervalData.pricingOptionId; // This preserves the pricing option ID
     }
   }
 
-  // Button styles
   const choosePlanBaseStyle = {
     width: '80%',
     padding: '12px 0',
@@ -250,8 +187,20 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
 
   const handlePurchaseClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    // Handle purchase logic here
-    console.log(`Purchase plan: ${plan.name}, option: ${currentOptionId}`);
+    
+    // This is what connects to Squarespace's membership system
+    if (typeof window !== 'undefined' && window.UserAccountApi) {
+      window.UserAccountApi.joinPricingPlan(
+        plan.pricingPlanId || '',
+        currentOptionId,
+        "", // coupon code (empty)
+        false, // gift (false)
+        "MEMBER_AREA_BLOCK" // source 
+      );
+    } else {
+      console.error('UserAccountApi not found - are you running outside of Squarespace?');
+      console.log(`Plan ID: ${plan.pricingPlanId}, Option ID: ${currentOptionId}`);
+    }
   };
 
   return (
@@ -259,7 +208,7 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
       style={{
         position: 'absolute',
         left: '50%',
-        top: 0,
+        top: '50px', // Add some top margin so cards have room to peek above
         width: '340px',
         maxWidth: '90vw',
         height: 'auto',
@@ -293,22 +242,26 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
           minHeight: '400px',
         }}
       >
-        {/* Background effect */}
-        <div 
-          style={{ 
-            position: 'absolute', 
-            top: 0, 
-            left: 0, 
-            right: 0, 
-            height: '60%', 
-            background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.1), transparent)', 
-            transform: 'rotate(5deg) translateY(-50%) translateX(-10%)', 
-            pointerEvents: 'none' 
-          }} 
+        {/* Add OrganicBackgroundEffect here */}
+        <OrganicBackgroundEffect
+          intensity={isActive ? 'medium' : 'subtle'}
+          colorScheme={index % 2 === 0 ? 'contrast' : 'cool'}
         />
-        
-        <StarsBackground />
-        
+
+        {/* The existing gradient overlay */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '60%',
+            background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.1), transparent)',
+            transform: 'rotate(5deg) translateY(-50%) translateX(-10%)',
+            pointerEvents: 'none',
+          }}
+        />
+
         <div
           style={{
             position: 'relative',
@@ -404,23 +357,24 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
               width: 'fit-content',
             }}
           >
-            {plan.features && plan.features.map((feature, fIndex) => (
-              <li
-                key={fIndex}
-                style={{
-                  fontSize: '15px',
-                  marginBottom: '10px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  fontFamily: 'var(--font-sans)',
-                  fontWeight: '300',
-                  color: 'var(--color-foreground)',
-                }}
-              >
-                <span style={{ marginRight: '10px', color: 'var(--color-accent-green)' }}>✓</span>
-                {feature}
-              </li>
-            ))}
+            {plan.features &&
+              plan.features.map((feature, fIndex) => (
+                <li
+                  key={fIndex}
+                  style={{
+                    fontSize: '15px',
+                    marginBottom: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    fontFamily: 'var(--font-sans)',
+                    fontWeight: '300',
+                    color: 'var(--color-foreground)',
+                  }}
+                >
+                  <span style={{ marginRight: '10px', color: 'var(--color-accent-green)' }}>✓</span>
+                  {feature}
+                </li>
+              ))}
           </ul>
 
           <button
@@ -472,66 +426,59 @@ const PricingSection: React.FC<PricingSectionProps> = ({ plans = [], id }) => {
   const [selectedIntervals, setSelectedIntervals] = useState<Record<number, string>>({});
 
   return (
-    <Section id={id} className="pricing-section py-16">
+    <Section id="signup-section" className="pricing-section py-16">
       <div className="container mx-auto px-4 py-8">
         <h2 className="font-sans text-4xl md:text-5xl text-[var(--color-foreground)] mb-6 font-light text-center">
           Membership Options
         </h2>
 
-        <div className="relative w-full h-[500px] mt-16 flex justify-center items-start">
+        <div className="relative w-full h-[550px] mt-16 flex justify-center items-start">
+          {/* Previous button */}
+          <button
+            onClick={() => activeCardIndex > 0 && setActiveCardIndex(activeCardIndex - 1)}
+            disabled={activeCardIndex === 0}
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full 
+                     border border-[var(--color-foreground-muted)] text-[var(--color-foreground)]
+                     hover:bg-[var(--color-foreground-muted)] transition-colors
+                     disabled:opacity-30 disabled:cursor-not-allowed backdrop-blur-sm bg-white/10
+                     flex items-center justify-center md:left-8 lg:left-12"
+            aria-label="Previous plan"
+          >
+            ←
+          </button>
+
+          {/* Card stack - unchanged */}
           {plans.map((plan, index) => (
             <MembershipCard
-              key={plan.id || index}
+              key={plan.id}
               plan={plan}
               isActive={index === activeCardIndex}
               onSelect={() => setActiveCardIndex(index)}
               index={index}
               activeIndex={activeCardIndex}
               totalCards={plans.length}
-              selectedInterval={selectedIntervals[index]}
-              onIntervalChange={(intervalKey) => {
-                setSelectedIntervals((prev) => ({ ...prev, [index]: intervalKey }));
+              selectedInterval={selectedIntervals[index] || 'monthly'}
+              onIntervalChange={(interval) => {
+                setSelectedIntervals({
+                  ...selectedIntervals,
+                  [index]: interval
+                });
               }}
             />
           ))}
-        </div>
 
-        <div className="flex mt-8 gap-2 justify-center">
-          {plans.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setActiveCardIndex(index)}
-              className="w-3 h-3 rounded-full transition-all duration-300"
-              style={{
-                background: index === activeCardIndex ? '#3b82f6' : 'rgba(255,255,255,0.3)',
-              }}
-              aria-label={`View ${plans[index].name} plan`}
-            />
-          ))}
-        </div>
-
-        <div className="flex mt-4 gap-4 justify-center">
-          <button
-            onClick={() => activeCardIndex > 0 && setActiveCardIndex(activeCardIndex - 1)}
-            disabled={activeCardIndex === 0}
-            className="px-4 py-2 rounded-lg border border-[var(--color-foreground-muted)] 
-                       text-[var(--color-foreground)] hover:bg-[var(--color-foreground-muted)]
-                       transition-colors disabled:opacity-30 disabled:cursor-not-allowed
-                       backdrop-blur-sm bg-transparent"
-            aria-label="Previous plan"
-          >
-            Previous
-          </button>
+          {/* Next button */}
           <button
             onClick={() => activeCardIndex < plans.length - 1 && setActiveCardIndex(activeCardIndex + 1)}
             disabled={activeCardIndex === plans.length - 1}
-            className="px-4 py-2 rounded-lg border border-[var(--color-foreground-muted)] 
-                       text-[var(--color-foreground)] hover:bg-[var(--color-foreground-muted)]
-                       transition-colors disabled:opacity-30 disabled:cursor-not-allowed
-                       backdrop-blur-sm bg-transparent"
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full
+                     border border-[var(--color-foreground-muted)] text-[var(--color-foreground)]
+                     hover:bg-[var(--color-foreground-muted)] transition-colors
+                     disabled:opacity-30 disabled:cursor-not-allowed backdrop-blur-sm bg-white/10
+                     flex items-center justify-center md:right-8 lg:right-12"
             aria-label="Next plan"
           >
-            Next
+            →
           </button>
         </div>
       </div>
