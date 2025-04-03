@@ -49,8 +49,9 @@ const GlassBowlIconsSection: React.FC<GlassBowlIconsSectionProps> = ({ id }) => 
   return (
     <Section id={id} className="py-16 px-4 md:px-8">
       <div className="flex flex-col items-center justify-center max-w-4xl mx-auto">
-        <div className="mb-20 text-center"> {/* Increased from mb-12 to mb-20 */}
-          <h2 className="font-sans text-4xl md:text-5xl text-[var(--color-foreground)] mb-6 font-light text-center">
+        <div className="mb-16 text-center">
+          {/* Remove extra top margin so the heading sits on the baseline */}
+          <h2 className="font-sans text-4xl md:text-5xl text-[var(--color-foreground)] mt-0 mb-6 font-light text-center">
             Realization Toolkit Exclusives
           </h2>
           <p className="text-base text-secondary italic">Click on an icon to learn more</p>
