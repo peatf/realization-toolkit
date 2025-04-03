@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import Section from '../layout/Section';
 
 // Define proper TypeScript interfaces
@@ -21,39 +22,117 @@ interface Plan {
   features: string[];
 }
 
+// Improved Star component with individual lifecycle
 interface StarProps {
-  isGlowing: boolean;
-  delay: number;
+  id: number;
+  left: number; 
+  top: number;
 }
 
-// Star component
-const Star: React.FC<StarProps> = ({ isGlowing, delay }) => {
+const Star: React.FC<StarProps> = ({ id, left, top }) => {
+  const [isGlowing, setIsGlowing] = useState(false);
+  const [intensity, setIntensity] = useState(0);
+  
+  // Random duration between 5-10 seconds for each star's lifecycle
+  const duration = useMemo(() => 5000 + Math.random() * 5000, []);
+  
+  // Random delay for staggered animation starts (0-15 seconds)
+  const initialDelay = useMemo(() => Math.random() * 15000, []);
+  
+  // Control the star's glow cycle
+  useEffect(() => {
+    // Initial delay before starting the animation cycle
+    const startTimeout = setTimeout(() => {
+      const glowCycle = () => {
+        // Glow up
+        setIsGlowing(true);
+        
+        // Randomly vary the intensity for each cycle
+        setIntensity(0.6 + Math.random() * 0.4); // between 0.6-1.0
+        
+        // Schedule glow down
+        const glowDuration = duration * (0.3 + Math.random() * 0.4); // 30-70% of total duration
+        const dimTimeout = setTimeout(() => {
+          setIsGlowing(false);
+          
+          // Schedule next glow with a small pause
+          const pauseDuration = duration * (0.5 + Math.random() * 0.3); // Increased pause between glows
+          const pauseTimeout = setTimeout(glowCycle, pauseDuration);
+          
+          return () => clearTimeout(pauseTimeout);
+        }, glowDuration);
+        
+        return () => clearTimeout(dimTimeout);
+      };
+      
+      glowCycle();
+    }, initialDelay);
+    
+    return () => clearTimeout(startTimeout);
+  }, [duration, initialDelay]);
+  
   return (
     <div
+      className="absolute"
       style={{
-        width: '2px',
-        height: '2px',
-        borderRadius: '50%',
-        background: isGlowing ? '#fff' : '#666',
-        transition: `all 2s ease-in-out ${delay}s`,
-        position: 'relative',
-        zIndex: 1,
+        left: `${left}%`,
+        top: `${top}%`,
       }}
-    />
+    >
+      {/* Base star dot - always visible */}
+      <div
+        className="absolute"
+        style={{
+          width: '2px',
+          height: '2px',
+          borderRadius: '50%',
+          background: isGlowing ? '#fff' : '#666',
+          opacity: isGlowing ? 1 : 0.5,
+          transform: `scale(${isGlowing ? 1.2 : 1})`,
+          transition: 'all 1.5s cubic-bezier(0.4, 0, 0.2, 1)',
+          zIndex: 1,
+        }}
+      />
+      
+      {/* Glow effect with smooth transitions */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.5 }}
+        animate={{ 
+          opacity: isGlowing ? intensity : 0,
+          scale: isGlowing ? 1 + intensity : 0.5
+        }}
+        transition={{
+          duration: 1.5,
+          ease: "easeInOut"
+        }}
+        className="absolute"
+        style={{
+          width: '6px',
+          height: '6px',
+          borderRadius: '50%',
+          background: 'rgba(59, 130, 246, 0.6)',
+          filter: 'blur(2px)',
+          top: '-2px',
+          left: '-2px',
+          boxShadow:
+            '0 0 8px 2px rgba(59, 130, 246, 0.6), 0 0 12px 4px rgba(59, 130, 246, 0.4)',
+          zIndex: 0,
+        }}
+      />
+    </div>
   );
 };
 
-// StarsBackground component
+// Improved StarsBackground component
 const StarsBackground: React.FC = () => {
-  const [glowingStars, setGlowingStars] = useState<number[]>([]);
-  const stars = 50;
-  
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const newGlowingStars: number[] = Array.from({ length: 5 }, () => Math.floor(Math.random() * stars));
-      setGlowingStars(newGlowingStars);
-    }, 2000);
-    return () => clearInterval(interval);
+  // Generate fixed star positions once
+  const starPositions = useMemo(() => {
+    const totalStars = 15; // Significantly reduced for better performance
+    return Array.from({ length: totalStars }).map((_, index) => ({
+      id: index,
+      left: Math.random() * 100,
+      top: Math.random() * 100
+    }));
   }, []);
 
   return (
@@ -69,45 +148,14 @@ const StarsBackground: React.FC = () => {
         pointerEvents: 'none',
       }}
     >
-      {Array.from({ length: stars }).map((_, index) => {
-        const isGlowing = glowingStars.includes(index);
-        const left = Math.random() * 100;
-        const top = Math.random() * 100;
-        const delay = (index % 10) * 0.1;
-        
-        return (
-          <div
-            key={`star-${index}`}
-            style={{
-              position: 'absolute',
-              left: `${left}%`,
-              top: `${top}%`,
-              opacity: isGlowing ? 1 : 0.5,
-              transform: `scale(${isGlowing ? 1.5 : 1})`,
-              transition: `all 2s ease-in-out ${delay}s`,
-            }}
-          >
-            <Star isGlowing={isGlowing} delay={delay} />
-            {isGlowing && (
-              <div
-                style={{
-                  position: 'absolute',
-                  width: '6px',
-                  height: '6px',
-                  borderRadius: '50%',
-                  background: 'rgba(59, 130, 246, 0.6)',
-                  filter: 'blur(2px)',
-                  top: '-2px',
-                  left: '-2px',
-                  boxShadow:
-                    '0 0 8px 2px rgba(59, 130, 246, 0.6), 0 0 12px 4px rgba(59, 130, 246, 0.4)',
-                  zIndex: 0,
-                }}
-              />
-            )}
-          </div>
-        );
-      })}
+      {starPositions.map((star) => (
+        <Star
+          key={`star-${star.id}`}
+          id={star.id}
+          left={star.left}
+          top={star.top}
+        />
+      ))}
     </div>
   );
 };
@@ -415,15 +463,16 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
 
 interface PricingSectionProps {
   plans: Plan[];
+  id?: string;
 }
 
 // Main PricingSection component
-const PricingSection: React.FC<PricingSectionProps> = ({ plans = [] }) => {
+const PricingSection: React.FC<PricingSectionProps> = ({ plans = [], id }) => {
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [selectedIntervals, setSelectedIntervals] = useState<Record<number, string>>({});
 
   return (
-    <Section id="pricing-section" className="overflow-hidden">
+    <Section id={id} className="pricing-section py-16">
       <div className="container mx-auto px-4 py-8">
         <h2 className="font-sans text-4xl md:text-5xl text-[var(--color-foreground)] mb-6 font-light text-center">
           Membership Options

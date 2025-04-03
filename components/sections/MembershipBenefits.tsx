@@ -168,7 +168,9 @@ const ContentAccordion: React.FC = () => {
   return (
     <Section>
       <div className="accordion-container">
-        <h2 className="text-xl font-bold mb-4 text-center">Realization ToolKit</h2>
+        <h2 className="font-sans text-4xl md:text-5xl text-[var(--color-foreground)] mb-6 font-light text-center">
+          Realization Toolkit?
+        </h2>
         <SimpleAccordion type="single" collapsible className="w-full">
           {items.map((item) => (
             <SimpleAccordionItem value={item.id} key={item.id}>
@@ -178,7 +180,11 @@ const ContentAccordion: React.FC = () => {
                   {item.sub && <span className="accordion-sub-text">{item.sub}</span>}
                 </span>
               </SimpleAccordionTrigger>
-              <SimpleAccordionContent>{item.content}</SimpleAccordionContent>
+              <SimpleAccordionContent>
+                <h3 className="text-xl md:text-2xl font-semibold mb-3 text-foreground">{item.title}</h3>
+                <p className="text-base text-secondary leading-relaxed">{item.content}</p>
+                <button className="btn btn-primary hover:bg-opacity-90 transition-all">Learn More</button>
+              </SimpleAccordionContent>
             </SimpleAccordionItem>
           ))}
         </SimpleAccordion>
@@ -216,11 +222,17 @@ class ErrorBoundary extends React.Component<{ children?: React.ReactNode }, Erro
   }
 }
 
-const MembershipBenefits: React.FC = () => {
+interface MembershipBenefitsProps {
+  id?: string;
+}
+
+const MembershipBenefits: React.FC<MembershipBenefitsProps> = ({ id }) => {
   return (
-    <ErrorBoundary>
-      <ContentAccordion />
-    </ErrorBoundary>
+    <Section id={id} className="py-16">
+      <ErrorBoundary>
+        <ContentAccordion />
+      </ErrorBoundary>
+    </Section>
   );
 };
 

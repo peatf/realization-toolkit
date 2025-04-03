@@ -1,41 +1,42 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import Section from '../layout/Section';
+import { motion } from 'framer-motion';
 
 const OpeningSection: React.FC = () => {
   return (
-    <Section fullHeight className="flex items-center justify-center overflow-hidden">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-8">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.2 }}
-            className="mb-4"
-          >
-            <span className="font-mono text-[var(--color-secondary)] tracking-widest uppercase text-sm">
-              Realization
-            </span>
-          </motion.div>
-          
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="font-sans text-5xl md:text-6xl text-[var(--color-foreground)] mb-6 font-light"
-          >
-            Tools for Transformation
-          </motion.h1>
-          
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="text-[var(--color-secondary)] text-lg max-w-xl mx-auto font-light mb-8"
-          >
-            Access powerful techniques to realize your potential.
-          </motion.p>
-        </div>
+    // Keep the fixed height that's working
+    <Section className="flex items-center justify-center overflow-hidden h-[30vh]">
+      <div className="container mx-auto px-4 text-center">
+        {/* Re-implement text with motion animations */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-thin tracking-tight mb-4">
+            REALIZATION
+          </h1>
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.8 }}
+        >
+          <h2 className="text-2xl md:text-3xl font-light mb-4">
+          Spiritual Technology for Innovators
+          </h2>
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6, duration: 0.8 }}
+        >
+          <p className="max-w-lg mx-auto text-lg text-gray-600">
+          A collection of living tools to create beautiful things.
+          </p>
+        </motion.div>
       </div>
     </Section>
   );

@@ -1,14 +1,23 @@
 import React from 'react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import VisualPreview from './VisualPreview';
+import dynamic from 'next/dynamic';
+
+// This version will only render on the client
+const VisualPreviewNoSSR = dynamic(() => import('./VisualPreview'), { ssr: false });
 
 // Fix the import path - adjust based on your actual file structure
 import QuizSection from '../components/sections/QuizSection';
 // OR if it's directly in the sections folder at project root:
 // import QuizSection from '../sections/QuizSection';
 
-const QuizWithPreview = () => {
+// Find or create the props interface
+interface QuizWithPreviewProps {
+  id?: string; // Add this line
+  // ...any other existing props
+}
+
+const QuizWithPreview: React.FC<QuizWithPreviewProps> = ({ id }) => {
   const [showQuiz, setShowQuiz] = useState(false);
   
   const handlePreviewClick = () => {
@@ -16,7 +25,7 @@ const QuizWithPreview = () => {
   };
   
   return (
-    <div className="quiz-wrapper relative h-full">
+    <div id={id} className="quiz-container">
       <AnimatePresence mode="wait">
         {!showQuiz ? (
           <motion.div 
@@ -26,7 +35,8 @@ const QuizWithPreview = () => {
             onClick={handlePreviewClick} 
             className="cursor-pointer h-full"
           >
-            <VisualPreview />
+            {/* Use the no-SSR version */}
+            <VisualPreviewNoSSR />
           </motion.div>
         ) : (
           <motion.div
