@@ -34,16 +34,75 @@ const Home: NextPage = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    const menuSection = document.getElementById('gooey-menu-section');
+    const heroSection = document.getElementById('opening');
+    
+    if (!menuSection || !heroSection) return;
+    
+    // Create intersection observer to detect when sections enter viewport
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          // When menu section enters viewport
+          if (entry.target.id === 'gooey-menu-section') {
+            // Add entrance animation class
+            entry.target.classList.add('entering');
+            
+            // Add visual indicator that we're in a new section
+            document.body.classList.add('viewing-menu');
+            document.body.classList.remove('viewing-hero');
+          }
+          
+          // When hero section enters viewport
+          if (entry.target.id === 'opening') {
+            document.body.classList.add('viewing-hero');
+            document.body.classList.remove('viewing-menu');
+            
+            // Reset menu animation for next entrance
+            menuSection.classList.remove('entering');
+          }
+        }
+      });
+    }, { threshold: 0.4 }); // Trigger when 40% of section is visible
+    
+    // Observe both sections
+    observer.observe(menuSection);
+    observer.observe(heroSection);
+    
+    // Advanced scroll control for better UX
+    const handleWheel = (e) => {
+      const heroRect = heroSection.getBoundingClientRect();
+      
+      // If at the bottom of hero section and scrolling down, snap to menu section
+      if (heroRect.bottom <= window.innerHeight && heroRect.bottom > window.innerHeight/2 && e.deltaY > 0) {
+        e.preventDefault();
+        menuSection.scrollIntoView({ behavior: 'smooth' });
+        menuSection.classList.add('entering');
+      }
+    };
+    
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('wheel', handleWheel);
+    };
+  }, []);
   
   return (
     <Layout>
-      {/* Opening / Hero Section - occupies full 100vh */}
-      <OpeningSection id="opening" />
+      {/* Opening / Hero Section - with scroll snap */}
+      <section id="opening" className="scroll-snap-align-start">
+        <OpeningSection />
+        <div className="scroll-transition-space"></div> {/* Add transition space */}
+      </section>
 
-      {/* Circular Menu Section - make it fully occupy the viewport */}
+      {/* Circular Menu Section - adjusted positioning */}
       <section 
         id="gooey-menu-section" 
-        className="relative h-screen min-h-screen sticky top-0 z-50 flex items-center justify-center -mt-16"
+        className="relative min-h-screen sticky top-0 z-50 flex items-center justify-center scroll-snap-align-start"
       >
         <CircularMenuWithGooeyText 
           items={[
@@ -57,33 +116,31 @@ const Home: NextPage = () => {
         />
       </section>
       
-     {/* Membership Benefits & Quiz Section */}
-<section 
-  id="membership-benefits" 
-  className="relative pt-24 mt-16 pb-20"
->
-  <div className="container mx-auto px-4 md:px-8">
-    <h2 className="font-sans text-4xl md:text-5xl text-[var(--color-foreground)] mb-8 font-light text-center">
-      About Realization Toolkit
-    </h2>
-    
-    <div className="flex flex-col lg:flex-row gap-12">
-      {/* Membership Benefits Section */}
-      <div className="w-full lg:w-1/2">
-        <MembershipBenefits />
-      </div>
+      {/* Membership Benefits & Quiz Section */}
+      <section 
+        id="membership-benefits" 
+        className="relative pt-20 mt-16 pb-12"
+      >
+        <div className="container mx-auto px-4 md:px-8">
+          <div className="flex flex-col lg:flex-row gap-12 items-start">
+            {/* Membership Benefits Section with debug wrapper */}
+            <div className="w-full lg:w-1/2">
+              <h3 className="font-sans text-4xl md:text-5xl text-[var(--color-foreground)] mb-8 font-light text-center">
+                About Realization Toolkit
+              </h3>
+              <MembershipBenefits />
+            </div>
 
-      {/* Quiz Section with original title restored */}
-      <div className="w-full lg:w-1/2 flex flex-col items-center">
-        <h3 className="text-2xl md:text-3xl font-light text-center mb-6">
-          Find Your Tools
-        </h3>
-        <QuizWithPreview />
-      </div>
-    </div>
-  </div>
-</section>
-
+            {/* Quiz Section */}
+            <div className="w-full lg:w-1/2 flex flex-col items-center">
+              <h3 className="font-sans text-4xl md:text-5xl text-[var(--color-foreground)] mb-8 font-light text-center">
+                Find Your Tools
+              </h3>
+              <QuizWithPreview />
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Product Carousels Section */}
       <section 
@@ -172,3 +229,4 @@ const Home: NextPage = () => {
 };
 
 export default Home;
+

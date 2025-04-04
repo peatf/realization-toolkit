@@ -48,7 +48,8 @@ const Layout: React.FC<LayoutProps> = ({
       
       <GlobalBackground />
       
-      <main className="relative z-0">
+      <main className="relative overflow-y-auto min-h-screen">
+
         {children}
       </main>
     </>

@@ -172,34 +172,25 @@ const MembershipBenefits: React.FC<MembershipBenefitsProps> = ({
   hideTitle = false 
 }) => {
   return (
-    <Section id={id} className="">
-      <div className="accordion-container">
-        {!hideTitle && (
-          <h2 
-            className="font-sans text-4xl md:text-5xl text-[var(--color-foreground)] mb-6 font-light" 
-            style={{ textAlign: "center" }}
-          >
-            About Realization Toolkit
-          </h2>
-        )}
-        <SimpleAccordion type="single" collapsible className="w-full">
-          {items.map((item) => (
-            <SimpleAccordionItem key={item.id} value={item.id} className="accordion-item">
-              <SimpleAccordionTrigger>
-                <div>
-                  <div className="accordion-title-text">{item.title}</div>
-                  {item.sub && <div className="accordion-sub-text">{item.sub}</div>}
-                </div>
-              </SimpleAccordionTrigger>
-              <SimpleAccordionContent>
-                {item.content}
-              </SimpleAccordionContent>
-            </SimpleAccordionItem>
-          ))}
-        </SimpleAccordion>
-      </div>
-    </Section>
+    <div className="membership-benefits w-full"> {/* Add w-full to match width */}
+      <SimpleAccordion type="single" collapsible className="w-full">
+        {items.map((item) => (
+          <SimpleAccordionItem key={item.id} value={item.id} className="accordion-item">
+            <SimpleAccordionTrigger>
+              <div>
+                <div className="accordion-title-text">{item.title}</div>
+                {item.sub && <div className="accordion-sub-text">{item.sub}</div>}
+              </div>
+            </SimpleAccordionTrigger>
+            <SimpleAccordionContent>
+              {item.content}
+            </SimpleAccordionContent>
+          </SimpleAccordionItem>
+        ))}
+      </SimpleAccordion>
+    </div>
   );
 };
 
 export default MembershipBenefits;
+

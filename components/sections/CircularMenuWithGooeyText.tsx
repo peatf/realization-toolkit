@@ -1,169 +1,117 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
 
-// Define the structure for navigation items
 interface NavItem {
   id: string;
   label: string;
-  target: string; // Used for scrolling to the target section ID
+  target: string;
 }
 
-// Define structure for calculated coordinates
 interface Point {
-    x: number;
-    y: number;
-    rotationOffset?: number; // Keep for potential future use
+  x: number;
+  y: number;
+  pathOffset: number; 
 }
 
-// Define props for the component
 interface CircularMenuProps {
   items?: NavItem[];
 }
 
-// --- CSS Keyframes for Breathing Animation ---
-// Define the animation outside the component for clarity,
-// or embed it in a <style> tag within the JSX if needed for self-containment.
 const breatheAnimation = `
   @keyframes breathe {
     0%, 100% {
       transform: scale(1);
     }
     50% {
-      transform: scale(1.02); /* Adjust scale factor for desired subtlety */
+      transform: scale(1.02);
     }
   }
 `;
 
-
-const CircularMenuWithGooeyText: React.FC<CircularMenuProps> = (props) => {
-  // --- Navigation Items ---
+const CircularMenuWithGooeyText: React.FC<CircularMenuProps> = () => {
   const navItems: NavItem[] = [
-    { id: 'membership-benefits', label: 'Realization Toolkit', target: 'membership-benefits' }, // Index 0
-    { id: 'quiz', label: 'Find Your Tools', target: 'quiz' }, // Index 1
-    { id: 'product-carousels', label: 'Learn About the Tools', target: 'product-carousels' }, // Index 2
-    { id: 'pricing', label: 'Enroll Now', target: 'pricing' }, // Index 3
-    { id: 'toolkit-exclusives', label: 'Realization Toolkit Exclusives', target: 'toolkit-exclusives' }, // Index 4
-    { id: 'testimonials', label: 'Testimonials', target: 'testimonials' } // Index 5
+    { id: 'membership-benefits', label: 'Realization Toolkit', target: 'membership-benefits' },
+    { id: 'quiz', label: 'Find Your Tools', target: 'quiz' },
+    { id: 'product-carousels', label: 'Learn About the Tools', target: 'product-carousels' },
+    { id: 'pricing', label: 'Enroll Now', target: 'pricing' },
+    { id: 'toolkit-exclusives', label: 'Realization Toolkit Exclusives', target: 'toolkit-exclusives' },
+    { id: 'testimonials', label: 'Testimonials', target: 'testimonials' }
   ];
 
-  // --- State Variables ---
   const [activeIndex, setActiveIndex] = useState(0);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [rotation, setRotation] = useState(0);
-  const [scaleFactor, setScaleFactor] = useState(1);
+  const [menuItemPositions, setMenuItemPositions] = useState<Point[]>([]);
+  const svgRef = useRef<SVGSVGElement>(null);
 
-  // --- Define colors ---
   const textColor = {
-    active: '#60a5fa', // Blue-400
-    hover: '#3b82f6', // Blue-500
-    normal: '#2563eb', // Blue-600
-    progressBarBg: '#93c5fd', // Blue-300
-    progressBarFill: '#1d4ed8', // Blue-700
+    active: '#60a5fa',
+    hover: '#3b82f6',
+    normal: '#2563eb',
+    progressBarBg: '#93c5fd',
+    progressBarFill: '#1d4ed8',
   };
 
-  // --- Spiral Parameters (Unchanged) ---
-  const spiralParams = {
-    startAngle: Math.PI * 5,
-    endAngle: Math.PI * 0.1,
-    minRadiusPath: 120,
-    maxRadiusPath: 700,
-    svgViewBox: "-750 -750 1500 1500",
-    containerSize: "h-screen w-full max-w-[1800px]",
-  };
+  const svgViewBox = "0 0 720.37 604.94";
+  const centerX = 360;
+  const centerY = 250;
 
-  // --- Calculate Menu Item Coordinates Dynamically (Includes targeted adjustments) ---
-  const menuItemCoordinates = useMemo((): Point[] => {
-    const points: Point[] = [{ x: 0, y: 0 }]; // Center point (index 0)
-    const numOuterItems = navItems.length - 1;
-    if (numOuterItems <= 0) return points;
+  const spiralPath = "M718.87,411.62c-124.67,201.4-392.55,253.22-593.85,112.3C-2.71,434.49-51.42,237.99,76.49,95.04,178.82-19.32,352.1-27.79,479.64,63.97c102.03,73.41,118.37,207.08,36.5,298.57-65.49,73.19-184.75,84.91-266.37,26.19-65.3-46.98-75.76-132.53-23.36-191.08,41.92-46.84,118.24-54.34,170.48-16.76,41.79,30.07,48.48,84.82,14.95,122.29-26.83,29.98-75.67,34.78-109.11,10.73-26.75-19.24-31.03-54.29-9.57-78.27";
 
-    const { startAngle, endAngle, minRadiusPath, maxRadiusPath } = spiralParams;
-    const totalAngleRange = startAngle - endAngle;
-    const placementAngleRange = totalAngleRange * 0.57; // Use 57% of the angular range
-    const b = Math.log(maxRadiusPath / minRadiusPath) / totalAngleRange;
+  const validSpiralPath = spiralPath || "M0,0"; // Fallback to empty path if undefined
 
-    for (let i = 1; i <= numOuterItems; i++) {
-      const t = numOuterItems > 1 ? (i - 1) / (numOuterItems - 1) : 0;
-      const angle = startAngle - t * placementAngleRange;
-      const radius = minRadiusPath * Math.exp(b * (startAngle - angle));
-      const x = radius * Math.cos(angle);
-      const y = radius * Math.sin(angle);
-      points.push({ x: parseFloat(x.toFixed(2)), y: parseFloat(y.toFixed(2)) });
-    }
+  // Calculate positions along the path
+  useEffect(() => {
+    if (svgRef.current && navItems.length > 0) {
+      try {
+        const pathElement = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        pathElement.setAttribute('d', spiralPath);
+        const pathLength = pathElement.getTotalLength();
+        const points: Point[] = [];
 
-    // TARGETED ADJUSTMENTS
-    const adjustmentOffset1 = { x: -40, y: -40 }; // Offset for item 1 (UP/LEFT)
-    const adjustmentOffset4 = { x: 15, y: 15 };  // Offset for item 4 (DOWN/RIGHT)
-    const adjustmentOffset5 = { x: -25, y: 0 };  // Offset for testimonials (LEFT)
+        // Center symbol at the beginning
+        points.push({
+          x: 0,
+          y: 0,
+          pathOffset: 0,
+        });
 
-    if (points[1]) { points[1].x += adjustmentOffset1.x; points[1].y += adjustmentOffset1.y; }
-    if (points[4]) { points[4].x += adjustmentOffset4.x; points[4].y += adjustmentOffset4.y; }
-    if (points[5]) { points[5].x += adjustmentOffset5.x; points[5].y += adjustmentOffset5.y; }
-
-    points.forEach(p => {
-        p.x = parseFloat(p.x.toFixed(2));
-        p.y = parseFloat(p.y.toFixed(2));
-    });
-
-    return points;
-  }, [navItems.length, spiralParams]);
-
-
-  // --- Generate Spiral Path (Unchanged logic) ---
-  const generateSpiralPath = (steps = 450): string => {
-    const { startAngle, endAngle, minRadiusPath, maxRadiusPath } = spiralParams;
-    const totalAngle = startAngle - endAngle;
-    const b = Math.log(maxRadiusPath / minRadiusPath) / totalAngle;
-    let path = '';
-    for (let i = 0; i <= steps; i++) {
-      const t = i / steps;
-      const angle = startAngle - t * totalAngle;
-      const radius = minRadiusPath * Math.exp(b * (startAngle - angle));
-      const x = radius * Math.cos(angle);
-      const y = radius * Math.sin(angle);
-      path += (i === 0 ? 'M' : 'L') + ` ${x.toFixed(2)} ${y.toFixed(2)} `;
-    }
-    return path;
-  };
-
-  const spiralPath = generateSpiralPath();
-
-  // --- Calculate Rotation (Unchanged) ---
-  const calculateRotation = useCallback((index: number): number => {
-    if (index === 0) return 0;
-    const coords = menuItemCoordinates[index];
-    if (!coords || (coords.x === 0 && coords.y === 0)) return 0;
-    const angle = Math.atan2(coords.y, coords.x);
-    return (-angle * (180 / Math.PI)) + 90 + (coords.rotationOffset || 0);
-  }, [menuItemCoordinates]);
-
-  // --- Navigation Function (Unchanged) ---
-  const navigateToSection = useCallback((targetId: string): void => {
-    try {
-      const targetElement = document.getElementById(targetId);
-      const menuSection = document.getElementById('gooey-menu-section');
-      if (targetElement) {
-        if (menuSection) menuSection.classList.add('section-hidden');
-        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        setTimeout(() => {
-          targetElement.classList.add('flash-highlight');
-          setTimeout(() => targetElement.classList.remove('flash-highlight'), 1000);
-        }, 500);
-      } else {
-        console.warn(`Target element with ID "${targetId}" not found.`);
+        const itemCount = navItems.length - 1;
+        if (itemCount > 0) {
+          // Adjust these percentages for spacing along the spiral
+          const positionPercentages = [0.15, 0.32, 0.49, 0.66, 0.83];
+          for (let i = 0; i < itemCount; i++) {
+            const percentage = positionPercentages[i] || i / (itemCount - 1);
+            const distance = pathLength * percentage;
+            const point = pathElement.getPointAtLength(distance);
+            points.push({
+              x: point.x - centerX,
+              y: point.y - centerY,
+              pathOffset: percentage * 100,
+            });
+          }
+        }
+        setMenuItemPositions(points);
+      } catch (error) {
+        console.error("Error calculating menu points:", error);
       }
-    } catch (error) {
-      console.error("Error navigating to section:", error);
+    }
+  }, [navItems.length]);
+
+  const navigateToSection = useCallback((targetId: string): void => {
+    const targetElement = document.getElementById(targetId);
+    const menuSection = document.getElementById('gooey-menu-section');
+    if (targetElement) {
+      if (menuSection) menuSection.classList.add('section-hidden');
+      targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setTimeout(() => {
+        targetElement.classList.add('flash-highlight');
+        setTimeout(() => targetElement.classList.remove('flash-highlight'), 1000);
+      }, 500);
+    } else {
+      console.warn(`Target element with ID "${targetId}" not found.`);
     }
   }, []);
 
-  // --- useEffect Hook for Rotation ---
-  useEffect(() => {
-    const targetRotation = calculateRotation(activeIndex);
-    setRotation(targetRotation);
-  }, [activeIndex, calculateRotation]);
-
-  // --- useEffect Hook for Scroll-based Menu Expansion (Unchanged) ---
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const menuSection = document.getElementById('gooey-menu-section');
@@ -181,24 +129,6 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuProps> = (props) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // --- useEffect Hook for Scale Factor ---
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    
-    const calculateScale = () => {
-      // Base scale on viewport width
-      const viewportWidth = window.innerWidth;
-      const baseWidth = 1200; // Desktop reference width
-      const newScale = viewportWidth < 768 ? Math.max(0.5, viewportWidth / baseWidth) : 1;
-      setScaleFactor(newScale);
-    };
-    
-    calculateScale();
-    window.addEventListener('resize', calculateScale);
-    return () => window.removeEventListener('resize', calculateScale);
-  }, []);
-
-  // --- Handle Item Click (Unchanged) ---
   const handleItemClick = useCallback((index: number): void => {
     if (index >= 0 && index < navItems.length) {
       if (index !== activeIndex) {
@@ -208,166 +138,199 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuProps> = (props) => {
     }
   }, [activeIndex, navItems, navigateToSection]);
 
-  // --- Render JSX (Added breathing animation) ---
+  // New text offset value using tspan (adjust as needed)
+  const textDy = "-30"; // Adjust this value until you see the desired space
+
   return (
     <>
-      {/* Inject the CSS animation keyframes */}
       <style>{breatheAnimation}</style>
 
-      <div className="flex items-center justify-center w-full h-screen bg-transparent font-sans overflow-hidden">
-        {/* Background Image Container */}
+      <div
+        className="flex items-center justify-center w-full h-screen bg-transparent font-sans overflow-hidden"
+        id="gooey-menu-section"
+      >
+        {/* Background Image */}
         <div className="absolute inset-0 z-0 overflow-hidden flex items-center justify-center">
           <div className="relative w-full h-full">
             <Image
-              src="/assets/realizationtk3d4.png" /* Replace with your actual image path */
+              src="/assets/realizationtk3d4.png"
               alt="Realization Toolkit Background"
               fill
               priority
               style={{ 
                 objectFit: 'contain',
                 objectPosition: 'center',
-                opacity: 0.12 // Adjust opacity to taste
+                opacity: 0.12
               }}
             />
           </div>
         </div>
 
-        {/* Apply the animation to this container */}
+        {/* Animated container */}
         <div
-          className={`relative ${spiralParams.containerSize} flex items-center justify-center overflow-visible z-10`}
+          className="relative h-screen w-full max-w-[1800px] flex items-center justify-center overflow-visible z-10"
           style={{
-             // Apply animation: name duration timing-function iteration-count
-             animation: 'breathe 4s ease-in-out infinite',
-             // Ensure transform-origin is center for scaling
-             transformOrigin: 'center center'
+            animation: 'breathe 4s ease-in-out infinite',
+            transformOrigin: 'center center'
           }}
         >
-          {/* Rotating container */}
-          <div
-            className="absolute w-full h-full"
-            style={{
-              transform: `rotate(${rotation}deg)`,
-              transition: 'transform 1s ease-in-out',
-              transformOrigin: 'center center'
-            }}
+          <svg
+            ref={svgRef}
+            className="w-[80%] h-[80%]"
+            viewBox={svgViewBox}
+            preserveAspectRatio="xMidYMid meet"
+            style={{ overflow: 'visible' }}
           >
-            {/* SVG container */}
-            <svg
-              className="absolute top-0 left-0 w-full h-full"
-              viewBox={spiralParams.svgViewBox}
-              style={{ overflow: 'visible' }}
-            >
-              {/* Visual spiral path - FINAL STYLING */}
+            <defs>
+              {/* Spiral path for text */}
+              <path id="spiralPathId" d={spiralPath} fill="none" stroke="none" />
+              
+              {/* Add checks for undefined spiralPath */}
               <path
-                d={spiralPath}
+                id="upperPathId"
+                d={validSpiralPath} // Add fallback value
                 fill="none"
-                stroke={textColor.active}
-                strokeWidth="4" // Increased thickness
-                strokeLinecap="round" // Rounded ends
-                strokeLinejoin="round" // Rounded corners/joins
-                style={{ opacity: 0.85 }}
+                stroke="none"
+                transform="translate(0, -25)"
               />
-              {/* Points representing menu item locations */}
-              {menuItemCoordinates.map((point, index) => (
-                index < navItems.length && index > 0 && (
-                  <g key={`point-${navItems[index].id}`}>
-                    <defs>
-                      <filter id={`blur-${navItems[index].id}`} x="-50%" y="-50%" width="200%" height="200%">
-                        <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" />
-                      </filter>
-                    </defs>
-                    <circle
-                      cx={point.x} cy={point.y} // Use final adjusted coords
-                      r={index === activeIndex ? 4 : 2}
-                      fill={index === activeIndex ? textColor.normal : textColor.active}
-                      style={{
-                        transition: 'r 0.3s ease, fill 0.3s ease, opacity 0.3s ease',
-                        opacity: index === activeIndex ? 0.7 : 0.3,
-                        filter: `url(#blur-${navItems[index].id})`
-                      }}
-                    />
-                  </g>
-                )
-              ))}
-            </svg>
+              
+              <path
+                id="lowerPathId"
+                d={validSpiralPath} // Add fallback value
+                fill="none" 
+                stroke="none"
+                transform="translate(0, 25)"
+              />
+              
+              <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="2.5" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
 
-            {/* Navigation menu items */}
-            {menuItemCoordinates.map((point, index) => (
-              <div
-                key={navItems[index].id}
-                className={`absolute transform ${index === 0 ? 'z-30' : ''}`}
-                style={{
-                  left: `calc(50% + ${point.x * scaleFactor}px)`, // Scale by factor
-                  top: `calc(50% + ${point.y * scaleFactor}px)`,  // Scale by factor
-                  transform: index === 0
-                    ? 'translate(-50%, -50%)'
-                    : `translate(-50%, -50%) rotate(${-rotation}deg)`,
-                  zIndex: index === 0 ? 30 : index === activeIndex ? 20 : 5,
-                  transition: index === 0 ? 'none' : 'transform 1s ease-in-out'
-                }}
-                onClick={() => handleItemClick(index)}
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-              >
-                {/* Inner div for text styling */}
-                <div
-                  className={`${
-                    index === 0
-                      ? 'w-20 xs:w-24 sm:w-28 md:w-40 flex flex-col items-center justify-center text-center'
-                      : index === 1 
-                        ? 'w-12 xs:w-16 sm:w-20 md:w-28 text-center flex flex-col' // Narrower for "Find Your Tools"
-                        : 'w-16 xs:w-20 sm:w-24 md:w-36 text-center' // Wider for other items
-                  } font-mono ${
-                    index === 0
-                      ? 'text-lg xs:text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight'
-                      : index === activeIndex
-                        ? 'text-sm xs:text-base sm:text-lg md:text-2xl font-medium tracking-tight'
-                        : index === hoveredIndex
-                          ? 'text-xs xs:text-sm sm:text-base md:text-xl font-normal tracking-tight'
-                          : 'text-[0.65rem] xs:text-xs sm:text-sm md:text-lg font-light tracking-tight'
-                  }`}
-                  style={{
-                    color: index === 0
-                      ? textColor.normal
-                      : index === activeIndex
-                        ? textColor.normal
-                        : index === hoveredIndex
-                          ? textColor.hover
-                          : textColor.active,
-                    letterSpacing: index === 0 ? '0.02em' : index === activeIndex ? '0.02em' : '0.01em',
-                    transition: 'all 0.3s ease',
-                    textAlign: 'center',
-                  }}
+              <linearGradient id="activeTextGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor={textColor.hover} />
+                <stop offset="100%" stopColor={textColor.normal} />
+              </linearGradient>
+            </defs>
+
+            {/* Visible spiral stroke */}
+            <path
+              d={validSpiralPath}
+              fill="none"
+              stroke={textColor.active}
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ opacity: 0.85 }}
+            />
+
+            {/* Center symbol */}
+            <text
+              x={centerX}
+              y={centerY}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fill={textColor.normal}
+              fontSize="40"
+              fontWeight="600"
+              style={{ 
+                cursor: 'pointer',
+                fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace'
+              }}
+              onClick={() => handleItemClick(0)}
+              onMouseEnter={() => setHoveredIndex(0)}
+              onMouseLeave={() => setHoveredIndex(null)}
+            >
+              ꩜
+            </text>
+
+            {/* Menu items on the spiral path */}
+            {menuItemPositions.map((position, index) => {
+              if (index === 0) return null;
+              
+              const isActive = index === activeIndex;
+              const isHovered = index === hoveredIndex;
+              const fontSize = isActive ? 24 : isHovered ? 22 : 20;
+              const fontWeight = isActive ? 600 : isHovered ? 500 : 400;
+              const fill = isActive 
+                ? 'url(#activeTextGradient)' 
+                : isHovered 
+                  ? textColor.hover 
+                  : textColor.active;
+
+              return (
+                <g
+                  key={`text-${navItems[index].id}`}
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => handleItemClick(index)}
+                  onMouseEnter={() => setHoveredIndex(index)}
+                  onMouseLeave={() => setHoveredIndex(null)}
                 >
-                  {/* Text content - with special handling for "Find Your Tools" */}
-                  {index === 0 ? (
-                    <div className="text-center">
-                      ꩜
-                    </div>
-                  ) : index === 1 ? (
-                    <div>
-                      <div>Find</div>
-                      <div>Your Tools</div>
-                    </div>
-                  ) : (
-                    navItems[index].label // Use original label directly
-                  )}
+                  {/* Shadow text for glow effect */}
+                  <text
+                    fill="rgba(0,0,10,0.1)"
+                    style={{
+                      fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+                      filter: 'blur(3px)',
+                    }}
+                  >
+                    <textPath
+                      href="#spiralPathId"
+                      startOffset={`${position.pathOffset}%`}
+                      fontSize={fontSize + 2}
+                      fontWeight={fontWeight}
+                      textAnchor="middle"
+                    >
+                      <tspan dy={textDy}>{navItems[index].label}</tspan>
+                    </textPath>
+                  </text>
 
-                  {/* Active item indicator dot */}
-                  {index !== 0 && index === activeIndex && (
-                    <div
-                      className="absolute -bottom-2 left-1/2 w-1 h-1 rounded-full"
-                      style={{
-                        backgroundColor: textColor.normal, transform: 'translateX(-50%)'
-                      }}
-                    />
-                  )}
-                </div>
-              </div>
-            ))}
-          </div> {/* End Rotating Container */}
+                  {/* Main text */}
+                  <text
+                    fill={fill}
+                    style={{
+                      fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+                      filter: isActive ? 'url(#glow)' : 'none',
+                      transition: 'font-size 0.3s ease, font-weight 0.3s ease, fill 0.3s ease'
+                    }}
+                  >
+                    <textPath
+                      href="#spiralPathId"
+                      startOffset={`${position.pathOffset}%`}
+                      fontSize={fontSize}
+                      fontWeight={fontWeight}
+                      textAnchor="middle"
+                    >
+                      <tspan dy={textDy}>{navItems[index].label}</tspan>
+                    </textPath>
+                  </text>
+                </g>
+              );
+            })}
 
-          {/* Progress indicator (Unchanged) */}
+            {/* Clickable hotspots */}
+            {menuItemPositions.map((position, index) => {
+              if (index === 0) return null;
+              return (
+                <circle
+                  key={`hotspot-${navItems[index].id}`}
+                  cx={centerX + position.x}
+                  cy={centerY + position.y}
+                  r="30"
+                  fill="transparent"
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => handleItemClick(index)}
+                  onMouseEnter={() => setHoveredIndex(index)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                />
+              );
+            })}
+          </svg>
+
+          {/* Progress indicator */}
           <div
             className="absolute transform -translate-x-1/2 flex flex-col items-center pointer-events-none"
             style={{ bottom: '-80px', left: '50%' }}
@@ -377,18 +340,22 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuProps> = (props) => {
                 className="h-full"
                 style={{
                   backgroundColor: textColor.progressBarFill,
-                  width: `${navItems.length > 1 ? (activeIndex / (navItems.length - 1)) * 100 : 0}%`,
+                  width: `${
+                    navItems.length > 1
+                      ? (activeIndex / (navItems.length - 1)) * 100
+                      : 0
+                  }%`,
                   transition: 'width 1s ease'
                 }}
               />
             </div>
             <p className="text-xs text-gray-500 mt-2 tracking-wider">
-              {(navItems[activeIndex]?.label) || 'Explore'}
+              {navItems[activeIndex]?.label || 'Explore'}
             </p>
           </div>
-        </div> {/* End Relative Container (Animated) */}
-      </div> 
-    </> // Use Fragment to wrap style and main div
+        </div>
+      </div>
+    </>
   );
 };
 

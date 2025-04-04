@@ -12,7 +12,6 @@ import { Testimonial } from '../../data/testimonialData'; // Adjust path as need
 import OrganicBackgroundEffect from '../animations/OrganicBackgroundEffect'; // Adjust path as needed
 
 // --- Testimonial Card (Memoized, Refactored for Shadow) ---
-// (Keep the TestimonialCard component from the previous version - no changes needed here)
 // Define the TestimonialCardProps interface
 interface TestimonialCardProps {
   testimonial: Testimonial;
@@ -20,6 +19,17 @@ interface TestimonialCardProps {
 
 const TestimonialCard: React.FC<TestimonialCardProps> = React.memo(({ testimonial }) => {
   const [hover, setHover] = useState(false);
+
+  // Calculate font size based on text length
+  const textFontSize = useMemo(() => {
+    if (!testimonial.text) return '';
+    
+    const length = testimonial.text.length;
+    // For mobile screens
+    if (length > 300) return 'text-sm md:text-base';
+    if (length > 200) return 'text-base md:text-lg';
+    return 'text-lg md:text-xl';
+  }, [testimonial.text]);
 
   const colorScheme = useMemo(() => {
     const schemes = ['default', 'cool', 'warm', 'contrast'] as const;
@@ -51,7 +61,8 @@ const TestimonialCard: React.FC<TestimonialCardProps> = React.memo(({ testimonia
         backdropFilter: 'blur(3px)',
         WebkitBackdropFilter: 'blur(1px)',
         border: '1px solid rgba(255, 255, 255, 0.1)',
-        minHeight: '320px',
+        minHeight: '280px', // Slightly reduced minimum height
+        maxHeight: '600px', // Added maximum height to prevent extremely tall cards
         height: 'auto',
         display: 'flex',
         flexDirection: 'column',
@@ -59,8 +70,9 @@ const TestimonialCard: React.FC<TestimonialCardProps> = React.memo(({ testimonia
         <OrganicBackgroundEffect
           intensity="subtle"
           colorScheme={colorScheme}
+          isStatic={true}
         />
-        <div className="relative z-10 flex flex-col justify-center flex-grow p-6">
+        <div className="relative z-10 flex flex-col justify-between flex-grow p-6">
           {testimonial.imageUrl ? (
             <div className="flex justify-center items-center flex-grow">
               <img
@@ -72,12 +84,12 @@ const TestimonialCard: React.FC<TestimonialCardProps> = React.memo(({ testimonia
             </div>
           ) : (
             <>
-              <div className="mb-6 flex-grow flex items-center">
-                <p className="text-[var(--color-foreground)] font-light text-center leading-relaxed">
+              <div className="mb-4 flex-grow flex items-center">
+                <p className={`text-[var(--color-foreground)] font-light text-center leading-relaxed ${textFontSize}`}>
                   {testimonial.text}
                 </p>
               </div>
-              <div className="flex items-center justify-center mt-auto pt-4">
+              <div className="flex items-center justify-center pt-4">
                 <div className="text-center">
                   <p className="text-[var(--color-foreground)] font-medium">{testimonial.name}</p>
                   {testimonial.title && (
@@ -95,31 +107,32 @@ const TestimonialCard: React.FC<TestimonialCardProps> = React.memo(({ testimonia
 
 
 // --- Arrow Button (Memoized) ---
-// (Keep the ArrowButton component from the previous version - no changes needed here)
 interface ArrowButtonProps {
   direction: 'prev' | 'next';
   onClick: () => void;
   disabled?: boolean;
 }
+
 const ArrowButton: React.FC<ArrowButtonProps> = React.memo(({ direction, onClick, disabled }) => {
   return (
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`p-3 rounded-full bg-transparent border border-[var(--color-foreground-muted)]
-                text-[var(--color-foreground)] hover:bg-[var(--color-foreground-muted)]
-                transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[var(--color-background)] focus:ring-[var(--color-accent-blue)]
-                disabled:opacity-30 disabled:cursor-not-allowed`}
+      className="w-12 h-12 rounded-full
+               border border-[var(--color-foreground-muted)] text-[var(--color-foreground)]
+               hover:bg-[var(--color-foreground-muted)] transition-colors
+               disabled:opacity-30 disabled:cursor-not-allowed backdrop-blur-sm bg-white/10
+               flex items-center justify-center
+               focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[var(--color-background)] focus:ring-[var(--color-accent-blue)]"
       aria-label={direction === 'prev' ? 'Previous testimonial' : 'Next testimonial'}
     >
-      {direction === 'prev' ? '‹' : '›'}
+      {direction === 'prev' ? '←' : '→'}
     </button>
   );
 });
 
 
 // --- Carousel Indicators (Memoized) ---
-// (Keep the CarouselIndicators component from the previous version - no changes needed here)
 interface IndicatorProps {
   count: number;
   current: number;
@@ -235,7 +248,7 @@ const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({ testimonials 
         </h2>
 
         <div
-          className="relative max-w-3xl mx-auto" // This container centers everything
+          className="relative max-w-3xl mx-auto"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
           onTouchStart={handleTouchStart}
@@ -244,18 +257,14 @@ const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({ testimonials 
           aria-roledescription="carousel"
           aria-label="Testimonials"
         >
-          {/* Card Animation Area - NOW WITH RESPONSIVE MIN-HEIGHT */}
+          {/* Card Animation Area */}
           <div
-             // **KEY CHANGE**: Using Tailwind classes for responsive min-height.
-             // Base (mobile): min-h-[650px] - Adjust this value based on testing!
-             // Medium screens and up: md:min-h-[480px] - Adjust if needed for desktop.
-             // Added mb-4 for extra spacing below the animation area before controls
-            className="relative overflow-hidden mb-4 min-h-[650px] md:min-h-[480px]"
+            className="relative mb-0"
             aria-live="polite"
           >
             <AnimatePresence initial={false} custom={direction} mode="wait">
               <motion.div
-                key={current} // Unique key for each slide
+                key={current}
                 custom={direction}
                 variants={slideVariants}
                 initial="enter"
@@ -265,43 +274,36 @@ const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({ testimonials 
                   x: { type: "spring", stiffness: 300, damping: 35 },
                   opacity: { duration: 0.3 }
                 }}
-                // Padding applied here to give card space within the animator frame
-                className="absolute top-0 left-0 w-full p-1 md:p-2"
+                className="w-full p-1 md:p-2"
                 role="group"
                 aria-roledescription="slide"
                 aria-label={`${current + 1} of ${testimonials.length}`}
               >
-                {/* Render the current testimonial card */}
                 {testimonials.length > 0 && <TestimonialCard testimonial={testimonials[current]} />}
               </motion.div>
             </AnimatePresence>
           </div>
-           {/* End Card Animation Area */}
 
+          {/* Controls Area - Moved closer to card */}
+          <div className="relative z-20 mt-4"> 
+            {/* Indicators */}
+            {testimonials.length > 1 && (
+              <CarouselIndicators
+                count={testimonials.length}
+                current={current}
+                setCurrent={goToSlide}
+              />
+            )}
 
-          {/* Controls Area */}
-          <div className="relative z-20"> {/* Ensure controls are not overlapped by potential absolute elements if structure changes */}
-              {/* Indicators */}
-              {testimonials.length > 1 && (
-                <CarouselIndicators
-                  count={testimonials.length}
-                  current={current}
-                  setCurrent={goToSlide}
-                />
-              )}
-
-              {/* Navigation Buttons */}
-              {testimonials.length > 1 && (
-                // mt-8 provides spacing between indicators and buttons
-                <div className="flex justify-center items-center space-x-6 mt-8">
-                  <ArrowButton direction="prev" onClick={prevSlide} disabled={testimonials.length <= 1} />
-                  <ArrowButton direction="next" onClick={nextSlide} disabled={testimonials.length <= 1} />
-                </div>
-              )}
+            {/* Navigation Buttons */}
+            {testimonials.length > 1 && (
+              <div className="flex justify-center items-center gap-4 mt-4">
+                <ArrowButton direction="prev" onClick={prevSlide} disabled={testimonials.length <= 1} />
+                <ArrowButton direction="next" onClick={nextSlide} disabled={testimonials.length <= 1} />
+              </div>
+            )}
           </div>
-           {/* End Controls Area */}
-
-        </div> {/* End max-w-3xl container */}
+        </div>
       </div>
     </Section>
   );

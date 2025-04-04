@@ -526,7 +526,8 @@ code, pre, .mono {
 /* Global Section Styles */
 section {
   position: relative;
-  transition: opacity 0.5s ease;
+  background: transparent; /* Changed from var(--color-background) to transparent */
+  z-index: 1; /* Ensure it's above the background but doesn't block it */
 }
 
 /* Gooey Carousel */
@@ -695,51 +696,9 @@ section {
 
 /* Sticky menu section styling */
 #gooey-menu-section {
-  z-index: 50;
-  transition: all 0.5s ease-out;
-  margin-top: -4rem; /* Negative margin to pull it up */
-}
-
-#gooey-menu-section.expanded {
-  height: 100vh;
-  width: 100vw;
-}
-/* Add a scroll trigger that enhances the transition */
-.scroll-active #gooey-menu-section {
-  transform: translateY(0);
-  opacity: 1;
-}
-
-.scroll-inactive #gooey-menu-section {
-  transform: translateY(2rem);
-  opacity: 0.95;
-}
-/* Enhance menu visibility */
-.gooey-menu-visible {
-  opacity: 1 !important;
-}
-
-/* Enhance menu item visibility when active */
-.menu-item-active {
-  transform: scale(1.1);
-  filter: brightness(1.2);
-}
-
-/* Flash highlight effect */
-.flash-highlight {
-  animation: flash-animation 1s ease-out;
-}
-
-@keyframes flash-animation {
-  0% { background-color: rgba(255, 255, 255, 0); }
-  50% { background-color: rgba(255, 255, 255, 0.15); }
-  100% { background-color: rgba(255, 255, 255, 0); }
-}
-
-/* Section visibility control for the sticky flow */
-.section-hidden {
-  opacity: 0;
-  pointer-events: none;
+  position: relative;
+  background: transparent; /* Changed to transparent */
+  z-index: 10;
 }
 
 /* Paper Texture Overlay */
@@ -757,26 +716,5 @@ section {
   opacity: 0.15;
   mix-blend-mode: multiply;
 }
-
-/* Add these rules to the end of your globals.css file to ensure they override everything else */
-
-/* Force carousel card positioning and stacking */
-.list-none li.flex-none {
-  position: sticky !important; 
-  overflow: visible !important;
-}
-
-/* Ensure z-index values are respected */
-/* Reverse the stacking order - first cards should be behind, later cards on top */
-.list-none li:nth-child(1) { z-index: 20 !important; }
-.list-none li:nth-child(2) { z-index: 21 !important; }
-.list-none li:nth-child(3) { z-index: 22 !important; }
-.list-none li:nth-child(4) { z-index: 23 !important; }
-.list-none li:nth-child(5) { z-index: 24 !important; }
-.list-none li:nth-child(6) { z-index: 25 !important; }
-.list-none li:nth-child(7) { z-index: 26 !important; }
-.list-none li:nth-child(8) { z-index: 27 !important; }
-.list-none li:nth-child(9) { z-index: 28 !important; }
-.list-none li:nth-child(10) { z-index: 29 !important; }
 
 

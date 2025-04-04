@@ -48,7 +48,7 @@ const OpeningSection: React.FC<OpeningSectionProps> = ({ id }) => {
         style={{ opacity, y: textY }}
       >
         <h1 className="text-5xl md:text-7xl lg:text-8xl font-light tracking-wide mb-4 md:mb-6 text-foreground">
-          REALIZATION
+          MEMBERSHIPS
         </h1>
         
         <h2 className="text-xl md:text-2xl lg:text-3xl font-light mb-6 md:mb-8 text-foreground">
@@ -63,7 +63,13 @@ const OpeningSection: React.FC<OpeningSectionProps> = ({ id }) => {
       {/* Scroll Indicator */}
       <motion.div 
         className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-10"
-        style={{ opacity: useTransform(scrollY, [0, viewportHeight * 0.2], [0.8, 0]) }}
+        style={{ 
+          opacity: useTransform(
+            scrollY, 
+            [0, viewportHeight * 0.1, viewportHeight * 0.2], 
+            [0.8, 0.4, 0]
+          ) 
+        }}
         animate={{ 
           y: [0, 10, 0],
         }}

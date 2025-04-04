@@ -50,7 +50,6 @@ interface MembershipCardProps {
   onIntervalChange: (interval: string) => void;
 }
 
-
 // (Keep the existing MembershipCard component)
 // ... MembershipCard component remains the same ...
 const MembershipCard: React.FC<MembershipCardProps> = ({
@@ -103,7 +102,6 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
       currentOptionId = intervalData.pricingOptionId; // This preserves the pricing option ID
     }
   }
-
 
   const choosePlanBaseStyle = {
     width: '80%',
@@ -173,8 +171,8 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
           overflow: 'hidden',
           padding: '24px',
           background: 'rgba(255, 255, 255, 0.08)',
-          backdropFilter: 'blur(3px)',
-          WebkitBackdropFilter: 'blur(0px)',
+          backdropFilter: 'blur(4px)',
+          WebkitBackdropFilter: 'blur(4px)',
           transform: 'translate3d(0, 0, 0)',
           border: '1px solid rgba(255, 255, 255, 0.1)',
           boxShadow: hover
@@ -190,6 +188,7 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
         <OrganicBackgroundEffect
           intensity={isActive ? 'medium' : 'subtle'}
           colorScheme={index % 2 === 0 ? 'contrast' : 'cool'}
+          isStatic={true} // Changed from static={true} to isStatic={true}
         />
 
         {/* The existing gradient overlay */}
@@ -360,7 +359,6 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
   );
 };
 
-
 interface PricingSectionProps {
   plans: Plan[];
   id?: string;
@@ -383,7 +381,6 @@ const PricingSection: React.FC<PricingSectionProps> = ({ plans = [], id }) => {
     setSelectedIntervals(initialIntervals);
   }, [plans]); // Re-run if plans change
 
-
   return (
     <Section id="pricing" className="pricing-section py-16">
       <div className="container mx-auto px-4 py-8">
@@ -392,7 +389,7 @@ const PricingSection: React.FC<PricingSectionProps> = ({ plans = [], id }) => {
         </h2>
 
         {/* Container for the card stack */}
-        <div className="relative w-full h-[550px] mt-16 flex justify-center items-start mb-8"> {/* Added mb-8 for base spacing */}
+        <div className="relative w-full h-[550px] mt-16 flex justify-center items-start mb-8">
           {/* Card stack */}
           {plans.map((plan, index) => (
             <MembershipCard
@@ -403,20 +400,19 @@ const PricingSection: React.FC<PricingSectionProps> = ({ plans = [], id }) => {
               index={index}
               activeIndex={activeCardIndex}
               totalCards={plans.length}
-              selectedInterval={selectedIntervals[index]} // Use state value
+              selectedInterval={selectedIntervals[index]}
               onIntervalChange={(interval) => {
-                  // Ensure state is updated correctly for the specific card
-                  setSelectedIntervals(prev => ({
-                      ...prev,
-                      [index]: interval
-                  }));
+                setSelectedIntervals(prev => ({
+                  ...prev,
+                  [index]: interval
+                }));
               }}
             />
           ))}
         </div>
 
         {/* Navigation Buttons Container */}
-        <div className="flex justify-center items-center gap-4 mt-4"> {/* Use mt-4 *in addition* to mb-8 above */}
+        <div className="flex justify-center items-center gap-4 mt-4">
           {/* Previous button */}
           <button
             onClick={() => activeCardIndex > 0 && setActiveCardIndex(activeCardIndex - 1)}
@@ -425,7 +421,7 @@ const PricingSection: React.FC<PricingSectionProps> = ({ plans = [], id }) => {
                      border border-[var(--color-foreground-muted)] text-[var(--color-foreground)]
                      hover:bg-[var(--color-foreground-muted)] transition-colors
                      disabled:opacity-30 disabled:cursor-not-allowed backdrop-blur-sm bg-white/10
-                     flex items-center justify-center" // Removed absolute positioning
+                     flex items-center justify-center"
             aria-label="Previous plan"
           >
             ←
@@ -439,7 +435,7 @@ const PricingSection: React.FC<PricingSectionProps> = ({ plans = [], id }) => {
                      border border-[var(--color-foreground-muted)] text-[var(--color-foreground)]
                      hover:bg-[var(--color-foreground-muted)] transition-colors
                      disabled:opacity-30 disabled:cursor-not-allowed backdrop-blur-sm bg-white/10
-                     flex items-center justify-center" // Removed absolute positioning
+                     flex items-center justify-center"
             aria-label="Next plan"
           >
             →

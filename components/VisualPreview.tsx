@@ -15,6 +15,7 @@ const GlassCardGrittyGradientBlob = () => {
 
   // Generate noise points for the gritty texture
   const [noisePoints, setNoisePoints] = useState([]);
+  const [hovered, setHovered] = useState(false);
   
   useEffect(() => {
     // Create a texture with more white space but covering the shapes
@@ -45,16 +46,13 @@ const GlassCardGrittyGradientBlob = () => {
     setNoisePoints(points);
   }, []);
 
-  // SVG paths for organic shapes inspired by the landscape map
+  // Define organic shape paths
   const organicShapePaths = [
-    // Main central shape (similar to "Service Innovation Processes")
-    "M30,30 C45,20 65,25 75,40 C85,55 80,75 65,85 C50,95 30,90 20,75 C10,60 15,40 30,30 Z",
+    // Central blob (similar to "Philosophy" shape)
+    "M60,40 C80,30 90,50 85,70 C80,90 60,95 40,90 C20,85 15,65 25,50 C35,35 50,45 60,40 Z",
     
-    // Upper right shape (similar to "Service Design Practice")
-    "M70,20 C85,15 95,25 98,40 C101,55 95,65 80,68 C65,71 55,65 52,50 C49,35 55,25 70,20 Z",
-    
-    // Lower shape (similar to "Value Creation")
-    "M40,65 C55,60 70,65 75,80 C80,95 70,105 55,110 C40,115 25,105 20,90 C15,75 25,70 40,65 Z",
+    // Left shape (similar to "Practices")
+    "M30,35 C40,25 55,35 60,50 C65,65 55,80 40,85 C25,90 15,75 15,60 C15,45 20,45 30,35 Z",
     
     // Right shape (similar to "Design for Sustainability")
     "M75,50 C90,45 100,55 105,70 C110,85 100,95 85,100 C70,105 60,95 55,80 C50,65 60,55 75,50 Z",
@@ -65,15 +63,28 @@ const GlassCardGrittyGradientBlob = () => {
 
   return (
     <div className="flex items-center justify-center w-full h-full p-4">
-      <div
-        className="relative max-w-3xl w-full aspect-video overflow-hidden rounded-xl shadow-xl"
+      <motion.div
+        className="relative max-w-3xl w-full aspect-video overflow-hidden shadow-xl"
         style={{
           background: 'rgba(255, 255, 255, 0.15)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
           border: '1px solid rgba(255, 255, 255, 0.3)',
-          boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.2)'
+          boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.2)',
+          borderRadius: '24px', // More pronounced rounding for cards
+          transition: 'all 0.3s ease'
         }}
+        whileHover={{
+          boxShadow: '0 12px 40px 0 rgba(31, 38, 135, 0.3)',
+          y: -5,
+        }}
+        animate={{
+          boxShadow: hovered ? 
+            '0 12px 40px 0 rgba(31, 38, 135, 0.3)' : 
+            '0 8px 32px 0 rgba(31, 38, 135, 0.2)',
+        }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
       >
         {/* Organic shape gradient blobs */}
         <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
@@ -117,36 +128,36 @@ const GlassCardGrittyGradientBlob = () => {
                     />
                   </radialGradient>
                   <filter id={`blur-${index}`} x="-50%" y="-50%" width="200%" height="200%">
-                    <feGaussianBlur in="SourceGraphic" stdDeviation={8 - (index % 3)} />
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="7" />
                   </filter>
                 </defs>
                 <motion.path
-                  d={path || "M0,0"}
+                  d={path}
                   fill={`url(#gradient-${index})`}
                   filter={`url(#blur-${index})`}
                   animate={{
                     d: [
                       path,
-                      // Slightly modified path for animation
+                      // More pronounced path variations for dynamic movement
                       path.replace(/(\d+),(\d+)/g, (match, p1, p2) => {
-                        const x = parseInt(p1) + (Math.random() * 10 - 5);
-                        const y = parseInt(p2) + (Math.random() * 10 - 5);
+                        const x = parseInt(p1) + (Math.random() * 12 - 6);
+                        const y = parseInt(p2) + (Math.random() * 12 - 6);
                         return `${x},${y}`;
                       }),
-                      // Another variation
+                      // Another variation with different values
                       path.replace(/(\d+),(\d+)/g, (match, p1, p2) => {
-                        const x = parseInt(p1) - (Math.random() * 8 - 4);
-                        const y = parseInt(p2) - (Math.random() * 8 - 4);
+                        const x = parseInt(p1) - (Math.random() * 10 - 5);
+                        const y = parseInt(p2) - (Math.random() * 10 - 5);
                         return `${x},${y}`;
                       }),
                       path
                     ],
                     opacity: [0.8, 0.7, 0.9, 0.8].map(v => v - (index * 0.05)),
-                    scale: [1, 1.03, 0.98, 1],
-                    rotate: [0, index % 2 === 0 ? 5 : -5, index % 2 === 0 ? -3 : 3, 0],
+                    scale: [1, 1.05, 0.97, 1], // More pronounced scale animation
+                    rotate: [0, index % 2 === 0 ? 7 : -7, index % 2 === 0 ? -5 : 5, 0], // Increased rotation
                   }}
                   transition={{
-                    duration: 15 + index * 2,
+                    duration: 10 + index * 1.5, // Faster base duration
                     repeat: Infinity,
                     ease: "easeInOut",
                     delay: index * 0.5,
@@ -157,7 +168,7 @@ const GlassCardGrittyGradientBlob = () => {
           ))}
         </div>
 
-        {/* Gritty texture overlay */}
+        {/* Gritty texture overlay with enhanced animation */}
         <div className="absolute inset-0">
           {noisePoints.map((point, index) => (
             <motion.div
@@ -175,22 +186,25 @@ const GlassCardGrittyGradientBlob = () => {
               animate={{
                 opacity: [
                   point.opacity, 
-                  point.opacity * 0.6, 
-                  point.opacity * 0.8, 
+                  point.opacity * 0.5, // More contrast between opacity states 
+                  point.opacity * 0.7, 
                   point.opacity
                 ],
                 scale: [
                   1, 
+                  Math.random() * 0.4 + 0.8, // More scale variation
                   Math.random() * 0.3 + 0.85, 
-                  Math.random() * 0.2 + 0.9, 
                   1
                 ],
+                x: [0, Math.random() * 4 - 2, Math.random() * 6 - 3, 0], // Slight position shifts
+                y: [0, Math.random() * 4 - 2, Math.random() * 6 - 3, 0],
+                rotate: [0, Math.random() * 40 - 20, 0], // Add rotation for more dynamism
               }}
               transition={{
-                duration: Math.random() * 4 + 6,
+                duration: Math.random() * 3 + 4, // Slightly faster animations
                 repeat: Infinity,
                 ease: "easeInOut",
-                delay: Math.random() * 3,
+                delay: Math.random() * 2,
               }}
             />
           ))}
@@ -217,8 +231,15 @@ const GlassCardGrittyGradientBlob = () => {
           }}
         />
 
-        {/* Text overlay - original styling from original code */}
-        <div className="absolute inset-x-0 bottom-0 flex items-center justify-center pb-8 pointer-events-none z-10">
+        {/* Text overlay - with improved hover interaction */}
+        <motion.div 
+          className="absolute inset-x-0 bottom-0 flex items-center justify-center pb-8 pointer-events-none z-10"
+          animate={{
+            y: hovered ? -5 : 0,
+            opacity: hovered ? 1 : 0.9,
+          }}
+          transition={{ duration: 0.3 }}
+        >
           <div className="text-center">
             <div style={{
               fontWeight: 300,
@@ -228,10 +249,19 @@ const GlassCardGrittyGradientBlob = () => {
             }}>
               <span className="text-lg tracking-wide">Tool Discovery Evaluation</span>
             </div>
-            <div className="mt-2 text-xs" style={{ color: colors.secondary }}>click to experience</div>
+            <motion.div 
+              className="mt-2 text-xs" 
+              style={{ color: colors.secondary }}
+              animate={{
+                opacity: hovered ? 1 : 0.7,
+                scale: hovered ? 1.05 : 1,
+              }}
+            >
+              click to experience
+            </motion.div>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };
