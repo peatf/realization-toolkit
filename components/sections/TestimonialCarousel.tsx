@@ -225,7 +225,7 @@ const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({ testimonials 
     <Section id="testimonials" className="overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 py-12">
         <h2 className="font-sans text-4xl md:text-5xl text-[var(--color-foreground)] mb-12 font-light text-center">
-          Transformational Results
+          Subscriber Celebrations
         </h2>
         
         <div 

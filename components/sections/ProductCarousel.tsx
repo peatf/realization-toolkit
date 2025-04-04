@@ -63,11 +63,14 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
             WebkitOverflowScrolling: 'touch',
             willChange: 'transform' 
           }}>
-            {products.map((product) => (
+            {products.map((product, index) => (
               <li
                 key={product.id}
-                className="flex-none w-full max-w-[280px] sm:max-w-[320px] sticky top-0 left-0 flex justify-center items-start h-80 relative ml-4 first:ml-0 md:left-auto cursor-pointer outline-none overflow-hidden"
-                style={{ left: `${(product.id * 2.2) - 2.2}rem` }}
+                className="flex-none w-full max-w-[280px] sm:max-w-[320px] sticky top-0 left-0 flex justify-center items-start h-80 relative ml-4 first:ml-0 cursor-pointer outline-none overflow-hidden"
+                style={{ 
+                  left: `${(product.id * 2.2) - 2.2}rem`,
+                  zIndex: products.length - index // This makes earlier cards stack on top
+                }}
                 onClick={() => openTip(product.id)}
               >
                 <span className="absolute top-0 left-0 block p-3 h-full writing-vertical-lr text-center">
@@ -205,6 +208,6 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
       `}</style>
     </Section>
   );
-};
+}; 
 
 export default ProductCarousel;
