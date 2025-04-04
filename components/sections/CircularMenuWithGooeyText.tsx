@@ -31,7 +31,7 @@ const breatheAnimation = `
 const CircularMenuWithGooeyText: React.FC<CircularMenuProps> = () => {
   const navItems: NavItem[] = [
     { id: 'membership-benefits', label: 'Realization Toolkit', target: 'membership-benefits' },
-    { id: 'quiz', label: 'Find Your Tools', target: 'quiz' },
+    { id: 'quiz', label: 'Find Your Tools', target: 'membership-benefits' }, // Changed from 'quiz' to 'membership-benefits'
     { id: 'product-carousels', label: 'Learn About the Tools', target: 'product-carousels' },
     { id: 'pricing', label: 'Enroll Now', target: 'pricing' },
     { id: 'toolkit-exclusives', label: 'Realization Toolkit Exclusives', target: 'toolkit-exclusives' },
@@ -42,6 +42,7 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuProps> = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [menuItemPositions, setMenuItemPositions] = useState<Point[]>([]);
   const svgRef = useRef<SVGSVGElement>(null);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
 
   const textColor = {
     active: '#60a5fa',
@@ -96,6 +97,21 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuProps> = () => {
       }
     }
   }, [navItems.length]);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    // Initial check
+    checkMobile();
+    
+    // Add event listener for window resize
+    window.addEventListener('resize', checkMobile);
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const navigateToSection = useCallback((targetId: string): void => {
     const targetElement = document.getElementById(targetId);
@@ -253,7 +269,9 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuProps> = () => {
               
               const isActive = index === activeIndex;
               const isHovered = index === hoveredIndex;
-              const fontSize = isActive ? 24 : isHovered ? 22 : 20;
+              const fontSize = isMobile
+                ? (isActive ? 28 : isHovered ? 26 : 24) // Larger sizes for mobile
+                : (isActive ? 24 : isHovered ? 22 : 20); // Original sizes for desktop;
               const fontWeight = isActive ? 600 : isHovered ? 500 : 400;
               const fill = isActive 
                 ? 'url(#activeTextGradient)' 
@@ -269,25 +287,6 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuProps> = () => {
                   onMouseEnter={() => setHoveredIndex(index)}
                   onMouseLeave={() => setHoveredIndex(null)}
                 >
-                  {/* Shadow text for glow effect */}
-                  <text
-                    fill="rgba(0,0,10,0.1)"
-                    style={{
-                      fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
-                      filter: 'blur(3px)',
-                    }}
-                  >
-                    <textPath
-                      href="#spiralPathId"
-                      startOffset={`${position.pathOffset}%`}
-                      fontSize={fontSize + 2}
-                      fontWeight={fontWeight}
-                      textAnchor="middle"
-                    >
-                      <tspan dy={textDy}>{navItems[index].label}</tspan>
-                    </textPath>
-                  </text>
-
                   {/* Main text */}
                   <text
                     fill={fill}
