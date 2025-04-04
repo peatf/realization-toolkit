@@ -11,7 +11,8 @@ const QuizWithPreview = () => {
   };
   
   return (
-    <div className="w-full min-h-[700px] relative">
+    // Remove the fixed min-height that's causing the gap
+    <div className="w-full relative">
       <AnimatePresence mode="wait">
         {!showQuiz ? (
           <motion.div 

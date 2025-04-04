@@ -116,10 +116,10 @@ const Home: NextPage = () => {
         />
       </section>
       
-      {/* Membership Benefits & Quiz Section - MOVE BOTH DOWN TOGETHER ON DESKTOP */}
+      {/* Membership Benefits & Quiz Section */}
       <section 
         id="membership-benefits" 
-        className="relative lg:mt-72 pt-12 pb-0" // Added lg:mt-32 to push BOTH sections down on desktop
+        className="relative lg:mt-72 pt-12 pb-6"
       >
         <div className="container mx-auto px-4 md:px-8">
           <div className="flex flex-col lg:flex-row gap-12 items-start">
@@ -128,7 +128,9 @@ const Home: NextPage = () => {
               <h3 className="font-sans text-4xl md:text-5xl text-[var(--color-foreground)] mb-8 font-light text-center">
                 About Realization Toolkit
               </h3>
-              <MembershipBenefits />
+              <div className="h-full"> {/* Wrapper to match heights if needed */}
+                <MembershipBenefits />
+              </div>
             </div>
 
             {/* Quiz Section */}
