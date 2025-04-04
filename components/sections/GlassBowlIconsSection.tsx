@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Section from '../layout/Section';
 import Image from 'next/image';
 
@@ -9,12 +9,45 @@ interface GlassBowlIconsSectionProps {
 const GlassBowlIconsSection: React.FC<GlassBowlIconsSectionProps> = ({ id }) => {
   const [activeIcon, setActiveIcon] = useState<number | null>(null);
   const [activePosition, setActivePosition] = useState<number | null>(null);
-  
-  // Bowl's original dimensions from the original component
-  const originalWidth = 320;  // Increased from 240px
-  const originalHeight = 160; // Increased from 120px
-  const originalIconSize = 75; // Increased from 60px
-  
+  const [dimensions, setDimensions] = useState({
+    width: 320,
+    height: 160,
+    iconSize: 75
+  });
+  const [isMobile, setIsMobile] = useState(false);
+  const [clientSide, setClientSide] = useState(false);
+
+  useEffect(() => {
+    // Set clientSide to true when component mounts (we're in browser)
+    setClientSide(true);
+
+    const handleResize = () => {
+      const isMobileView = window.innerWidth < 640;
+      setIsMobile(isMobileView);
+
+      if (isMobileView) {
+        // Mobile dimensions
+        setDimensions({
+          width: 260,
+          height: 130,
+          iconSize: 55
+        });
+      } else {
+        // Desktop dimensions
+        setDimensions({
+          width: 320,
+          height: 160,
+          iconSize: 75
+        });
+      }
+    };
+
+    // Initial call and event listener
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const icons = [
     {
       id: 1,
@@ -35,7 +68,7 @@ const GlassBowlIconsSection: React.FC<GlassBowlIconsSectionProps> = ({ id }) => 
       image: "/assets/Self Dashboard new icon.png"
     }
   ];
-  
+
   const handleIconClick = (id: number) => {
     if (activeIcon === id) {
       setActiveIcon(null);
@@ -45,7 +78,7 @@ const GlassBowlIconsSection: React.FC<GlassBowlIconsSectionProps> = ({ id }) => 
       setActivePosition(id);
     }
   };
-  
+
   return (
     <Section id={id} className="py-16 px-4 md:px-8">
       <div className="flex flex-col items-center justify-center max-w-4xl mx-auto">
@@ -56,15 +89,16 @@ const GlassBowlIconsSection: React.FC<GlassBowlIconsSectionProps> = ({ id }) => 
           </h2>
           <p className="text-base text-secondary italic">Click on an icon to learn more</p>
         </div>
-        
+
         {/* Organic Glass Bowl Container - with dynamic sizing based on active state */}
         <div 
-          className="relative mb-16 mt-8 transition-all duration-500" /* Added mt-8 */
+          className="relative mb-16 mt-8 transition-all duration-500"
           style={{ 
-            width: `${originalWidth}px`,
-            height: `${originalHeight}px`,
-            transform: `scale(${activeIcon ? 1 : 1.55})`,
-            transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)'
+            width: `${dimensions.width}px`,
+            height: `${dimensions.height}px`,
+            transform: `scale(${activeIcon ? 1 : (clientSide && isMobile ? 1.3 : 1.55)})`,
+            transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+            margin: '0 auto' // Center the bowl on mobile
           }}
         >
           {/* First Icon */}
@@ -75,8 +109,8 @@ const GlassBowlIconsSection: React.FC<GlassBowlIconsSectionProps> = ({ id }) => 
               top: activePosition === 1 ? '-40px' : '0px',
               transform: 'translateX(-50%)',
               transitionTimingFunction: activePosition === 1 ? 'cubic-bezier(0.34, 1.56, 0.64, 1)' : 'ease',
-              width: `${originalIconSize}px`,
-              height: `${originalIconSize}px`
+              width: `${dimensions.iconSize}px`,
+              height: `${dimensions.iconSize}px`
             }}
             onClick={() => handleIconClick(1)}
           >
@@ -96,7 +130,7 @@ const GlassBowlIconsSection: React.FC<GlassBowlIconsSectionProps> = ({ id }) => 
                   />
                 </div>
               </div>
-              
+
               {/* Container with clip-path to only show bottom half with blur */}
               <div 
                 className="absolute inset-0" 
@@ -118,7 +152,7 @@ const GlassBowlIconsSection: React.FC<GlassBowlIconsSectionProps> = ({ id }) => 
               </div>
             </div>
           </div>
-          
+
           {/* Second Icon */}
           <div 
             className="absolute z-20 cursor-pointer transition-all duration-500"
@@ -127,8 +161,8 @@ const GlassBowlIconsSection: React.FC<GlassBowlIconsSectionProps> = ({ id }) => 
               top: activePosition === 2 ? '-40px' : '0px',
               transform: 'translateX(-50%)',
               transitionTimingFunction: activePosition === 2 ? 'cubic-bezier(0.34, 1.56, 0.64, 1)' : 'ease',
-              width: `${originalIconSize}px`,
-              height: `${originalIconSize}px`
+              width: `${dimensions.iconSize}px`,
+              height: `${dimensions.iconSize}px`
             }}
             onClick={() => handleIconClick(2)}
           >
@@ -148,7 +182,7 @@ const GlassBowlIconsSection: React.FC<GlassBowlIconsSectionProps> = ({ id }) => 
                   />
                 </div>
               </div>
-              
+
               {/* Container with clip-path to only show bottom half with blur */}
               <div 
                 className="absolute inset-0" 
@@ -170,7 +204,7 @@ const GlassBowlIconsSection: React.FC<GlassBowlIconsSectionProps> = ({ id }) => 
               </div>
             </div>
           </div>
-          
+
           {/* Third Icon */}
           <div 
             className="absolute z-20 cursor-pointer transition-all duration-500"
@@ -179,8 +213,8 @@ const GlassBowlIconsSection: React.FC<GlassBowlIconsSectionProps> = ({ id }) => 
               top: activePosition === 3 ? '-40px' : '0px',
               transform: 'translateX(-50%)',
               transitionTimingFunction: activePosition === 3 ? 'cubic-bezier(0.34, 1.56, 0.64, 1)' : 'ease',
-              width: `${originalIconSize}px`,
-              height: `${originalIconSize}px`
+              width: `${dimensions.iconSize}px`,
+              height: `${dimensions.iconSize}px`
             }}
             onClick={() => handleIconClick(3)}
           >
@@ -200,7 +234,7 @@ const GlassBowlIconsSection: React.FC<GlassBowlIconsSectionProps> = ({ id }) => 
                   />
                 </div>
               </div>
-              
+
               {/* Container with clip-path to only show bottom half with blur */}
               <div 
                 className="absolute inset-0" 
@@ -222,7 +256,7 @@ const GlassBowlIconsSection: React.FC<GlassBowlIconsSectionProps> = ({ id }) => 
               </div>
             </div>
           </div>
-          
+
           {/* Organic Glass Bowl - comes after the icons to properly layer */}
           <div className="absolute z-10 inset-0" style={{ 
             borderRadius: '50% / 70%',
@@ -235,7 +269,7 @@ const GlassBowlIconsSection: React.FC<GlassBowlIconsSectionProps> = ({ id }) => 
             <div className="absolute inset-0" style={{ 
               background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05))'
             }}></div>
-            
+
             {/* Subtle color highlights inside the bowl */}
             <div className="absolute inset-0 overflow-hidden">
               <div className="absolute w-1/4 h-1/2 rounded-full opacity-10 blur-xl"
@@ -260,14 +294,14 @@ const GlassBowlIconsSection: React.FC<GlassBowlIconsSectionProps> = ({ id }) => 
                      backgroundColor: 'var(--color-accent-green)'
                    }}></div>
             </div>
-            
+
             {/* Edge highlight for more organic feel */}
             <div className="absolute inset-0" style={{
               background: 'radial-gradient(ellipse at 50% 80%, transparent 50%, rgba(255,255,255,0.15) 100%)'
             }}></div>
           </div>
         </div>
-        
+
         {/* Description Text without max-height/overflow constraint */}
         <div className="w-full max-w-xl text-center relative">
           {icons.map(icon => (

@@ -1,27 +1,45 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Section from '../layout/Section';
-import { Testimonial } from '../../data/testimonialData';
-import OrganicBackgroundEffect from '../animations/OrganicBackgroundEffect';
+// Assuming Testimonial type is defined correctly elsewhere or uncomment below
+// interface Testimonial {
+//   text?: string;
+//   name: string;
+//   title?: string;
+//   imageUrl?: string;
+// }
+import { Testimonial } from '../../data/testimonialData'; // Adjust path as needed
+import OrganicBackgroundEffect from '../animations/OrganicBackgroundEffect'; // Adjust path as needed
 
-// Testimonial Card
+// --- Testimonial Card (Memoized, Refactored for Shadow) ---
+// (Keep the TestimonialCard component from the previous version - no changes needed here)
+// Define the TestimonialCardProps interface
 interface TestimonialCardProps {
   testimonial: Testimonial;
 }
 
-const TestimonialCard: React.FC<TestimonialCardProps> = ({ testimonial }) => {
+const TestimonialCard: React.FC<TestimonialCardProps> = React.memo(({ testimonial }) => {
   const [hover, setHover] = useState(false);
-  
-  // Assign a consistent color scheme based on name to ensure testimonials keep the same colors
-  const getColorScheme = () => {
-    const schemes = ['default', 'cool', 'warm', 'contrast'];
-    const hash = testimonial.name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    return schemes[hash % schemes.length] as 'default' | 'cool' | 'warm' | 'contrast';
-  };
-  
+
+  const colorScheme = useMemo(() => {
+    const schemes = ['default', 'cool', 'warm', 'contrast'] as const;
+    const hash = testimonial.name
+      .split('')
+      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return schemes[hash % schemes.length];
+  }, [testimonial.name]);
+
+  const defaultShadow = '0 4px 15px rgba(0, 0, 0, 0.06)';
+  const hoverShadow = '0 10px 25px rgba(0, 0, 0, 0.08)';
+
   return (
-    <div 
+    <div
       className="relative w-full"
+      style={{
+        transition: 'box-shadow 0.3s ease',
+        boxShadow: hover ? hoverShadow : defaultShadow,
+        borderRadius: '30px',
+      }}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
@@ -29,46 +47,37 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({ testimonial }) => {
         position: 'relative',
         borderRadius: '30px',
         overflow: 'hidden',
-        padding: '24px',
         background: 'rgba(255, 255, 255, 0.03)',
         backdropFilter: 'blur(3px)',
-        transform: 'translate3d(0, 0, 0)',
         WebkitBackdropFilter: 'blur(1px)',
         border: '1px solid rgba(255, 255, 255, 0.1)',
-        boxShadow: hover ? '0 14px 28px rgba(0, 0, 0, 0.15), 0 10px 10px rgba(0, 0, 0, 0.12)' : '0 4px 12px rgba(0, 0, 0, 0.05)',
-        transition: 'box-shadow 0.3s ease',
         minHeight: '320px',
-        height: 'auto', // Allow it to grow with content
-        maxWidth: '100%',
-        marginLeft: 'auto',
-        marginRight: 'auto',
+        height: 'auto',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'center'
       }}>
-        {/* Replace StarsBackground with OrganicBackgroundEffect */}
-        <OrganicBackgroundEffect 
+        <OrganicBackgroundEffect
           intensity="subtle"
-          colorScheme={getColorScheme()}
+          colorScheme={colorScheme}
         />
-        
-        <div className="relative z-10">
+        <div className="relative z-10 flex flex-col justify-center flex-grow p-6">
           {testimonial.imageUrl ? (
-            <div className="flex justify-center">
-              <img 
-                src={testimonial.imageUrl} 
-                alt="Testimonial" 
+            <div className="flex justify-center items-center flex-grow">
+              <img
+                src={testimonial.imageUrl}
+                alt={`${testimonial.name}'s testimonial`}
                 className="rounded-lg max-w-full max-h-64 object-contain"
+                loading="lazy"
               />
             </div>
           ) : (
             <>
-              <div className="mb-6">
-                <p className="text-[var(--color-foreground)] font-light mb-4 text-center">
+              <div className="mb-6 flex-grow flex items-center">
+                <p className="text-[var(--color-foreground)] font-light text-center leading-relaxed">
                   {testimonial.text}
                 </p>
               </div>
-              <div className="flex items-center justify-center">
+              <div className="flex items-center justify-center mt-auto pt-4">
                 <div className="text-center">
                   <p className="text-[var(--color-foreground)] font-medium">{testimonial.name}</p>
                   {testimonial.title && (
@@ -82,143 +91,140 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({ testimonial }) => {
       </div>
     </div>
   );
-};
+});
 
-// Arrow Button
+
+// --- Arrow Button (Memoized) ---
+// (Keep the ArrowButton component from the previous version - no changes needed here)
 interface ArrowButtonProps {
   direction: 'prev' | 'next';
   onClick: () => void;
   disabled?: boolean;
 }
-
-const ArrowButton: React.FC<ArrowButtonProps> = ({ direction, onClick, disabled }) => {
+const ArrowButton: React.FC<ArrowButtonProps> = React.memo(({ direction, onClick, disabled }) => {
   return (
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`absolute top-1/2 transform -translate-y-1/2 ${direction === 'prev' ? 'left-0 md:left-2' : 'right-0 md:right-2'} 
-                z-20 p-2 md:p-3 rounded-full bg-transparent border border-[var(--color-foreground-muted)] 
-                text-[var(--color-foreground)] hover:bg-[var(--color-foreground-muted)] 
-                transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-accent-blue)] 
+      className={`p-3 rounded-full bg-transparent border border-[var(--color-foreground-muted)]
+                text-[var(--color-foreground)] hover:bg-[var(--color-foreground-muted)]
+                transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[var(--color-background)] focus:ring-[var(--color-accent-blue)]
                 disabled:opacity-30 disabled:cursor-not-allowed`}
       aria-label={direction === 'prev' ? 'Previous testimonial' : 'Next testimonial'}
     >
-      {direction === 'prev' ? '←' : '→'}
+      {direction === 'prev' ? '‹' : '›'}
     </button>
   );
-};
+});
 
-// Carousel Indicators
+
+// --- Carousel Indicators (Memoized) ---
+// (Keep the CarouselIndicators component from the previous version - no changes needed here)
 interface IndicatorProps {
   count: number;
   current: number;
   setCurrent: (index: number) => void;
 }
-
-const CarouselIndicators: React.FC<IndicatorProps> = ({ count, current, setCurrent }) => {
+const CarouselIndicators: React.FC<IndicatorProps> = React.memo(({ count, current, setCurrent }) => {
   return (
     <div className="flex justify-center mt-6 space-x-2">
       {Array.from({ length: count }).map((_, i) => (
         <button
           key={i}
           onClick={() => setCurrent(i)}
-          className="w-3 h-3 rounded-full transition-all duration-300"
-          style={{ 
-            background: i === current ? 'var(--color-accent-blue)' : 'rgba(255,255,255,0.3)' 
+          className="w-3 h-3 rounded-full transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-offset-[var(--color-background)] focus:ring-[var(--color-accent-blue)]"
+          style={{
+            background: i === current ? 'var(--color-accent-blue)' : 'rgba(255,255,255,0.3)'
           }}
           aria-label={`Go to slide ${i + 1}`}
+          aria-current={i === current ? "true" : "false"}
         />
       ))}
     </div>
   );
-};
+});
 
-// Main Testimonial Carousel Component
+
+// --- Main Testimonial Carousel Component ---
 interface TestimonialCarouselProps {
   testimonials?: Testimonial[];
 }
 
 const defaultTestimonials: Testimonial[] = [
-  {
-    text: "The toolkit has given me precise clarity. I'm now able to make better decisions with confidence.",
-    name: "Sarah Johnson",
-    title: "Entrepreneur"
-  }
+    { text: "The toolkit has given me precise clarity. I'm now able to make better decisions with confidence.", name: "Sarah Johnson", title: "Entrepreneur" },
+    { text: "No testimonial provided.", name: "Example Inc.", imageUrl: "https://via.placeholder.com/300x150?text=Client+Logo+1" }, // Added default text
+    { text: "A fantastic resource that streamlined my entire workflow. It helped me save hours each week and focus on what truly matters for my business growth. Highly recommended for anyone looking to boost productivity!", name: "Michael Chen", title: "Project Manager" }, // Slightly longer text again
+    { text: "Short and sweet.", name: "Alex Lee"}
 ];
+
 
 const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({ testimonials = defaultTestimonials }) => {
   const [current, setCurrent] = useState(0);
-  const [direction, setDirection] = useState<'left' | 'right'>('right');
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
+  const [direction, setDirection] = useState<'left' | 'right' | 'none'>('none');
   const [autoplayPaused, setAutoplayPaused] = useState(false);
-  
-  // Autoplay functionality with longer intervals
+  const touchStartRef = useRef<number | null>(null);
+  const touchEndRef = useRef<number | null>(null);
+  const minSwipeDistance = 50;
+
+  // --- Effects and Handlers (Keep from previous version) ---
+  // Autoplay effect
   useEffect(() => {
-    if (autoplayPaused) return;
-    
+    if (autoplayPaused || testimonials.length <= 1) return;
     const interval = setInterval(() => {
       setDirection('right');
       setCurrent((prev) => (prev + 1) % testimonials.length);
-    }, 12000); // 12 seconds per slide to allow for slower transitions
-    
+    }, 12000);
     return () => clearInterval(interval);
   }, [testimonials.length, autoplayPaused]);
-  
-  // Touch handlers for mobile swiping
+
+  // Optimized touch handlers
   const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-  
-  const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-  
-  const handleTouchEnd = () => {
-    if (touchStart - touchEnd > 100) {
-      // Swipe left
-      nextSlide();
-    }
-    
-    if (touchStart - touchEnd < -100) {
-      // Swipe right
-      prevSlide();
-    }
-  };
-  
-  const nextSlide = () => {
-    setDirection('right');
-    setCurrent((prev) => (prev + 1) % testimonials.length);
-  };
-  
-  const prevSlide = () => {
-    setDirection('left');
-    setCurrent((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-  };
-  
-  // Pause autoplay on hover
-  const handleMouseEnter = () => {
+    touchEndRef.current = null;
+    touchStartRef.current = e.targetTouches[0].clientX;
     setAutoplayPaused(true);
   };
-  
-  const handleMouseLeave = () => {
-    setAutoplayPaused(false);
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStartRef.current === null) return;
+    touchEndRef.current = e.targetTouches[0].clientX;
+  };
+  const handleTouchEnd = () => {
+    if (touchStartRef.current === null || touchEndRef.current === null) return;
+    const distance = touchStartRef.current - touchEndRef.current;
+    if (distance > minSwipeDistance) nextSlide();
+    else if (distance < -minSwipeDistance) prevSlide();
+    touchStartRef.current = null;
+    touchEndRef.current = null;
   };
 
-  // Simpler slide animation that matches the arrow click direction
+  // Memoized navigation functions
+  const nextSlide = useCallback(() => {
+    if (testimonials.length <= 1) return;
+    setDirection('right');
+    setCurrent((prev) => (prev + 1) % testimonials.length);
+  }, [testimonials.length]);
+  const prevSlide = useCallback(() => {
+    if (testimonials.length <= 1) return;
+    setDirection('left');
+    setCurrent((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+  }, [testimonials.length]);
+  const goToSlide = useCallback((index: number) => {
+    if (index === current) return;
+    setDirection(index > current ? 'right' : 'left');
+    setCurrent(index);
+  }, [current]);
+
+  // Pause on hover
+  const handleMouseEnter = () => setAutoplayPaused(true);
+  const handleMouseLeave = () => {
+    if (touchStartRef.current === null) setAutoplayPaused(false);
+  };
+  // ---------------------------------------------------------
+
+  // Animation variants
   const slideVariants = {
-    // When clicking "next", current slide exits left, new slide enters from right
-    next: {
-      enter: { x: "100%" },
-      center: { x: 0 },
-      exit: { x: "-100%" }
-    },
-    // When clicking "prev", current slide exits right, new slide enters from left
-    prev: {
-      enter: { x: "-100%" },
-      center: { x: 0 },
-      exit: { x: "100%" }
-    }
+      enter: (direction: 'left' | 'right' | 'none') => ({ x: direction === 'right' ? '100%' : direction === 'left' ? '-100%' : '0%', opacity: 0 }),
+      center: { zIndex: 1, x: 0, opacity: 1 },
+      exit: (direction: 'left' | 'right' | 'none') => ({ zIndex: 0, x: direction === 'left' ? '100%' : '-100%', opacity: 0 })
   };
 
   return (
@@ -227,54 +233,75 @@ const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({ testimonials 
         <h2 className="font-sans text-4xl md:text-5xl text-[var(--color-foreground)] mb-12 font-light text-center">
           Subscriber Celebrations
         </h2>
-        
-        <div 
-          className="relative max-w-3xl mx-auto px-16 pb-12" // Increased horizontal padding and added bottom padding
+
+        <div
+          className="relative max-w-3xl mx-auto" // This container centers everything
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
+          aria-roledescription="carousel"
+          aria-label="Testimonials"
         >
-          <ArrowButton direction="prev" onClick={prevSlide} />
-          
-          <div className="overflow-visible"> {/* Changed from overflow-hidden to visible */}
-            <div 
-              className="relative overflow-visible" // Changed from overflow-hidden to visible
-              style={{ minHeight: '420px' }} // Changed from fixed height to minHeight
-            >
-              <AnimatePresence custom={direction} initial={false} mode="popLayout">
-                <motion.div 
-                  key={current}
-                  custom={direction}
-                  variants={slideVariants[direction === 'right' ? 'next' : 'prev']}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{ 
-                    duration: 0.6,
-                    ease: "easeInOut"
-                  }}
-                  className="absolute top-0 left-0 w-full px-8" // Increased horizontal padding
-                >
-                  <TestimonialCard testimonial={testimonials[current]} />
-                </motion.div>
-              </AnimatePresence>
-            </div>
+          {/* Card Animation Area - NOW WITH RESPONSIVE MIN-HEIGHT */}
+          <div
+             // **KEY CHANGE**: Using Tailwind classes for responsive min-height.
+             // Base (mobile): min-h-[650px] - Adjust this value based on testing!
+             // Medium screens and up: md:min-h-[480px] - Adjust if needed for desktop.
+             // Added mb-4 for extra spacing below the animation area before controls
+            className="relative overflow-hidden mb-4 min-h-[650px] md:min-h-[480px]"
+            aria-live="polite"
+          >
+            <AnimatePresence initial={false} custom={direction} mode="wait">
+              <motion.div
+                key={current} // Unique key for each slide
+                custom={direction}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{
+                  x: { type: "spring", stiffness: 300, damping: 35 },
+                  opacity: { duration: 0.3 }
+                }}
+                // Padding applied here to give card space within the animator frame
+                className="absolute top-0 left-0 w-full p-1 md:p-2"
+                role="group"
+                aria-roledescription="slide"
+                aria-label={`${current + 1} of ${testimonials.length}`}
+              >
+                {/* Render the current testimonial card */}
+                {testimonials.length > 0 && <TestimonialCard testimonial={testimonials[current]} />}
+              </motion.div>
+            </AnimatePresence>
           </div>
-          
-          <ArrowButton direction="next" onClick={nextSlide} />
-          
-          <CarouselIndicators 
-            count={testimonials.length} 
-            current={current}
-            setCurrent={(index) => {
-              // Set direction based on which indicator was clicked
-              setDirection(index > current ? 'right' : 'left');
-              setCurrent(index);
-            }}
-          />
-        </div>
+           {/* End Card Animation Area */}
+
+
+          {/* Controls Area */}
+          <div className="relative z-20"> {/* Ensure controls are not overlapped by potential absolute elements if structure changes */}
+              {/* Indicators */}
+              {testimonials.length > 1 && (
+                <CarouselIndicators
+                  count={testimonials.length}
+                  current={current}
+                  setCurrent={goToSlide}
+                />
+              )}
+
+              {/* Navigation Buttons */}
+              {testimonials.length > 1 && (
+                // mt-8 provides spacing between indicators and buttons
+                <div className="flex justify-center items-center space-x-6 mt-8">
+                  <ArrowButton direction="prev" onClick={prevSlide} disabled={testimonials.length <= 1} />
+                  <ArrowButton direction="next" onClick={nextSlide} disabled={testimonials.length <= 1} />
+                </div>
+              )}
+          </div>
+           {/* End Controls Area */}
+
+        </div> {/* End max-w-3xl container */}
       </div>
     </Section>
   );

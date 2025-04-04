@@ -1,23 +1,25 @@
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+
+// Extend the Window interface to include UserAccountApi
 declare global {
   interface Window {
     UserAccountApi?: {
       joinPricingPlan: (
-        planId: string, 
-        optionId: string, 
-        couponCode: string, 
-        isGift: boolean, 
+        pricingPlanId: string,
+        pricingOptionId: string,
+        couponCode: string,
+        gift: boolean,
         source: string
       ) => void;
-    }
+    };
   }
 }
-
-import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import Section from '../layout/Section';
 import OrganicBackgroundEffect from '../animations/OrganicBackgroundEffect';
 
-// Define proper TypeScript interfaces
+// (Keep the existing interfaces: IntervalData, Plan, PricingSectionProps, MembershipCardProps)
+// ... interfaces remain the same ...
 interface IntervalData {
   price: string;
   interval: string;
@@ -37,70 +39,6 @@ interface Plan {
   features: string[];
 }
 
-interface PricingSectionProps {
-  plans: Plan[];
-  id?: string;
-}
-
-// Render pricing card function
-const renderPricingCard = (plan: Plan, isPrimary: boolean, interval: string) => {
-  const price = plan.hasMultipleIntervals ? plan.intervals[interval].price : plan.price;
-  const intervalText = plan.hasMultipleIntervals ? plan.intervals[interval].interval : plan.interval;
-
-  return (
-    <motion.div
-      key={plan.id}
-      className={`pricing-card relative rounded-xl overflow-hidden ${
-        isPrimary ? 'transform hover:-translate-y-2' : 'hover:bg-opacity-10'
-      }`}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      style={{
-        backdropFilter: 'blur(10px)',
-        WebkitBackdropFilter: 'blur(10px)',
-      }}
-    >
-      <OrganicBackgroundEffect
-        intensity={isPrimary ? 'medium' : 'subtle'}
-        colorScheme={isPrimary ? 'contrast' : 'cool'}
-      />
-
-      <div className="relative z-10 p-6">
-        <div className="mb-4">
-          <h3 className="text-xl font-medium">{plan.name}</h3>
-        </div>
-
-        <div className="mb-6">
-          <div className="flex items-baseline">
-            <span className="text-3xl font-bold">{price}</span>
-            <span className="text-sm ml-2 opacity-70">{intervalText}</span>
-          </div>
-        </div>
-
-        <ul className="mb-6 space-y-2">
-          {plan.features.map((feature, index) => (
-            <li key={index} className="flex items-start">
-              <span className="mr-2 text-emerald-500">✓</span>
-              <span>{feature}</span>
-            </li>
-          ))}
-        </ul>
-
-        <button
-          className={`w-full py-3 rounded-lg font-medium ${
-            isPrimary
-              ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white'
-              : 'bg-white bg-opacity-10 hover:bg-opacity-20'
-          }`}
-        >
-          Choose Plan
-        </button>
-      </div>
-    </motion.div>
-  );
-};
-
 interface MembershipCardProps {
   plan: Plan;
   isActive: boolean;
@@ -112,7 +50,9 @@ interface MembershipCardProps {
   onIntervalChange: (interval: string) => void;
 }
 
-// MembershipCard component
+
+// (Keep the existing MembershipCard component)
+// ... MembershipCard component remains the same ...
 const MembershipCard: React.FC<MembershipCardProps> = ({
   plan,
   isActive,
@@ -154,13 +94,16 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
   let currentOptionId = plan.pricingOptionId || ''; // This preserves the pricing ID
 
   if (plan.hasMultipleIntervals && plan.intervals) {
-    const intervalData = plan.intervals[selectedInterval || 'monthly'];
+    // Ensure selectedInterval has a default if undefined
+    const currentIntervalKey = selectedInterval || Object.keys(plan.intervals)[0] || 'monthly';
+    const intervalData = plan.intervals[currentIntervalKey];
     if (intervalData) {
       currentPrice = intervalData.price;
       currentIntervalText = intervalData.interval;
       currentOptionId = intervalData.pricingOptionId; // This preserves the pricing option ID
     }
   }
+
 
   const choosePlanBaseStyle = {
     width: '80%',
@@ -187,7 +130,7 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
 
   const handlePurchaseClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    
+
     // This is what connects to Squarespace's membership system
     if (typeof window !== 'undefined' && window.UserAccountApi) {
       window.UserAccountApi.joinPricingPlan(
@@ -195,7 +138,7 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
         currentOptionId,
         "", // coupon code (empty)
         false, // gift (false)
-        "MEMBER_AREA_BLOCK" // source 
+        "MEMBER_AREA_BLOCK" // source
       );
     } else {
       console.error('UserAccountApi not found - are you running outside of Squarespace?');
@@ -240,7 +183,7 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
           transition: 'box-shadow 0.3s ease',
           display: 'flex',
           flexDirection: 'column',
-          minHeight: '400px',
+          minHeight: '400px', // Ensures a minimum height for content spacing
         }}
       >
         {/* Add OrganicBackgroundEffect here */}
@@ -306,7 +249,7 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
                     onIntervalChange(intervalKey);
                   }}
                   style={{
-                    background: selectedInterval === intervalKey ? 'rgba(255,255,255,0.2)' : 'none',
+                    background: (selectedInterval || Object.keys(plan.intervals || {})[0]) === intervalKey ? 'rgba(255,255,255,0.2)' : 'none',
                     border: 'none',
                     padding: '6px 12px',
                     borderRadius: '16px',
@@ -356,6 +299,7 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
               textAlign: 'left',
               flexGrow: 1,
               width: 'fit-content',
+              minHeight: '50px', // Example: Ensure feature list area has some minimum height
             }}
           >
             {plan.features &&
@@ -396,7 +340,7 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
         <div
           style={{
             position: 'absolute',
-            bottom: '-10px',
+            bottom: '-25px', // Adjusted slightly because the card itself moved up
             left: '50%',
             transform: 'translateX(-50%)',
             width: '100px',
@@ -416,15 +360,29 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
   );
 };
 
+
 interface PricingSectionProps {
   plans: Plan[];
   id?: string;
 }
 
-// Main PricingSection component
+// --- Main PricingSection component ---
 const PricingSection: React.FC<PricingSectionProps> = ({ plans = [], id }) => {
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [selectedIntervals, setSelectedIntervals] = useState<Record<number, string>>({});
+
+  // Initialize selected intervals (important for multi-interval plans)
+  useEffect(() => {
+    const initialIntervals: Record<number, string> = {};
+    plans.forEach((plan, index) => {
+      if (plan.hasMultipleIntervals && plan.intervals) {
+        // Default to the first interval key if available
+        initialIntervals[index] = Object.keys(plan.intervals)[0] || 'monthly';
+      }
+    });
+    setSelectedIntervals(initialIntervals);
+  }, [plans]); // Re-run if plans change
+
 
   return (
     <Section id="pricing" className="pricing-section py-16">
@@ -433,22 +391,9 @@ const PricingSection: React.FC<PricingSectionProps> = ({ plans = [], id }) => {
           Membership Options
         </h2>
 
-        <div className="relative w-full h-[550px] mt-16 flex justify-center items-start">
-          {/* Previous button */}
-          <button
-            onClick={() => activeCardIndex > 0 && setActiveCardIndex(activeCardIndex - 1)}
-            disabled={activeCardIndex === 0}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full 
-                     border border-[var(--color-foreground-muted)] text-[var(--color-foreground)]
-                     hover:bg-[var(--color-foreground-muted)] transition-colors
-                     disabled:opacity-30 disabled:cursor-not-allowed backdrop-blur-sm bg-white/10
-                     flex items-center justify-center md:left-8 lg:left-12"
-            aria-label="Previous plan"
-          >
-            ←
-          </button>
-
-          {/* Card stack - unchanged */}
+        {/* Container for the card stack */}
+        <div className="relative w-full h-[550px] mt-16 flex justify-center items-start mb-8"> {/* Added mb-8 for base spacing */}
+          {/* Card stack */}
           {plans.map((plan, index) => (
             <MembershipCard
               key={plan.id}
@@ -458,25 +403,43 @@ const PricingSection: React.FC<PricingSectionProps> = ({ plans = [], id }) => {
               index={index}
               activeIndex={activeCardIndex}
               totalCards={plans.length}
-              selectedInterval={selectedIntervals[index] || 'monthly'}
+              selectedInterval={selectedIntervals[index]} // Use state value
               onIntervalChange={(interval) => {
-                setSelectedIntervals({
-                  ...selectedIntervals,
-                  [index]: interval
-                });
+                  // Ensure state is updated correctly for the specific card
+                  setSelectedIntervals(prev => ({
+                      ...prev,
+                      [index]: interval
+                  }));
               }}
             />
           ))}
+        </div>
+
+        {/* Navigation Buttons Container */}
+        <div className="flex justify-center items-center gap-4 mt-4"> {/* Use mt-4 *in addition* to mb-8 above */}
+          {/* Previous button */}
+          <button
+            onClick={() => activeCardIndex > 0 && setActiveCardIndex(activeCardIndex - 1)}
+            disabled={activeCardIndex === 0}
+            className="w-12 h-12 rounded-full
+                     border border-[var(--color-foreground-muted)] text-[var(--color-foreground)]
+                     hover:bg-[var(--color-foreground-muted)] transition-colors
+                     disabled:opacity-30 disabled:cursor-not-allowed backdrop-blur-sm bg-white/10
+                     flex items-center justify-center" // Removed absolute positioning
+            aria-label="Previous plan"
+          >
+            ←
+          </button>
 
           {/* Next button */}
           <button
             onClick={() => activeCardIndex < plans.length - 1 && setActiveCardIndex(activeCardIndex + 1)}
             disabled={activeCardIndex === plans.length - 1}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full
+            className="w-12 h-12 rounded-full
                      border border-[var(--color-foreground-muted)] text-[var(--color-foreground)]
                      hover:bg-[var(--color-foreground-muted)] transition-colors
                      disabled:opacity-30 disabled:cursor-not-allowed backdrop-blur-sm bg-white/10
-                     flex items-center justify-center md:right-8 lg:right-12"
+                     flex items-center justify-center" // Removed absolute positioning
             aria-label="Next plan"
           >
             →

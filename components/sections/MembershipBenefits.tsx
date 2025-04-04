@@ -151,7 +151,7 @@ const items = [
     title: "Other Options",
     sub: null,
     content:
-      "*I have also added the option to access either the Alchemical Tools, Power Tools or just the Refiner separately. You can see what's included in all options when you scroll to the bottom.*",
+      "*Pea has also added the option to access either the Alchemical Tools, Power Tools or just the Refiner separately. You can see what's included in all options when you scroll to the bottom, or select Enroll Now in the spiral menu.*",
   },
   {
     id: "5",

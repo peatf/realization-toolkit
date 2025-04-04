@@ -16,6 +16,24 @@ const Home: NextPage = () => {
   useEffect(() => {
     // You can keep your GSAP ScrollTrigger setup if needed.
   }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const threshold = window.innerHeight * 0.1; // 10% of viewport height
+      
+      if (scrollY > threshold) {
+        document.body.classList.add('scroll-active');
+        document.body.classList.remove('scroll-inactive');
+      } else {
+        document.body.classList.add('scroll-inactive');
+        document.body.classList.remove('scroll-active');
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   
   return (
     <Layout>
@@ -23,7 +41,10 @@ const Home: NextPage = () => {
       <OpeningSection id="opening" />
 
       {/* Circular Menu Section - make it fully occupy the viewport */}
-      <section id="gooey-menu-section" className="relative h-screen min-h-screen sticky top-0 z-50 flex items-center justify-center">
+      <section 
+        id="gooey-menu-section" 
+        className="relative h-screen min-h-screen sticky top-0 z-50 flex items-center justify-center -mt-16"
+      >
         <CircularMenuWithGooeyText 
           items={[
             { id: 'membership-benefits', label: 'Realization Toolkit', target: 'membership-benefits' },
@@ -36,33 +57,39 @@ const Home: NextPage = () => {
         />
       </section>
       
-      {/* Membership Benefits & Quiz Section */}
-      <section id="membership-benefits" className="relative py-20 section-animated">
-        <div className="container mx-auto px-4 md:px-8">
-          <div className="flex flex-col lg:flex-row gap-12">
-            <div className="w-full lg:w-1/2 flex flex-col stagger-item">
-              <h2 className="font-sans text-4xl md:text-5xl text-[var(--color-foreground)] mb-6 font-light text-center">
-                About Realization Toolkit
-              </h2>
-              <div className="flex-grow">
-                <MembershipBenefits hideTitle={true} />
-              </div>
-            </div>
-            
-            <div id="quiz" className="w-full lg:w-1/2 flex flex-col stagger-item">
-              <h2 className="font-sans text-4xl md:text-5xl text-[var(--color-foreground)] mb-6 font-light text-center">
-                Find Your Tools
-              </h2>
-              <div className="flex-grow">
-                <QuizWithPreview />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      
+     {/* Membership Benefits & Quiz Section */}
+<section 
+  id="membership-benefits" 
+  className="relative pt-24 mt-16 pb-20"
+>
+  <div className="container mx-auto px-4 md:px-8">
+    <h2 className="font-sans text-4xl md:text-5xl text-[var(--color-foreground)] mb-8 font-light text-center">
+      About Realization Toolkit
+    </h2>
+    
+    <div className="flex flex-col lg:flex-row gap-12">
+      {/* Membership Benefits Section */}
+      <div className="w-full lg:w-1/2">
+        <MembershipBenefits />
+      </div>
+
+      {/* Quiz Section with original title restored */}
+      <div className="w-full lg:w-1/2 flex flex-col items-center">
+        <h3 className="text-2xl md:text-3xl font-light text-center mb-6">
+          Find Your Tools
+        </h3>
+        <QuizWithPreview />
+      </div>
+    </div>
+  </div>
+</section>
+
+
       {/* Product Carousels Section */}
-      <section id="product-carousels" className="py-16">
+      <section 
+        id="product-carousels" 
+        className="relative pt-12 pb-20 section-animated"
+      >
         <ProductCarousel 
           products={personalToolsProducts}
           title="The Power Tools" 

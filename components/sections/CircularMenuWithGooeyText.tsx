@@ -50,6 +50,7 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuProps> = (props) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [rotation, setRotation] = useState(0);
+  const [scaleFactor, setScaleFactor] = useState(1);
 
   // --- Define colors ---
   const textColor = {
@@ -93,9 +94,11 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuProps> = (props) => {
     // TARGETED ADJUSTMENTS
     const adjustmentOffset1 = { x: -40, y: -40 }; // Offset for item 1 (UP/LEFT)
     const adjustmentOffset4 = { x: 15, y: 15 };  // Offset for item 4 (DOWN/RIGHT)
+    const adjustmentOffset5 = { x: -25, y: 0 };  // Offset for testimonials (LEFT)
 
     if (points[1]) { points[1].x += adjustmentOffset1.x; points[1].y += adjustmentOffset1.y; }
     if (points[4]) { points[4].x += adjustmentOffset4.x; points[4].y += adjustmentOffset4.y; }
+    if (points[5]) { points[5].x += adjustmentOffset5.x; points[5].y += adjustmentOffset5.y; }
 
     points.forEach(p => {
         p.x = parseFloat(p.x.toFixed(2));
@@ -178,6 +181,23 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuProps> = (props) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // --- useEffect Hook for Scale Factor ---
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const calculateScale = () => {
+      // Base scale on viewport width
+      const viewportWidth = window.innerWidth;
+      const baseWidth = 1200; // Desktop reference width
+      const newScale = viewportWidth < 768 ? Math.max(0.5, viewportWidth / baseWidth) : 1;
+      setScaleFactor(newScale);
+    };
+    
+    calculateScale();
+    window.addEventListener('resize', calculateScale);
+    return () => window.removeEventListener('resize', calculateScale);
+  }, []);
+
   // --- Handle Item Click (Unchanged) ---
   const handleItemClick = useCallback((index: number): void => {
     if (index >= 0 && index < navItems.length) {
@@ -199,7 +219,7 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuProps> = (props) => {
         <div className="absolute inset-0 z-0 overflow-hidden flex items-center justify-center">
           <div className="relative w-full h-full">
             <Image
-              src="/images/logo.png" /* Replace with your actual image path */
+              src="/assets/realizationtk3d4.png" /* Replace with your actual image path */
               alt="Realization Toolkit Background"
               fill
               priority
@@ -277,8 +297,8 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuProps> = (props) => {
                 key={navItems[index].id}
                 className={`absolute transform ${index === 0 ? 'z-30' : ''}`}
                 style={{
-                  left: `calc(50% + ${point.x}px)`, // Use final adjusted coords
-                  top: `calc(50% + ${point.y}px)`,  // Use final adjusted coords
+                  left: `calc(50% + ${point.x * scaleFactor}px)`, // Scale by factor
+                  top: `calc(50% + ${point.y * scaleFactor}px)`,  // Scale by factor
                   transform: index === 0
                     ? 'translate(-50%, -50%)'
                     : `translate(-50%, -50%) rotate(${-rotation}deg)`,
@@ -293,16 +313,18 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuProps> = (props) => {
                 <div
                   className={`${
                     index === 0
-                      ? 'w-40 flex flex-col items-center justify-center text-center'
-                      : 'w-36 text-center' // Keep wider width
-                  } font-sans ${
+                      ? 'w-20 xs:w-24 sm:w-28 md:w-40 flex flex-col items-center justify-center text-center'
+                      : index === 1 
+                        ? 'w-12 xs:w-16 sm:w-20 md:w-28 text-center flex flex-col' // Narrower for "Find Your Tools"
+                        : 'w-16 xs:w-20 sm:w-24 md:w-36 text-center' // Wider for other items
+                  } font-mono ${
                     index === 0
-                      ? 'text-2xl font-semibold'
+                      ? 'text-lg xs:text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight'
                       : index === activeIndex
-                        ? 'text-xl font-medium'
+                        ? 'text-sm xs:text-base sm:text-lg md:text-2xl font-medium tracking-tight'
                         : index === hoveredIndex
-                          ? 'text-base font-normal'
-                          : 'text-base font-light'
+                          ? 'text-xs xs:text-sm sm:text-base md:text-xl font-normal tracking-tight'
+                          : 'text-[0.65rem] xs:text-xs sm:text-sm md:text-lg font-light tracking-tight'
                   }`}
                   style={{
                     color: index === 0
@@ -312,21 +334,20 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuProps> = (props) => {
                         : index === hoveredIndex
                           ? textColor.hover
                           : textColor.active,
-                    letterSpacing: index === 0 ? '0.07em' : index === activeIndex ? '0.05em' : '0.02em',
+                    letterSpacing: index === 0 ? '0.02em' : index === activeIndex ? '0.02em' : '0.01em',
                     transition: 'all 0.3s ease',
                     textAlign: 'center',
                   }}
                 >
-                  {/* Text content - Replace text with image for center item */}
+                  {/* Text content - with special handling for "Find Your Tools" */}
                   {index === 0 ? (
-                    <div className="relative w-32 h-32"> {/* Adjust size as needed */}
-                      <Image
-                        src="/public/assets/realizationtk3d_4.png" /* Replace with your actual image path */
-                        alt="Realization Toolkit"
-                        fill
-                        style={{ objectFit: 'contain' }}
-                        priority
-                      />
+                    <div className="text-center">
+                      ꩜
+                    </div>
+                  ) : index === 1 ? (
+                    <div>
+                      <div>Find</div>
+                      <div>Your Tools</div>
                     </div>
                   ) : (
                     navItems[index].label // Use original label directly

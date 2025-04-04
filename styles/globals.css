@@ -697,13 +697,23 @@ section {
 #gooey-menu-section {
   z-index: 50;
   transition: all 0.5s ease-out;
+  margin-top: -4rem; /* Negative margin to pull it up */
 }
 
 #gooey-menu-section.expanded {
   height: 100vh;
   width: 100vw;
 }
+/* Add a scroll trigger that enhances the transition */
+.scroll-active #gooey-menu-section {
+  transform: translateY(0);
+  opacity: 1;
+}
 
+.scroll-inactive #gooey-menu-section {
+  transform: translateY(2rem);
+  opacity: 0.95;
+}
 /* Enhance menu visibility */
 .gooey-menu-visible {
   opacity: 1 !important;

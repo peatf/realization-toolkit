@@ -127,36 +127,38 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
             }}
           >
             <div 
-              className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 relative text-gray-800 border-0 outline-none"
+              className="bg-white rounded-2xl shadow-xl max-w-md w-full p-4 sm:p-6 relative text-gray-800 border-0 outline-none"
               onClick={(e) => e.stopPropagation()}
               style={{
-                animation: 'zoomIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+                animation: 'zoomIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                maxWidth: '95vw' // Ensure it doesn't overflow on very small devices
               }}
             >
               <button 
                 onClick={closeTip}
-                className="absolute top-3 right-3 p-1 hover:bg-gray-100 rounded-full border-0 outline-none"
+                className="absolute top-2 sm:top-3 right-2 sm:right-3 p-1 hover:bg-gray-100 rounded-full border-0 outline-none"
                 aria-label="Close tip"
               >
-                <X size={20} className="text-gray-700" />
+                <X size={16} className="text-gray-700 sm:hidden" />
+                <X size={20} className="text-gray-700 hidden sm:block" />
               </button>
               {products.find(p => p.id === activeTip) && (
                 <>
-                  <div className="w-20 h-20 rounded-full overflow-hidden mx-auto mb-4 border-0 outline-none shadow-md relative">
+                  <div className="w-12 h-12 sm:w-16 md:w-20 sm:h-16 md:h-20 rounded-full overflow-hidden mx-auto mb-2 sm:mb-4 border-0 outline-none shadow-md relative">
                     {products.find(p => p.id === activeTip) && (
                       <Image
                         src={products.find(p => p.id === activeTip)?.image || ''}
                         alt={products.find(p => p.id === activeTip)?.alt || ''}
                         fill
-                        sizes="80px"
+                        sizes="(max-width: 640px) 48px, (max-width: 768px) 64px, 80px"
                         className="object-cover"
                       />
                     )}
                   </div>
-                  <h3 className="text-xl font-bold text-center mb-3 uppercase tracking-wider">
+                  <h3 className="text-lg sm:text-xl font-bold text-center mb-2 sm:mb-3 uppercase tracking-wider">
                     {products.find(p => p.id === activeTip)?.title}
                   </h3>
-                  <p className="text-gray-700 text-center">
+                  <p className="text-sm sm:text-base text-gray-700 text-center">
                     {products.find(p => p.id === activeTip)?.tip}
                   </p>
                 </>

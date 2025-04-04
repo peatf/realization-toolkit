@@ -121,7 +121,7 @@ const GlassCardGrittyGradientBlob = () => {
                   </filter>
                 </defs>
                 <motion.path
-                  d={path}
+                  d={path || "M0,0"}
                   fill={`url(#gradient-${index})`}
                   filter={`url(#blur-${index})`}
                   animate={{
