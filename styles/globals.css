@@ -714,5 +714,24 @@ section {
   opacity: 0.15;
   mix-blend-mode: multiply;
 }
+/* Add these rules to the end of your globals.css file to ensure they override everything else */
 
+/* Force carousel card positioning and stacking */
+.list-none li.flex-none {
+  position: sticky !important; 
+  overflow: visible !important;
+}
+
+/* Ensure z-index values are respected */
+/* Reverse the stacking order - first cards should be behind, later cards on top */
+.list-none li:nth-child(1) { z-index: 20 !important; }
+.list-none li:nth-child(2) { z-index: 21 !important; }
+.list-none li:nth-child(3) { z-index: 22 !important; }
+.list-none li:nth-child(4) { z-index: 23 !important; }
+.list-none li:nth-child(5) { z-index: 24 !important; }
+.list-none li:nth-child(6) { z-index: 25 !important; }
+.list-none li:nth-child(7) { z-index: 26 !important; }
+.list-none li:nth-child(8) { z-index: 27 !important; }
+.list-none li:nth-child(9) { z-index: 28 !important; }
+.list-none li:nth-child(10) { z-index: 29 !important; }
 
