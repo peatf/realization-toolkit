@@ -116,14 +116,14 @@ const Home: NextPage = () => {
         />
       </section>
       
-      {/* Membership Benefits & Quiz Section */}
+      {/* Membership Benefits & Quiz Section - MOVE BOTH DOWN TOGETHER ON DESKTOP */}
       <section 
         id="membership-benefits" 
-        className="relative pt-20 mt-16 pb-12"
+        className="relative lg:mt-72 pt-12 pb-0" // Added lg:mt-32 to push BOTH sections down on desktop
       >
         <div className="container mx-auto px-4 md:px-8">
           <div className="flex flex-col lg:flex-row gap-12 items-start">
-            {/* Membership Benefits Section with debug wrapper */}
+            {/* Membership Benefits Section */}
             <div className="w-full lg:w-1/2">
               <h3 className="font-sans text-4xl md:text-5xl text-[var(--color-foreground)] mb-8 font-light text-center">
                 About Realization Toolkit
@@ -142,10 +142,10 @@ const Home: NextPage = () => {
         </div>
       </section>
 
-      {/* Product Carousels Section */}
+      {/* Product Carousels Section - REDUCE TOP PADDING */}
       <section 
         id="product-carousels" 
-        className="relative pt-12 pb-20 section-animated"
+        className="relative pt-0 pb-20 section-animated"
       >
         <ProductCarousel 
           products={personalToolsProducts}
