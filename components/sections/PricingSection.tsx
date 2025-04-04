@@ -226,16 +226,17 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
         style={{
           position: 'relative',
           width: '100%',
-          borderRadius: '16px',
+          borderRadius: '30px',
           overflow: 'hidden',
           padding: '24px',
           background: 'rgba(255, 255, 255, 0.08)',
-          backdropFilter: 'blur(10px)',
-          WebkitBackdropFilter: 'blur(10px)',
+          backdropFilter: 'blur(3px)',
+          WebkitBackdropFilter: 'blur(0px)',
+          transform: 'translate3d(0, 0, 0)',
           border: '1px solid rgba(255, 255, 255, 0.1)',
           boxShadow: hover
-            ? '0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22)'
-            : '0 4px 12px rgba(0, 0, 0, 0.15)',
+            ? '0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.12)'
+            : '0 4px 12px rgba(0, 0, 0, 0.05)',
           transition: 'box-shadow 0.3s ease',
           display: 'flex',
           flexDirection: 'column',
@@ -426,7 +427,7 @@ const PricingSection: React.FC<PricingSectionProps> = ({ plans = [], id }) => {
   const [selectedIntervals, setSelectedIntervals] = useState<Record<number, string>>({});
 
   return (
-    <Section id="signup-section" className="pricing-section py-16">
+    <Section id="pricing" className="pricing-section py-16">
       <div className="container mx-auto px-4 py-8">
         <h2 className="font-sans text-4xl md:text-5xl text-[var(--color-foreground)] mb-6 font-light text-center">
           Membership Options

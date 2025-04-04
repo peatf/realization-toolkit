@@ -22,8 +22,8 @@ const Home: NextPage = () => {
       {/* Opening / Hero Section - occupies full 100vh */}
       <OpeningSection id="opening" />
 
-      {/* Circular Menu Section - now distinct from the hero; no negative margins */}
-      <section className="relative min-h-screen flex items-center">
+      {/* Circular Menu Section - make it fully occupy the viewport */}
+      <section id="gooey-menu-section" className="relative h-screen min-h-screen sticky top-0 z-50 flex items-center justify-center">
         <CircularMenuWithGooeyText 
           items={[
             { id: 'membership-benefits', label: 'Realization Toolkit', target: 'membership-benefits' },
@@ -37,10 +37,10 @@ const Home: NextPage = () => {
       </section>
       
       {/* Membership Benefits & Quiz Section */}
-      <section id="membership-benefits" className="relative py-20">
+      <section id="membership-benefits" className="relative py-20 section-animated">
         <div className="container mx-auto px-4 md:px-8">
           <div className="flex flex-col lg:flex-row gap-12">
-            <div className="w-full lg:w-1/2 flex flex-col">
+            <div className="w-full lg:w-1/2 flex flex-col stagger-item">
               <h2 className="font-sans text-4xl md:text-5xl text-[var(--color-foreground)] mb-6 font-light text-center">
                 About Realization Toolkit
               </h2>
@@ -49,7 +49,7 @@ const Home: NextPage = () => {
               </div>
             </div>
             
-            <div id="quiz" className="w-full lg:w-1/2 flex flex-col">
+            <div id="quiz" className="w-full lg:w-1/2 flex flex-col stagger-item">
               <h2 className="font-sans text-4xl md:text-5xl text-[var(--color-foreground)] mb-6 font-light text-center">
                 Find Your Tools
               </h2>

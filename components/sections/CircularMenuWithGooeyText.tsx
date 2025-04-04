@@ -1,19 +1,20 @@
-import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import { motion, AnimatePresence, useMotionValue, useTransform, animate } from 'framer-motion';
+import React, { useState, useEffect, useCallback } from 'react';
 
+// Define the structure for navigation items
 interface NavItem {
   id: string;
   label: string;
-  target: string;
+  target: string; // Used for scrolling to the target section ID
 }
 
+// Define props for the component (currently unused but good practice)
 interface CircularMenuProps {
-  items?: NavItem[];
+  items?: NavItem[]; // Allow passing custom items, though defaults are used if not provided
 }
 
 const CircularMenuWithGooeyText: React.FC<CircularMenuProps> = (props) => {
-  // Default navigation items
-  const defaultItems = [
+  // --- Navigation Items (from your original code) ---
+  const navItems: NavItem[] = [
     { id: 'membership-benefits', label: 'Realization Toolkit', target: 'membership-benefits' },
     { id: 'quiz', label: 'Find Your Tools', target: 'quiz' },
     { id: 'product-carousels', label: 'Learn About the Tools', target: 'product-carousels' },
@@ -21,279 +22,332 @@ const CircularMenuWithGooeyText: React.FC<CircularMenuProps> = (props) => {
     { id: 'toolkit-exclusives', label: 'Realization Toolkit Exclusives', target: 'toolkit-exclusives' },
     { id: 'testimonials', label: 'Testimonials', target: 'testimonials' }
   ];
-  
-  // Use passed items if available, otherwise use default items
-  const items = props.items || defaultItems;
-  
-  // Prevent hooks from being conditional - move these outside any conditional logic
+
+  // --- State Variables ---
   const [activeIndex, setActiveIndex] = useState(0);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  
-  // Initialize motion values properly
-  const spiralRotation = useMotionValue(0);
-  const orbitProgress = useMotionValue(0);
-  
-  // Safely use useEffect for animations rather than direct calls
-  useEffect(() => {
-    // Animation code here
-    // Using animate() from framer-motion only if browser is available
-    if (typeof window !== 'undefined') {
-      animate(spiralRotation, activeIndex * 60, { 
-        type: 'spring', 
-        damping: 25, 
-        stiffness: 100
-      });
-    }
-  }, [activeIndex, spiralRotation]);
+  const [rotation, setRotation] = useState(0);
+  const [labels, setLabels] = useState<string[]>(navItems.map(item => item.label));
 
-  // Calculate spiral points for positioning nav items
-  const spiralPoints = useMemo(() => {
-    const points = [];
-    const numPoints = items.length;
-    const radius = 260; // Base radius
-    const radiusIncrement = 0;
-    const angleIncrement = (2 * Math.PI) / numPoints;
-    
-    for (let i = 0; i < numPoints; i++) {
-      const angle = i * angleIncrement;
-      const currentRadius = radius + i * radiusIncrement;
-      const x = currentRadius * Math.cos(angle);
-      const y = currentRadius * Math.sin(angle);
-      points.push({ x, y });
-    }
-    
-    return points;
-  }, [items.length]);
-  
-  // Generate SVG spiral path for visualization
-  const spiralPath = useMemo(() => {
-    const numPoints = 200;
-    const maxRadius = 300;
-    const radiusIncrement = maxRadius / numPoints;
-    const angleIncrement = (2 * Math.PI * 2) / numPoints;
-    let path = "M 0 0";
-    
-    for (let i = 1; i < numPoints; i++) {
-      const angle = i * angleIncrement;
-      const radius = i * radiusIncrement;
+  // --- Define colors ---
+  const textColor = {
+    active: '#60a5fa', // Blue-400 (Used for inactive text and spiral path)
+    hover: '#3b82f6', // Blue-500 (Used for hovered text)
+    normal: '#2563eb', // Blue-600 (Used for active text and active point fill)
+    progressBarBg: '#93c5fd', // Blue-300 (Progress bar background)
+    progressBarFill: '#1d4ed8', // Blue-700 (Progress bar fill)
+  };
+
+  // --- Text scramble effect configuration ---
+  const scrambleConfig = {
+    duration: 800,
+    chars: '!<>-_\\/[]{}—=+*^?#________',
+  };
+
+  // --- Spiral Parameters for Visual Path ---
+  const spiralParams = {
+    startAngle: Math.PI * 5,        // Increased from 3 to add more rotations
+    endAngle: Math.PI * 0.1,        // Decreased to extend the spiral further
+    minRadiusPath: 120,             // Increased from 80
+    maxRadiusPath: 700,             // Increased from 400
+    svgViewBox: "-750 -750 1500 1500", // Expanded viewBox to fit larger spiral
+    containerSize: "h-screen w-full max-w-[1800px]", // Increased max width and using full viewport height
+  };
+
+  // --- Explicit Menu Item Coordinates ---
+  const menuItemCoordinates = [
+    { x: 0, y: 0, rotationOffset: 0 },                  // Center - Realization Toolkit
+    { x: 300, y: -260, rotationOffset: 0 },             // Adjusted Position 1 
+    { x: 450, y: -50, rotationOffset: 0 },              // Adjusted Position 2
+    { x: 380, y: 230, rotationOffset: 0 },              // Adjusted Position 3
+    { x: 120, y: 450, rotationOffset: 0 },              // Adjusted Position 4
+    { x: -270, y: 400, rotationOffset: 0 }              // Adjusted Position 5
+  ];
+
+  // --- Generate Spiral Path for Visual Reference Only ---
+  const generateSpiralPath = (steps = 250): string => {
+    const { startAngle, endAngle, minRadiusPath, maxRadiusPath } = spiralParams;
+    const totalAngle = startAngle - endAngle;
+    const b = Math.log(maxRadiusPath / minRadiusPath) / totalAngle;
+    let path = '';
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      const angle = startAngle - t * totalAngle;
+      const radius = minRadiusPath * Math.exp(b * (startAngle - angle));
       const x = radius * Math.cos(angle);
       const y = radius * Math.sin(angle);
-      path += ` L ${x} ${y}`;
+      path += (i === 0 ? 'M' : 'L') + ` ${x.toFixed(2)} ${y.toFixed(2)} `;
     }
-    
     return path;
-  }, []);
+  };
 
-  // Navigation function - smooth scroll to section
-  const navigateToSection = useCallback((targetId: string) => {
+  // Increase steps for a smoother spiral
+  const spiralPath = generateSpiralPath(450); // Increased from 250
+
+  // --- Text Scramble Animation ---
+  const textScrambleEffect = (targetIndex: number): void => {
+    const finalText = navItems[targetIndex].label;
+    const finalTextArray = finalText.split('');
+    const charIndexes = Array.from(Array(finalTextArray.length).keys())
+      .sort(() => Math.random() - 0.5);
+    let frame = 0;
+    const totalFrames = 20;
+
+    const animateText = () => {
+      if (frame >= totalFrames) {
+        setLabels(currentLabels => {
+            const newLabels = [...currentLabels];
+            newLabels[targetIndex] = finalText;
+            return newLabels;
+        });
+        return;
+      }
+      const progress = frame / totalFrames;
+      const revealedCount = Math.floor(finalTextArray.length * progress);
+      let scrambledText = '';
+      for (let i = 0; i < finalTextArray.length; i++) {
+        const charIndex = charIndexes[i];
+        if (i < revealedCount) {
+          scrambledText += finalTextArray[charIndex];
+        } else {
+          scrambledText += scrambleConfig.chars[Math.floor(Math.random() * scrambleConfig.chars.length)];
+        }
+      }
+      setLabels(currentLabels => {
+          const newLabels = [...currentLabels];
+          newLabels[targetIndex] = scrambledText;
+          return newLabels;
+      });
+      frame++;
+      setTimeout(animateText, scrambleConfig.duration / totalFrames);
+    };
+    animateText();
+  };
+
+  // --- Calculate Rotation ---
+  const calculateRotation = (index: number): number => {
+    // If it's the first (centered) item, don't rotate
+    if (index === 0) return 0;
+
+    const safeIndex = Math.max(0, Math.min(index, menuItemCoordinates.length - 1));
+    const coords = menuItemCoordinates[safeIndex];
+    if (!coords) return 0;
+    const angle = Math.atan2(coords.y, coords.x);
+    return (-angle * (180 / Math.PI)) + 90 + (coords.rotationOffset || 0);
+  };
+
+  // --- Navigation Function ---
+  const navigateToSection = useCallback((targetId: string): void => {
     try {
       const targetElement = document.getElementById(targetId);
+      const menuSection = document.getElementById('gooey-menu-section');
+      
       if (targetElement) {
-        targetElement.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
-        });
+        // Add transition class to menu section
+        if (menuSection) menuSection.classList.add('section-hidden');
+        
+        // Smooth scroll to target
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+        // Optional: add a nice flash effect on the target section
+        setTimeout(() => {
+          targetElement.classList.add('flash-highlight');
+          setTimeout(() => targetElement.classList.remove('flash-highlight'), 1000);
+        }, 500);
+      } else {
+        console.warn(`Target element with ID "${targetId}" not found.`);
       }
     } catch (error) {
       console.error("Error navigating to section:", error);
     }
   }, []);
 
-  // Handle clicks on menu items - SIMPLIFIED
-  const handleItemClick = useCallback((index: number) => {
-    // Set the active index
-    setActiveIndex(index);
-    
-    // Navigate to target section
-    navigateToSection(items[index].target);
-  }, [items, navigateToSection]);
+  // --- useEffect Hook ---
+  useEffect(() => {
+    const targetRotation = calculateRotation(activeIndex);
+    setRotation(targetRotation);
+    textScrambleEffect(activeIndex);
+  }, [activeIndex]);
 
+  // --- Scroll effect for menu expansion ---
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const menuSection = document.getElementById('gooey-menu-section');
+    if (!menuSection) return;
+    
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const openingHeight = window.innerHeight; // Assuming opening section is 100vh
+      
+      // Start expanding when scrolling past 50% of opening section
+      if (scrollY > openingHeight * 0.5) {
+        menuSection.classList.add('expanded');
+      } else {
+        menuSection.classList.remove('expanded');
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // --- Handle Item Click ---
+  const handleItemClick = useCallback((index: number): void => {
+    if (index >= 0 && index < navItems.length) {
+      if (index !== activeIndex) {
+        setActiveIndex(index);
+      }
+      navigateToSection(navItems[index].target);
+    }
+  }, [activeIndex, navItems, navigateToSection]);
+
+  // --- Render JSX ---
   return (
-    <div className="flex items-center justify-center h-screen w-full bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
+    // Main container - Make it fill entire space
+    <div className="flex items-center justify-center w-full h-screen bg-transparent font-sans overflow-hidden">
+      {/* Relative container for positioning - make it larger */}
       <div
-        ref={containerRef}
-        className="relative w-full h-full flex items-center justify-center"
+        className={`relative ${spiralParams.containerSize} flex items-center justify-center overflow-visible`}
       >
-        {/* Ambient background elements */}
-        <div className="absolute w-full h-full opacity-40">
-          <div className="absolute top-1/4 left-1/2 w-64 h-64 rounded-full bg-teal-100 filter blur-3xl opacity-20 transform -translate-x-1/2"></div>
-          <div className="absolute bottom-1/3 right-1/3 w-48 h-48 rounded-full bg-blue-100 filter blur-3xl opacity-20"></div>
-        </div>
-        
-        {/* Central node with pulsating animation */}
-        <motion.div
-          className="absolute z-10 w-4 h-4 rounded-full bg-gradient-to-br from-teal-300 to-emerald-400 shadow-lg"
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.7, 1, 0.7]
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-        
-        {/* Spiral visualization */}
-        <motion.div
-          className="absolute w-[700px] h-[700px]"
+        {/* Rotating container */}
+        <div
+          className="absolute w-full h-full"
           style={{
-            rotate: spiralRotation,
-            left: '50%',
-            top: '50%',
-            translateX: '-50%',
-            translateY: '-50%'
-          }}
-          transition={{
-            type: "spring",
-            stiffness: 45,
-            damping: 25
+            transform: `rotate(${rotation}deg)`,
+            transition: 'transform 1s ease-in-out',
+            transformOrigin: 'center center'
           }}
         >
+          {/* SVG container */}
           <svg
             className="absolute top-0 left-0 w-full h-full"
-            viewBox="-350 -350 700 700"
+            viewBox={spiralParams.svgViewBox}
             style={{ overflow: 'visible' }}
           >
-            <rect x="-350" y="-350" width="700" height="700" fill="url(#grid)" />
-            
-            {/* Decorative spiral paths */}
-            <motion.path
-              d={spiralPath}
-              fill="none"
-              stroke="#000"
-              strokeWidth="0.5"
-              strokeDasharray="1 2"
-              style={{ opacity: 0.08 }}
+            {/* Visual spiral path */}
+            <path
+              d={spiralPath} 
+              fill="none" 
+              stroke={textColor.active}
+              strokeWidth="2.5" // Increased from 0.8
+              style={{ opacity: 0.85 }} // Slightly increased opacity
             />
-            
-            <motion.path
-              d={spiralPath}
-              fill="none"
-              stroke="#6366f1"
-              strokeWidth="0.4"
-              strokeDasharray="1 6"
-              style={{ opacity: 0.1 }}
-              transform="scale(0.92) rotate(5)"
-            />
-            
-            <motion.path
-              d={spiralPath}
-              fill="none"
-              stroke="#10b981"
-              strokeWidth="0.4"
-              strokeDasharray="1 6"
-              style={{ opacity: 0.1 }}
-              transform="scale(1.08) rotate(-5)"
-            />
-            
-            <motion.path
-              d={spiralPath}
-              fill="none"
-              stroke="#6ce4a6"
-              strokeWidth="1.2"
-              strokeLinecap="round"
-              style={{
-                opacity: 0.3
-              }}
-              filter="drop-shadow(0 0 2px rgba(108, 228, 166, 0.5))"
-            />
+            {/* Points representing menu item locations */}
+            {menuItemCoordinates.map((point, index) => (
+              index < navItems.length && (
+                <g key={`point-${navItems[index].id}`}>
+                  <defs>
+                    <filter id={`blur-${navItems[index].id}`} x="-50%" y="-50%" width="200%" height="200%">
+                      <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" />
+                    </filter>
+                  </defs>
+                  <circle
+                    cx={point.x} cy={point.y} r={index === activeIndex ? 4 : 2}
+                    fill={index === activeIndex ? textColor.normal : textColor.active}
+                    style={{
+                      transition: 'r 0.3s ease, fill 0.3s ease, opacity 0.3s ease',
+                      opacity: index === activeIndex ? 0.7 : 0.3,
+                      filter: `url(#blur-${navItems[index].id})`
+                    }}
+                  />
+                </g>
+              )
+            ))}
           </svg>
-          
-          {/* Navigation items - USING PURE FRAMER MOTION */}
-          <AnimatePresence>
-            {spiralPoints.map((point, index) => {
-              const isActive = index === activeIndex;
-              const isHovered = index === hoveredIndex;
-              const itemCounterRotate = useTransform(spiralRotation, value => -value);
-              
-              return (
-                <motion.div
-                  key={items[index].id}
-                  className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer"
+
+          {/* Navigation menu items */}
+          {menuItemCoordinates.map((point, index) => (
+            index < navItems.length && (
+              <div
+                key={navItems[index].id}
+                className={`absolute transform ${index === 0 ? 'z-30' : ''}`}
+                style={{
+                  left: `calc(50% + ${point.x}px)`, 
+                  top: `calc(50% + ${point.y}px)`,
+                  // Center item doesn't rotate with the spiral
+                  transform: index === 0 
+                    ? 'translate(-50%, -50%)' 
+                    : `translate(-50%, -50%) rotate(${-rotation}deg)`,
+                  zIndex: index === 0 ? 30 : index === activeIndex ? 20 : 5,
+                  transition: index === 0 ? 'none' : 'transform 1s ease-in-out'
+                }}
+                onClick={() => handleItemClick(index)}
+                onMouseEnter={() => setHoveredIndex(index)}
+                onMouseLeave={() => setHoveredIndex(null)}
+              >
+                {/* Inner div for text styling */}
+                <div
+                  className={`${
+                    index === 0 
+                      ? 'w-40 flex flex-col items-center justify-center text-center' // Wider and explicitly centered container for central item
+                      : 'w-28 text-center'
+                  } font-sans ${
+                    index === 0 
+                      ? 'text-2xl font-semibold' 
+                      : index === activeIndex
+                        ? 'text-xl font-medium'
+                        : index === hoveredIndex
+                          ? 'text-base font-normal'
+                          : 'text-base font-light'
+                  }`}
                   style={{
-                    left: `calc(50% + ${point.x}px)`,
-                    top: `calc(50% + ${point.y}px)`,
-                    zIndex: isActive ? 20 : 5
+                    color: index === 0 
+                      ? textColor.normal 
+                      : index === activeIndex 
+                        ? textColor.normal 
+                        : index === hoveredIndex 
+                          ? textColor.hover 
+                          : textColor.active,
+                    letterSpacing: index === 0 ? '0.07em' : index === activeIndex ? '0.05em' : '0.02em',
+                    transition: 'all 0.3s ease',
+                    textAlign: 'center', // Ensure text is centered
                   }}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{
-                    scale: isActive ? 1.2 : isHovered ? 1.1 : 1,
-                    opacity: 1,
-                    y: isActive ? -5 : 0
-                  }}
-                  whileHover={{ y: -2 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 400,
-                    damping: 25
-                  }}
-                  onClick={() => handleItemClick(index)}
-                  onMouseEnter={() => setHoveredIndex(index)}
-                  onMouseLeave={() => setHoveredIndex(null)}
                 >
-                  <motion.div 
-                    className="relative"
-                    style={{ rotate: itemCounterRotate }}
-                  >
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={items[index].label}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.2 }}
-                        className={`whitespace-nowrap font-sans ${
-                          isActive 
-                            ? 'text-lg font-medium text-emerald-800' 
-                            : isHovered 
-                              ? 'text-sm font-normal text-gray-700' 
-                              : 'text-sm font-light text-gray-600'
-                        }`}
-                      >
-                        {items[index].label}
-                        {isActive && (
-                          <motion.div 
-                            className="absolute -bottom-2 left-1/2 w-1 h-1 rounded-full bg-emerald-400"
-                            layoutId="activeIndicator"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            style={{ transform: 'translateX(-50%)' }}
-                          />
-                        )}
-                      </motion.div>
-                    </AnimatePresence>
-                  </motion.div>
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
-        </motion.div>
-        
+                  {/* For the center item, split the text to better center it */}
+                  {index === 0 ? (
+                    <>
+                      <span>Realization</span>
+                      <span>Toolkit</span>
+                    </>
+                  ) : (
+                    labels[index]
+                  )}
+                  
+                  {/* Subtle dot indicator - not showing for centered item */}
+                  {index !== 0 && index === activeIndex && (
+                    <div
+                      className="absolute -bottom-2 left-1/2 w-1 h-1 rounded-full"
+                      style={{
+                        backgroundColor: textColor.normal, transform: 'translateX(-50%)'
+                      }}
+                    />
+                  )}
+                </div>
+              </div>
+            )
+          ))}
+        </div>
+
         {/* Progress indicator */}
-        <motion.div 
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
+        <div
+          className="absolute transform -translate-x-1/2 flex flex-col items-center pointer-events-none"
+          style={{ bottom: '-80px', left: '50%' }}
         >
-          <div className="w-40 h-1 bg-gray-200 rounded-full overflow-hidden">
-            <motion.div 
-              className="h-full bg-gradient-to-r from-teal-300 to-emerald-400"
-              style={{ 
-                width: useTransform(
-                  orbitProgress, 
-                  [0, 1], 
-                  ['0%', '100%']
-                )
+          <div className="w-48 h-2 bg-blue-100 rounded-full overflow-hidden">
+            <div
+              className="h-full"
+              style={{
+                backgroundColor: textColor.progressBarFill,
+                width: `${navItems.length > 1 ? (activeIndex / (navItems.length - 1)) * 100 : 0}%`,
+                transition: 'width 1s ease'
               }}
             />
           </div>
           <p className="text-xs text-gray-500 mt-2 tracking-wider">
-            {items[activeIndex]?.label || 'Explore'} 
+            {(navItems[activeIndex]?.label) || 'Explore'}
           </p>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { FogBackground } from '../ui/NeumorphicUI';
 import GlobalBackground from './GlobalBackground';
+import { initSectionObserver } from '../../utils/SectionObserver';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -26,10 +27,14 @@ const Layout: React.FC<LayoutProps> = ({
       ScrollTrigger.update();
     };
     
+    // Initialize section observers for animations
+    const cleanup = initSectionObserver();
+    
     window.addEventListener('scroll', updateScrollTrigger, { passive: true });
     
     return () => {
       window.removeEventListener('scroll', updateScrollTrigger);
+      if (cleanup) cleanup();
     };
   }, []);
 

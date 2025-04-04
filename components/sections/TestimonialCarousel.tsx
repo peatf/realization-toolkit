@@ -27,14 +27,15 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({ testimonial }) => {
     >
       <div style={{
         position: 'relative',
-        borderRadius: '16px',
+        borderRadius: '30px',
         overflow: 'hidden',
         padding: '24px',
-        background: 'rgba(255, 255, 255, 0.08)',
-        backdropFilter: 'blur(10px)',
-        WebkitBackdropFilter: 'blur(10px)',
+        background: 'rgba(255, 255, 255, 0.03)',
+        backdropFilter: 'blur(3px)',
+        transform: 'translate3d(0, 0, 0)',
+        WebkitBackdropFilter: 'blur(1px)',
         border: '1px solid rgba(255, 255, 255, 0.1)',
-        boxShadow: hover ? '0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22)' : '0 4px 12px rgba(0, 0, 0, 0.15)',
+        boxShadow: hover ? '0 14px 28px rgba(0, 0, 0, 0.15), 0 10px 10px rgba(0, 0, 0, 0.12)' : '0 4px 12px rgba(0, 0, 0, 0.05)',
         transition: 'box-shadow 0.3s ease',
         minHeight: '320px',
         height: 'auto', // Allow it to grow with content

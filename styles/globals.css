@@ -22,12 +22,16 @@
   
   /* Glass effect parameters */
   --glass-opacity: 0.7;
-  --glass-blur: 10px;
+  --glass-blur: 3px;
   --glass-border: 1px solid rgba(255, 255, 255, 0.7);
 
   /* New background colors */
   --background-primary: #0f172a;
   --background-secondary: #1e293b;
+  
+  /* Background effect variables */
+  --color-grid: rgba(254, 255, 250, 0.3);
+  --color-noise: rgba(50, 50, 50, 0.06);
 }
 
 /* Global Styles */
@@ -53,6 +57,30 @@ body {
   line-height: 1.6;
   font-weight: 300;
   letter-spacing: 0.01em;
+}
+
+/* Noise Overlay Effect */
+body::before {
+  content: "";
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(var(--color-noise) 1px, transparent 1px),
+    radial-gradient(var(--color-noise) 1px, transparent 1px);
+  background-size: 4px 4px;
+  background-position: 0 0, 2px 2px;
+  animation: subtleNoise 1s steps(2) infinite;
+}
+
+/* Animation for subtle noise effect */
+@keyframes subtleNoise {
+   0% { background-position: 0 0, 2px 2px; }
+   100% { background-position: 0 0, 2.1px 2.1px; }
 }
 
 /* Universal Box-Sizing & Visibility */
@@ -103,14 +131,14 @@ body::after {
   pointer-events: none;
   background-image:
     /* Grid layers */
-    repeating-linear-gradient(0deg, transparent, transparent 24px, rgba(254, 255, 250, 0.3) 24px, rgba(254, 255, 250, 0.3) 25px),
-    repeating-linear-gradient(90deg, transparent, transparent 24px, rgba(254, 255, 250, 0.3) 24px, rgba(254, 255, 250, 0.3) 25px),
+    repeating-linear-gradient(0deg, transparent, transparent 24px, var(--color-grid) 24px, var(--color-grid) 25px),
+    repeating-linear-gradient(90deg, transparent, transparent 24px, var(--color-grid) 24px, var(--color-grid) 25px),
     
     /* Green gradient blobs */
     radial-gradient(circle at 12% 18%, rgba(175, 206, 174, 0.35) 0%, rgba(175, 206, 174, 0.2) 5%, transparent 15%),
-    radial-gradient(circle at 78% 72%, rgba(175, 206, 174, 0.38) 0%, rgba(175, 206, 174, 0.22) 6%, transparent 18%),
+    radial-gradient(circle at 78% 72%, rgba(175, 206, 174, 0.48) 0%, rgba(175, 206, 174, 0.22) 6%, transparent 18%),
     radial-gradient(circle at 32% 88%, rgba(175, 206, 174, 0.32) 0%, rgba(175, 206, 174, 0.18) 4%, transparent 12%),
-    radial-gradient(circle at 88% 12%, rgba(175, 206, 174, 0.36) 0%, rgba(175, 206, 174, 0.21) 5%, transparent 15%),
+    radial-gradient(circle at 88% 12%, rgba(175, 206, 174, 0.46) 0%, rgba(175, 206, 174, 0.21) 5%, transparent 15%),
     
     /* Additional tiny blobs */
     radial-gradient(circle at 52% 35%, rgba(175, 206, 174, 0.3) 0%, rgba(175, 206, 174, 0.15) 3%, transparent 10%),
@@ -144,27 +172,6 @@ body::after {
     background-position: 7% -3%;
     background-size: 115% 112%;
   }
-}
-
-/* Glass Card Components */
-.rt-glass-card {
-  background-color: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: var(--glass-border);
-  border-radius: 24px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
-  height: 100%;
-  width: 100%;
-}
-.rt-glass-card-dark {
-  background-color: rgba(26, 26, 26, 0.8);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  color: white;
 }
 
 /* Button Styles */
@@ -605,9 +612,114 @@ section {
 
 /* Glass effect enhancement */
 .glass-morphism {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(.5px);
+  transform: translate3d(0, 0, 0);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 30px;
   box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+}
+
+/* Add this near the end of your file, after the glass-morphism class */
+.card-glass {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(3px);
+  transform: translate3d(0, 0, 0);
+  -webkit-backdrop-filter: blur(.5px);
+  transform: translate3d(0, 0, 0);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 30px;
+  overflow: hidden;
+}
+
+/* Section Animation and Transitions */
+.section-animated {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  will-change: opacity, transform;
+}
+
+.section-animated.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered animations for elements within a section */
+.stagger-item {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.is-visible .stagger-item:nth-child(1) { transition-delay: 0.1s; }
+.is-visible .stagger-item:nth-child(2) { transition-delay: 0.2s; }
+.is-visible .stagger-item:nth-child(3) { transition-delay: 0.3s; }
+.is-visible .stagger-item:nth-child(4) { transition-delay: 0.4s; }
+.is-visible .stagger-item:nth-child(5) { transition-delay: 0.5s; }
+.is-visible .stagger-item:nth-child(6) { transition-delay: 0.6s; }
+
+.is-visible .stagger-item {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Section transition indicators */
+.section-separator {
+  position: relative;
+  height: 100px;
+  margin-top: -50px;
+  z-index: 5;
+  overflow: hidden;
+}
+
+.section-separator::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(254, 255, 250, 0), var(--color-background));
+  pointer-events: none;
+}
+
+/* Sticky menu section styling */
+#gooey-menu-section {
+  z-index: 50;
+  transition: all 0.5s ease-out;
+}
+
+#gooey-menu-section.expanded {
+  height: 100vh;
+  width: 100vw;
+}
+
+/* Enhance menu visibility */
+.gooey-menu-visible {
+  opacity: 1 !important;
+}
+
+/* Enhance menu item visibility when active */
+.menu-item-active {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+}
+
+/* Flash highlight effect */
+.flash-highlight {
+  animation: flash-animation 1s ease-out;
+}
+
+@keyframes flash-animation {
+  0% { background-color: rgba(255, 255, 255, 0); }
+  50% { background-color: rgba(255, 255, 255, 0.15); }
+  100% { background-color: rgba(255, 255, 255, 0); }
+}
+
+/* Section visibility control for the sticky flow */
+.section-hidden {
+  opacity: 0;
+  pointer-events: none;
 }
