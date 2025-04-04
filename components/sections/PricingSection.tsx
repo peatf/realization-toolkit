@@ -173,7 +173,6 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
           background: 'rgba(255, 255, 255, 0.08)',
           backdropFilter: 'blur(4px)',
           WebkitBackdropFilter: 'blur(4px)',
-          transform: 'translate3d(0, 0, 0)',
           border: '1px solid rgba(255, 255, 255, 0.1)',
           boxShadow: hover
             ? '0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.12)'
