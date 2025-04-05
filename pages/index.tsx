@@ -11,98 +11,38 @@ import CircularMenuWithGooeyText from '../components/sections/CircularMenuWithGo
 import GlassBowlIconsSection from '../components/sections/GlassBowlIconsSection';
 import { personalToolsProducts, communityToolsProducts } from '../data/productData';
 import { testimonials } from '../data/testimonialData';
+import { initSectionObserver } from '../utils/SectionObserver';
 
 const Home: NextPage = () => {
   useEffect(() => {
-    // You can keep your GSAP ScrollTrigger setup if needed.
-  }, []);
+    // Initialize scroll animations
+    initSectionObserver();
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const threshold = window.innerHeight * 0.1; // 10% of viewport height
-      
-      if (scrollY > threshold) {
-        document.body.classList.add('scroll-active');
-        document.body.classList.remove('scroll-inactive');
-      } else {
-        document.body.classList.add('scroll-inactive');
-        document.body.classList.remove('scroll-active');
-      }
+    // Improve scroll performance with passive events
+    const wheelOpts = { passive: true };
+    const wheelHandler = (e) => {
+      // You can add custom wheel behavior here if needed
+      // But keep it simple and don't interfere with natural scrolling
     };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
-  useEffect(() => {
-    const menuSection = document.getElementById('gooey-menu-section');
-    const heroSection = document.getElementById('opening');
-    
-    if (!menuSection || !heroSection) return;
-    
-    // Create intersection observer to detect when sections enter viewport
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          // When menu section enters viewport
-          if (entry.target.id === 'gooey-menu-section') {
-            // Add entrance animation class
-            entry.target.classList.add('entering');
-            
-            // Add visual indicator that we're in a new section
-            document.body.classList.add('viewing-menu');
-            document.body.classList.remove('viewing-hero');
-          }
-          
-          // When hero section enters viewport
-          if (entry.target.id === 'opening') {
-            document.body.classList.add('viewing-hero');
-            document.body.classList.remove('viewing-menu');
-            
-            // Reset menu animation for next entrance
-            menuSection.classList.remove('entering');
-          }
-        }
-      });
-    }, { threshold: 0.4 }); // Trigger when 40% of section is visible
-    
-    // Observe both sections
-    observer.observe(menuSection);
-    observer.observe(heroSection);
-    
-    // Advanced scroll control for better UX
-    const handleWheel = (e) => {
-      const heroRect = heroSection.getBoundingClientRect();
-      
-      // If at the bottom of hero section and scrolling down, snap to menu section
-      if (heroRect.bottom <= window.innerHeight && heroRect.bottom > window.innerHeight/2 && e.deltaY > 0) {
-        e.preventDefault();
-        menuSection.scrollIntoView({ behavior: 'smooth' });
-        menuSection.classList.add('entering');
-      }
-    };
-    
-    window.addEventListener('wheel', handleWheel, { passive: false });
-    
+    window.addEventListener('wheel', wheelHandler, wheelOpts);
+
     return () => {
-      observer.disconnect();
-      window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('wheel', wheelHandler);
     };
   }, []);
-  
+
   return (
     <Layout>
-      {/* Opening / Hero Section - with scroll snap */}
-      <section id="opening" className="scroll-snap-align-start">
+      {/* Opening section */}
+      <section id="opening" className="relative">
         <OpeningSection />
-        <div className="scroll-transition-space"></div> {/* Add transition space */}
       </section>
 
-      {/* Circular Menu Section - adjusted positioning */}
+      {/* Circular Menu Section */}
       <section 
         id="gooey-menu-section" 
-        className="relative min-h-screen sticky top-0 z-50 flex items-center justify-center scroll-snap-align-start"
+        className="relative min-h-screen z-50 flex items-center justify-center"
       >
         <CircularMenuWithGooeyText 
           items={[
@@ -115,11 +55,11 @@ const Home: NextPage = () => {
           ]}
         />
       </section>
-      
+
       {/* Membership Benefits & Quiz Section */}
       <section 
         id="membership-benefits" 
-        className="relative lg:mt-72 pt-12 pb-6"
+        className="relative lg:mt-32 pt-12 pb-6 section-animated"
       >
         <div className="container mx-auto px-4 md:px-8">
           <div className="flex flex-col lg:flex-row gap-12 items-start">
@@ -144,15 +84,16 @@ const Home: NextPage = () => {
         </div>
       </section>
 
-      {/* Product Carousels Section - REDUCE TOP PADDING */}
+      {/* Product Carousels Section */}
       <section 
         id="product-carousels" 
-        className="relative pt-0 pb-20 section-animated"
+        className="relative pt-0 pb-16"
       >
         <ProductCarousel 
           products={personalToolsProducts}
           title="The Power Tools" 
           subtitle="Learn the Tools"
+          // animated={true} // Removed as ProductCarousel does not accept it
         />
         <ProductCarousel 
           products={communityToolsProducts}
@@ -162,11 +103,11 @@ const Home: NextPage = () => {
       </section>
       
       {/* Testimonial Section */}
-      <section id="testimonials" className="py-16">
+      <section id="testimonials" className="relative">
         <TestimonialCarousel testimonials={testimonials} />
       </section>
       
-      {/* Glass Bowl and Pricing Section - Side-by-side on desktop */}
+      {/* Glass Bowl and Pricing Section */}
       <section className="py-16">
         <div className="container mx-auto px-4 md:px-8">
           <div className="flex flex-col lg:flex-row items-baseline gap-12">

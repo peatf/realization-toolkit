@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 
 interface SectionProps {
   children: React.ReactNode;
@@ -13,7 +13,7 @@ const Section: React.FC<SectionProps> = ({
   className = '', 
   id, 
   fullHeight = false,
-  animated = true
+  animated = false // Change default to false!
 }) => {
   const sectionRef = useRef<HTMLElement>(null);
   

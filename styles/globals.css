@@ -714,6 +714,55 @@ section {
   opacity: 0.15;
   mix-blend-mode: multiply;
 }
+
+/* Add these smooth scroll styles */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Transition styles for sections */
+.section-animated {
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  will-change: opacity, transform;
+}
+
+/* Staggered animation items */
+.stagger-item {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+/* Flash highlight effect when navigating to sections */
+.flash-highlight {
+  animation: flashHighlight 1.2s ease-out;
+}
+
+@keyframes flashHighlight {
+  0%, 100% {
+    background-color: transparent;
+  }
+  15% {
+    background-color: rgba(96, 165, 250, 0.2);
+  }
+}
+
+/* Smooth section transitions */
+.section-transition {
+  position: relative;
+}
+
+.section-transition::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100px;
+  background: linear-gradient(to bottom, transparent, var(--color-background));
+  pointer-events: none;
+  z-index: 1;
+}
+
 /* Add these rules to the end of your globals.css file to ensure they override everything else */
 
 /* Force carousel card positioning and stacking */

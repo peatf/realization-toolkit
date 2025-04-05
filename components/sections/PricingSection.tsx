@@ -131,6 +131,7 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
 
     // This is what connects to Squarespace's membership system
     if (typeof window !== 'undefined' && window.UserAccountApi) {
+      // Direct API access (works only when NOT in iframe)
       window.UserAccountApi.joinPricingPlan(
         plan.pricingPlanId || '',
         currentOptionId,
@@ -139,8 +140,36 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
         "MEMBER_AREA_BLOCK" // source
       );
     } else {
-      console.error('UserAccountApi not found - are you running outside of Squarespace?');
-      console.log(`Plan ID: ${plan.pricingPlanId}, Option ID: ${currentOptionId}`);
+      // We're in an iframe - try both approaches:
+      
+      // 1. Send message to parent Squarespace page
+      try {
+        window.parent.postMessage({
+          type: 'JOIN_PRICING_PLAN',
+          pricingPlanId: plan.pricingPlanId || '',
+          pricingOptionId: currentOptionId,
+          couponCode: "",
+          gift: false,
+          source: "MEMBER_AREA_BLOCK"
+        }, '*');
+        
+        console.log('Sent membership request to parent window');
+      } catch (err) {
+        console.error('Failed to communicate with parent window:', err);
+      }
+      
+      // 2. Fallback: Redirect to Squarespace membership page directly
+      try {
+        // Construct the URL to the Squarespace membership page
+        const squarespaceUrl = 'https://peathefeary.com'; // Replace with your main Squarespace domain
+        const membershipUrl = `${squarespaceUrl}/members-area?pricingPlanId=${plan.pricingPlanId}&pricingOptionId=${currentOptionId}`;
+        
+        // Open in parent window to break out of iframe
+        window.top.location.href = membershipUrl;
+      } catch (err) {
+        console.error('Failed to redirect:', err);
+        console.log(`Plan ID: ${plan.pricingPlanId}, Option ID: ${currentOptionId}`);
+      }
     }
   };
 
