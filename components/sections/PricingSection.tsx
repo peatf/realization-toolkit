@@ -129,46 +129,34 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
   const handlePurchaseClick = (e: React.MouseEvent) => {
     e.stopPropagation();
 
-    // This is what connects to Squarespace's membership system
+    const pricingPlanId = plan.pricingPlanId || '';
+    const pricingOptionId = currentOptionId;
+
+    // This is what normally opens the modal
     if (typeof window !== 'undefined' && window.UserAccountApi) {
-      // Direct API access (works only when NOT in iframe)
       window.UserAccountApi.joinPricingPlan(
-        plan.pricingPlanId || '',
-        currentOptionId,
-        "", // coupon code (empty)
-        false, // gift (false)
+        pricingPlanId,
+        pricingOptionId,
+        "", // coupon code
+        false, // gift
         "MEMBER_AREA_BLOCK" // source
       );
     } else {
-      // We're in an iframe - try both approaches:
-      
-      // 1. Send message to parent Squarespace page
+      // We're in an iframe - only use the postMessage approach (no redirect)
       try {
+        console.log('Attempting to open membership modal via parent window...');
         window.parent.postMessage({
           type: 'JOIN_PRICING_PLAN',
-          pricingPlanId: plan.pricingPlanId || '',
-          pricingOptionId: currentOptionId,
+          pricingPlanId: pricingPlanId,
+          pricingOptionId: pricingOptionId,
           couponCode: "",
           gift: false,
           source: "MEMBER_AREA_BLOCK"
-        }, '*');
+        }, '*'); // Allow any origin for testing
         
-        console.log('Sent membership request to parent window');
+        console.log(`Sent membership request to parent window for plan ${pricingPlanId}`);
       } catch (err) {
         console.error('Failed to communicate with parent window:', err);
-      }
-      
-      // 2. Fallback: Redirect to Squarespace membership page directly
-      try {
-        // Construct the URL to the Squarespace membership page
-        const squarespaceUrl = 'https://peathefeary.com'; // Replace with your main Squarespace domain
-        const membershipUrl = `${squarespaceUrl}/members-area?pricingPlanId=${plan.pricingPlanId}&pricingOptionId=${currentOptionId}`;
-        
-        // Open in parent window to break out of iframe
-        window.top.location.href = membershipUrl;
-      } catch (err) {
-        console.error('Failed to redirect:', err);
-        console.log(`Plan ID: ${plan.pricingPlanId}, Option ID: ${currentOptionId}`);
       }
     }
   };
