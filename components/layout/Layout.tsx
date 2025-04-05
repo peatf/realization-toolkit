@@ -27,14 +27,15 @@ const Layout: React.FC<LayoutProps> = ({
       ScrollTrigger.update();
     };
     
-    // Initialize section observers for animations
-    const cleanup = initSectionObserver();
+    // Initialize section observers for animations - but don't try to use the return value
+    initSectionObserver();
     
     window.addEventListener('scroll', updateScrollTrigger, { passive: true });
     
     return () => {
       window.removeEventListener('scroll', updateScrollTrigger);
-      if (cleanup) cleanup();
+      // Simply remove this line that's causing the error
+      // if (cleanup) cleanup(); 
     };
   }, []);
 
@@ -43,13 +44,11 @@ const Layout: React.FC<LayoutProps> = ({
       <Head>
         <title>{title}</title>
         <meta name="description" content={description} />
-        {/* Other head elements */}
       </Head>
       
       <GlobalBackground />
       
       <main className="relative overflow-y-auto min-h-screen">
-
         {children}
       </main>
     </>
