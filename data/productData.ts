@@ -28,10 +28,10 @@ export const personalToolsProducts: Product[] = [
   },
   {
     id: 3,
-    image: productIconMapping["Abundance Cheat Codes"],
-    alt: "Abundance Cheat Codes",
-    title: "Abundance Cheat Codes",
-    tip: "Abundance isn't chased, it's allowed. These codes shift how you relate to money, sales, and business so things flow naturally. No tricks. But rather an available way of being.\nFrom this way of being,\nMoney flows easier.\nClients come naturally.\nScarcity is allowed to dissolve.\nBusiness feels like you.\nMore becomes your norm.\nAnd these aren't hacks. These are internal shifts. When you're ready, these codes guide the way."
+    image: productIconMapping["ABUNDANCELAB"],
+    alt: "ABUNDANCELAB",
+    title: "ABUNDANCELAB",
+    tip: "Abundance isn't chased, it's allowed. These codes shift how you relate to money, sales, and business so things flow naturally. No tricks. But rather an available way of being. From this way of being, Money flows easier. Clients come naturally. Scarcity is allowed to dissolve. Business feels like you. More becomes your norm. And these aren't hacks. These are internal shifts. When you're ready, these codes guide the way to this: a digital toolkit for getting clear, feeling grounded, and opening to more, especially around money. With three simple tools, it helps you shift your focus, clarify your pricing, and reconnect with what actually feels aligned."
   },
   {
     id: 4,
@@ -98,6 +98,6 @@ export const communityToolsProducts: Product[] = [
     image: productIconMapping["Tension To Form"],
     alt: "Tension To Form",
     title: "Tension To Form",
-    tip: "When expanding and fortifying areas within your business or career, you will be moving into tension. Tension is a signal, a clear indicator of where something is ready to grow or be given energy. Tension to Form is an interactive art experience tool designed to transform tension,the felt experience of reality’s challenges,into energy and power. "
+    tip: "When expanding and fortifying areas within your business or career, you will be moving into tension. Tension is a signal, a clear indicator of where something is ready to grow or be given energy. Tension to Form is an interactive art experience tool designed to transform tension,the felt experience of reality's challenges,into energy and power. "
   }
 ];
