@@ -26,6 +26,7 @@ const QuizWithPreview = () => {
             <div 
               onClick={handleToggleQuiz}
               className="w-full cursor-pointer relative"
+              data-cta
             >
               <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-5 flex items-center justify-center transition-all duration-300">
                 <span className="bg-white px-4 py-2 rounded shadow opacity-0 hover:opacity-100 transition-all duration-300">

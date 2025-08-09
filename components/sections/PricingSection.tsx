@@ -16,6 +16,7 @@ declare global {
 }
 import { motion } from 'framer-motion';
 import Section from '../layout/Section';
+import usePerformanceMetrics from '../../utils/usePerformanceMetrics';
 import OrganicBackgroundEffect from '../animations/OrganicBackgroundEffect';
 
 // (Keep the existing interfaces: IntervalData, Plan, PricingSectionProps, MembershipCardProps)
@@ -38,6 +39,32 @@ interface Plan {
   toggleLabels?: Record<string, string>;
   features: string[];
 }
+function computeNextBillingDateText(plan: Plan, selectedInterval?: string): string {
+  try {
+    const now = new Date();
+    const d = new Date(now);
+    if (plan.hasMultipleIntervals && plan.intervals) {
+      const key = selectedInterval || Object.keys(plan.intervals)[0] || 'monthly';
+      if (key.toLowerCase().includes('week')) {
+        d.setDate(d.getDate() + 7);
+      } else if (key.toLowerCase().includes('2 week')) {
+        d.setDate(d.getDate() + 14);
+      } else {
+        d.setMonth(d.getMonth() + 1);
+      }
+    } else {
+      const interval = (plan.interval || '').toLowerCase();
+      if (interval.includes('week')) {
+        d.setDate(d.getDate() + 7);
+      } else {
+        d.setMonth(d.getMonth() + 1);
+      }
+    }
+    return d.toLocaleDateString();
+  } catch {
+    return '—';
+  }
+}
 
 interface MembershipCardProps {
   plan: Plan;
@@ -48,6 +75,8 @@ interface MembershipCardProps {
   totalCards: number;
   selectedInterval?: string;
   onIntervalChange: (interval: string) => void;
+  onPurchase?: () => void;
+  layout?: 'stacked' | 'side-by-side';
 }
 
 // (Keep the existing MembershipCard component)
@@ -61,6 +90,8 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
   totalCards,
   selectedInterval,
   onIntervalChange,
+  onPurchase,
+  layout = 'stacked',
 }) => {
   const [hover, setHover] = useState(false);
   const [buttonHover, setButtonHover] = useState(false);
@@ -70,23 +101,23 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
   let scale = 1;
   let cardZIndex = totalCards;
 
-  if (!isActive) {
-    const distance = Math.abs(relativeIndex);
-    if (relativeIndex > 0) {
-      // Change from pushing cards down to moving them up
-      translateY = -relativeIndex * 30; // Negative value moves cards up
-      scale = 1 - relativeIndex * 0.05;
-    } else {
-      // Cards before the active one also move up
-      translateY = relativeIndex * 30; // This will be negative since relativeIndex is negative
-      scale = 1 - distance * 0.03;
+  if (layout === 'stacked') {
+    if (!isActive) {
+      const distance = Math.abs(relativeIndex);
+      if (relativeIndex > 0) {
+        translateY = -relativeIndex * 30;
+        scale = 1 - relativeIndex * 0.05;
+      } else {
+        translateY = relativeIndex * 30;
+        scale = 1 - distance * 0.03;
+      }
+      cardZIndex = totalCards - distance;
+      scale = Math.max(0.75, scale);
+      cardZIndex = Math.max(1, cardZIndex);
     }
-    cardZIndex = totalCards - distance;
-    scale = Math.max(0.75, scale);
-    cardZIndex = Math.max(1, cardZIndex);
   }
 
-  const transform = `translateX(-50%) translateY(${translateY}px) scale(${scale})`;
+  const transform = layout === 'stacked' ? `translateX(-50%) translateY(${translateY}px) scale(${scale})` : 'none';
 
   let currentPrice = plan.price || '';
   let currentIntervalText = plan.interval || '';
@@ -128,6 +159,7 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
 
   const handlePurchaseClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (onPurchase) onPurchase();
 
     const pricingPlanId = plan.pricingPlanId || '';
     const pricingOptionId = currentOptionId;
@@ -161,12 +193,11 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
     }
   };
 
-  return (
-    <div
-      style={{
+  const containerStyle: React.CSSProperties = layout === 'stacked'
+    ? {
         position: 'absolute',
         left: '50%',
-        top: '50px', // Add some top margin so cards have room to peek above
+        top: '50px',
         width: '340px',
         maxWidth: '90vw',
         height: 'auto',
@@ -175,10 +206,25 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
         opacity: 1,
         cursor: isActive ? 'default' : 'pointer',
         transition: 'transform 0.5s ease, z-index 0.5s ease',
-      }}
+      }
+    : {
+        position: 'relative',
+        width: '340px',
+        maxWidth: '95vw',
+        height: 'auto',
+        zIndex: index + 1,
+        marginLeft: index > 0 ? -20 : 0,
+        opacity: 1,
+        cursor: 'default',
+        transition: 'transform 0.3s ease',
+      };
+
+  return (
+    <div
+      style={containerStyle}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      onClick={() => !isActive && onSelect()}
+      onClick={() => layout === 'stacked' && !isActive ? onSelect() : undefined}
     >
       <div
         style={{
@@ -307,6 +353,19 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
             {currentIntervalText}
           </p>
 
+          {/* Billing details: Cancel anytime + Next billing date */}
+          <p
+            style={{
+              fontSize: '12px',
+              marginTop: '-10px',
+              marginBottom: '16px',
+              fontFamily: 'var(--font-sans)',
+              color: 'var(--color-secondary)'
+            }}
+          >
+            Cancel anytime • Next billing: {computeNextBillingDateText(plan, selectedInterval)}
+          </p>
+
           <ul
             style={{
               listStyle: 'none',
@@ -339,6 +398,7 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
           </ul>
 
           <button
+            data-payment-cta
             style={{
               ...choosePlanBaseStyle,
               ...(buttonHover ? choosePlanHoverStyle : {}),
@@ -352,7 +412,7 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
         </div>
       </div>
 
-      {!isActive && (
+      {layout === 'stacked' && !isActive && (
         <div
           style={{
             position: 'absolute',
@@ -385,6 +445,8 @@ interface PricingSectionProps {
 const PricingSection: React.FC<PricingSectionProps> = ({ plans = [], id }) => {
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [selectedIntervals, setSelectedIntervals] = useState<Record<number, string>>({});
+  const metrics = usePerformanceMetrics();
+  const [layoutMode] = useState<'stacked' | 'side-by-side'>('side-by-side');
 
   // Initialize selected intervals (important for multi-interval plans)
   useEffect(() => {
@@ -399,65 +461,86 @@ const PricingSection: React.FC<PricingSectionProps> = ({ plans = [], id }) => {
   }, [plans]); // Re-run if plans change
 
   return (
-    <Section id="pricing" className="pricing-section py-16">
-      <div className="container mx-auto px-4 py-8">
+    <Section id="pricing" className="pricing-section py-16" data-pricing>
+      <div className="container mx-auto px-4 py-8" data-cta>
         <h2 className="font-sans text-4xl md:text-5xl text-[var(--color-foreground)] mb-6 font-light text-center">
           Membership Options
         </h2>
 
-        {/* Container for the card stack */}
-        <div className="relative w-full h-[550px] mt-16 flex justify-center items-start mb-8">
-          {/* Card stack */}
-          {plans.map((plan, index) => (
-            <MembershipCard
-              key={plan.id}
-              plan={plan}
-              isActive={index === activeCardIndex}
-              onSelect={() => setActiveCardIndex(index)}
-              index={index}
-              activeIndex={activeCardIndex}
-              totalCards={plans.length}
-              selectedInterval={selectedIntervals[index]}
-              onIntervalChange={(interval) => {
-                setSelectedIntervals(prev => ({
-                  ...prev,
-                  [index]: interval
-                }));
-              }}
-            />
-          ))}
-        </div>
+        {layoutMode === 'stacked' ? (
+          <div className="relative w-full h-[550px] mt-16 flex justify-center items-start mb-8">
+            {plans.map((plan, index) => (
+              <MembershipCard
+                key={plan.id}
+                plan={plan}
+                isActive={index === activeCardIndex}
+                onSelect={() => setActiveCardIndex(index)}
+                index={index}
+                activeIndex={activeCardIndex}
+                totalCards={plans.length}
+                selectedInterval={selectedIntervals[index]}
+                onIntervalChange={(interval) => {
+                  setSelectedIntervals(prev => ({
+                    ...prev,
+                    [index]: interval
+                  }));
+                }}
+                onPurchase={metrics.recordPaymentClick}
+                layout="stacked"
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="w-full mt-10 flex flex-col items-center gap-4 lg:flex-row lg:justify-center lg:items-stretch lg:gap-0">
+            {plans.map((plan, index) => (
+              <MembershipCard
+                key={plan.id}
+                plan={plan}
+                isActive={true}
+                onSelect={() => {}}
+                index={index}
+                activeIndex={0}
+                totalCards={plans.length}
+                selectedInterval={selectedIntervals[index]}
+                onIntervalChange={(interval) => {
+                  setSelectedIntervals(prev => ({
+                    ...prev,
+                    [index]: interval
+                  }));
+                }}
+                onPurchase={metrics.recordPaymentClick}
+                layout="side-by-side"
+              />
+            ))}
+          </div>
+        )}
 
-        {/* Navigation Buttons Container */}
-        <div className="flex justify-center items-center gap-4 mt-4">
-          {/* Previous button */}
-          <button
-            onClick={() => activeCardIndex > 0 && setActiveCardIndex(activeCardIndex - 1)}
-            disabled={activeCardIndex === 0}
-            className="w-12 h-12 rounded-full
-                     border border-[var(--color-foreground-muted)] text-[var(--color-foreground)]
-                     hover:bg-[var(--color-foreground-muted)] transition-colors
-                     disabled:opacity-30 disabled:cursor-not-allowed backdrop-blur-sm bg-white/10
-                     flex items-center justify-center"
-            aria-label="Previous plan"
-          >
-            ←
-          </button>
+        {layoutMode === 'stacked' && (
+          <div className="flex justify-center items-center gap-4 mt-4">
+            <button
+              onClick={() => activeCardIndex > 0 && setActiveCardIndex(activeCardIndex - 1)}
+              disabled={activeCardIndex === 0}
+              className="w-12 h-12 rounded-full border border-[var(--color-foreground-muted)] text-[var(--color-foreground)] hover:bg-[var(--color-foreground-muted)] transition-colors disabled:opacity-30 disabled:cursor-not-allowed backdrop-blur-sm bg-white/10 flex items-center justify-center"
+              aria-label="Previous plan"
+            >
+              ←
+            </button>
+            <button
+              onClick={() => activeCardIndex < plans.length - 1 && setActiveCardIndex(activeCardIndex + 1)}
+              disabled={activeCardIndex === plans.length - 1}
+              className="w-12 h-12 rounded-full border border-[var(--color-foreground-muted)] text-[var(--color-foreground)] hover:bg-[var(--color-foreground-muted)] transition-colors disabled:opacity-30 disabled:cursor-not-allowed backdrop-blur-sm bg-white/10 flex items-center justify-center"
+              aria-label="Next plan"
+            >
+              →
+            </button>
+          </div>
+        )}
 
-          {/* Next button */}
-          <button
-            onClick={() => activeCardIndex < plans.length - 1 && setActiveCardIndex(activeCardIndex + 1)}
-            disabled={activeCardIndex === plans.length - 1}
-            className="w-12 h-12 rounded-full
-                     border border-[var(--color-foreground-muted)] text-[var(--color-foreground)]
-                     hover:bg-[var(--color-foreground-muted)] transition-colors
-                     disabled:opacity-30 disabled:cursor-not-allowed backdrop-blur-sm bg-white/10
-                     flex items-center justify-center"
-            aria-label="Next plan"
-          >
-            →
-          </button>
-        </div>
+        {process.env.NODE_ENV !== 'production' ? (
+          <div className="mt-6 text-center text-sm text-[var(--color-secondary)]">
+            <p>Dev Metrics: TTFCTA: {metrics.timeToFirstCTA ? (metrics.timeToFirstCTA / 1000).toFixed(2) + 's' : '—'} | TTPricing: {metrics.timeToPricing ? (metrics.timeToPricing / 1000).toFixed(2) + 's' : '—'} | Clicks→Payment: {metrics.clicksToPayment ?? '—'} | Payment Attempts: {metrics.paymentAttempts}</p>
+          </div>
+        ) : null}
       </div>
     </Section>
   );

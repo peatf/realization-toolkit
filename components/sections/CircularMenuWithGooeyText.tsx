@@ -31,11 +31,11 @@ const breatheAnimation = `
 const CircularMenuWithGooeyText: React.FC<CircularMenuProps> = () => {
   const navItems: NavItem[] = [
     { id: 'membership-benefits', label: 'Realization Toolkit', target: 'membership-benefits' },
-    { id: 'quiz', label: 'Find Your Tools', target: 'membership-benefits' }, // Changed from 'quiz' to 'membership-benefits'
-    { id: 'product-carousels', label: 'Learn About the Tools', target: 'product-carousels' },
-    { id: 'pricing', label: 'Enroll Now', target: 'pricing' },
+    { id: 'quiz', label: 'Find Your Tools', target: 'quiz' },
     { id: 'toolkit-exclusives', label: 'Realization Toolkit Exclusives', target: 'toolkit-exclusives' },
-    { id: 'testimonials', label: 'Testimonials', target: 'testimonials' }
+    { id: 'product-carousels', label: 'Learn About the Tools', target: 'product-carousels' },
+    { id: 'testimonials', label: 'Testimonials', target: 'testimonials' },
+    { id: 'pricing', label: 'Enroll Now', target: 'pricing' }
   ];
 
   const [activeIndex, setActiveIndex] = useState(0);

@@ -3,6 +3,9 @@ export interface Testimonial {
   name: string;
   title?: string;
   imageUrl?: string;
+  priority?: 'high' | 'medium' | 'low';
+  outcomeType?: 'revenue' | 'throughput' | 'implementation' | 'general';
+  isPinned?: boolean;
 }
 
 export const testimonials: Testimonial[] = [
@@ -17,7 +20,9 @@ export const testimonials: Testimonial[] = [
   },
   {
     text: "Recently, I tapped into the refiner to gain clarity around how I wanted to approach and share my next big project. First, that tool is incredible. Like what an insanely gorgeous way to get feedback from virtual Pea… the way my goal and desire was summarized set me up for my next steps perfectly. When I took that summary and applied it to creating content? I am so high on life right now and just so happy to do what I'm doing that nothing else really matters. What a fun way to create and execute a project!!! Thanks PEA! <3",
-    name: "Andrea"
+    name: "Andrea",
+    priority: 'medium',
+    outcomeType: 'implementation'
   },
   {
     text: "[The] Realization Toolkit membership is invaluable. \"The Refiner' alone is one of the coolest things I've ever encountered. I can only imagine the amount of work they put into creating it. Props!",
@@ -33,7 +38,10 @@ export const testimonials: Testimonial[] = [
   },
   {
     text: "celebrating where i'm at right now... a project appeared out of the blue which is paying the highest rate i've ever been paid for longterm work, and the work is a total blast. i'm animating short cartoons for this company and they are making me laugh out loud while i'm working which is quite precious. i always welcome more belly laughs into my world! i'm on track to make almost double my previous annual income. the people that hired me also literally said that i am bringing joy back to their company and that is something i always aim to provide in my work. 'work' doesn't feel like the right word so i'm going to switch in 'play while being simultaneously resourced'. feeling like a benevolent sorcerer.",
-    name: "Elias"
+    name: "Elias",
+    isPinned: true,
+    priority: 'high',
+    outcomeType: 'revenue'
   },
   {
     text: "Booking a shoot that was very much led by giving my genius the authority it deserves (that I pinpointed from that very first coaching call), enjoying the process of the shoot SO! MUCH! and feeling so inspired to keep going in this direction, then posting the images on social media the other day and getting more likes than any other post in, like, years. A good embodied reminder to hang tight a moment while reality is doing its shifting.",
@@ -45,7 +53,9 @@ export const testimonials: Testimonial[] = [
   },
   {
     text: "I sent my most recent (wonderful & lucrative) client my largest invoice to date. i was experiencing a glimmer of trepidation... inner dialogue something like 'how can i possibly be getting paid this much to make fun cartoons?' their response? 'thank you for putting so much soul into this project – you two are a creative force I am profoundly lucky to be working with.' feeling very very blessed and appreciated. i feel that i am reaping the reward of my efforts to identify & neutralize tension in my reality; the blessings are starting to double up.",
-    name: "Elias"
+    name: "Elias",
+    priority: 'high',
+    outcomeType: 'revenue'
   },
   {
     text: "I am used to no pressure, so much calm in my life now and it feels great to create from this place. If you would ask me 2 years ago how I would be able to live the abundant life I'm living now, I would tell you I'd have to be on the cusp of burn-out, working many hours and feeling the pressure in order to be successful. I'm so happy that my pov has changed completely, and that I'm feeling like I have the time in the world and I'm just having fun. It doesn't need to be hard at all, I love the ease and flow and my slow morning :) I love to delegate stuff I don't like doing. I love to work on my projects more intuitively, not as rigidly planned. In many ways I get more done than ever, while just chilling haha. Bliiss!!",
@@ -65,7 +75,9 @@ export const testimonials: Testimonial[] = [
   },
   {
     text: "Yesterday I made the most I've ever made in a single day animating cartoons. Buying a black velvet blazer and getting a massage to celebrate! Really grateful for the systems/people/opportunities that have appeared in my reality to make this lifestyle possible.",
-    name: "E"
+    name: "E",
+    priority: 'high',
+    outcomeType: 'revenue'
   },
   {
     text: "Since active programming started I have been inspired to change little things in my surroundings or making things cuter, like adding pictures to random notes on my computer. This feels so yummy and I wanna celebrate that. Also started a pinterest board inspired by AP, which I love to look at and instantly makes me happy.",
@@ -86,7 +98,10 @@ export const testimonials: Testimonial[] = [
   },
   {
     text: "I sent out an invoice to a client for $15k, and had some wriggly energy. After identifying the wriggly energy, I decided to let receiving the dough be easy. One single payment received with neutrality. Last night $15k hit my bank account which really is life changing. I feel thrilled but also calm, the payment was for exactly $15,000 which to me felt like reality winking at me - - that feels like an easy number. Right now my career really does feel like a game.",
-    name: "E"
+    name: "E",
+    isPinned: true,
+    priority: 'high',
+    outcomeType: 'revenue'
   },
   {
     text: "I had several meetings in a row with the people I love to work with. One of them invited me to a lecture to a subject which is incredibly niche and exactly what I needed to hear in the moment. I am so supported, when I let myself be.",
@@ -144,7 +159,9 @@ export const testimonials: Testimonial[] = [
   },
   {
     text: "Celebrating two new clients in the first week of releasing a new offer! Embodying my core desire, continuously choosing self trust, and utilizing all these juicy tools at my disposal have been key! It's unbelievably satisfying to do things the way I want to do them while focusing on the energy I believe will get me there. RTK membership really is the shiz lol, exactly what I needed in my life.",
-    name: "Andrea"
+    name: "Andrea",
+    priority: 'medium',
+    outcomeType: 'throughput'
   },
   {
     text: "",

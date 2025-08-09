@@ -60,6 +60,13 @@ body {
   letter-spacing: 0.01em;
 }
 
+/* Body scroll lock state */
+body.scroll-locked {
+  overflow: hidden !important;
+  overscroll-behavior: contain;
+  touch-action: none;
+}
+
 /* Noise Overlay Effect (Top Layer) */
 body::before {
   content: "";

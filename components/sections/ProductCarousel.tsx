@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { X, ChevronRight } from 'lucide-react';
 import { Product } from '../../data/productData';
 import Section from '../layout/Section';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
+import EnhancedTooltip from '../ui/EnhancedTooltip';
 
 interface ProductCarouselProps {
   products: Product[];
@@ -21,6 +22,10 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
   hideScrollbar = false
 }) => {
   const [activeTip, setActiveTip] = useState<number | null>(null);
+
+  const activeProduct = useMemo(() =>
+    activeTip !== null ? products.find(p => p.id === activeTip) ?? null : null,
+  [activeTip, products]);
   
   const openTip = (id: number) => {
     setActiveTip(id);
@@ -113,60 +118,38 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
           )}
         </div>
         
-        {/* Tip Card Modal */}
-        {activeTip !== null && createPortal(
-          <div 
-            className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
-            onClick={closeTip}
-            style={{
-              backgroundImage: 'radial-gradient(rgba(0, 0, 0, 0.4) 1px, transparent 1px)',
-              backgroundSize: '4px 4px',
-              backdropFilter: 'brightness(0.9) blur(3px)',
-              animation: 'fadeIn 0.2s ease-out',
-              opacity: 1
-            }}
-          >
-            <div 
-              className="bg-white rounded-2xl shadow-xl max-w-md w-full p-4 sm:p-6 relative text-gray-800 border-0 outline-none"
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                animation: 'zoomIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-                maxWidth: '95vw' // Ensure it doesn't overflow on very small devices
-              }}
-            >
-              <button 
-                onClick={closeTip}
-                className="absolute top-2 sm:top-3 right-2 sm:right-3 p-1 hover:bg-gray-100 rounded-full border-0 outline-none"
-                aria-label="Close tip"
-              >
-                <X size={16} className="text-gray-700 sm:hidden" />
-                <X size={20} className="text-gray-700 hidden sm:block" />
-              </button>
-              {products.find(p => p.id === activeTip) && (
-                <>
-                  <div className="w-12 h-12 sm:w-16 md:w-20 sm:h-16 md:h-20 rounded-full overflow-hidden mx-auto mb-2 sm:mb-4 border-0 outline-none shadow-md relative">
-                    {products.find(p => p.id === activeTip) && (
-                      <Image
-                        src={products.find(p => p.id === activeTip)?.image || ''}
-                        alt={products.find(p => p.id === activeTip)?.alt || ''}
-                        fill
-                        sizes="(max-width: 640px) 48px, (max-width: 768px) 64px, 80px"
-                        className="object-cover"
-                      />
-                    )}
-                  </div>
-                  <h3 className="text-lg sm:text-xl font-bold text-center mb-2 sm:mb-3 uppercase tracking-wider">
-                    {products.find(p => p.id === activeTip)?.title}
-                  </h3>
-                  <p className="text-sm sm:text-base text-gray-700 text-center">
-                    {products.find(p => p.id === activeTip)?.tip}
-                  </p>
-                </>
-              )}
-            </div>
-          </div>,
-          document.body
-        )}
+         {/* Tip Card Modal with scroll lock and touch prevention */}
+         <EnhancedTooltip
+           isOpen={activeTip !== null}
+           onClose={closeTip}
+           content={activeProduct ? (
+             <>
+               <button 
+                 onClick={closeTip}
+                 className="absolute top-2 sm:top-3 right-2 sm:right-3 p-1 hover:bg-gray-100 rounded-full border-0 outline-none"
+                 aria-label="Close tip"
+               >
+                 <X size={16} className="text-gray-700 sm:hidden" />
+                 <X size={20} className="text-gray-700 hidden sm:block" />
+               </button>
+               <div className="w-12 h-12 sm:w-16 md:w-20 sm:h-16 md:h-20 rounded-full overflow-hidden mx-auto mb-2 sm:mb-4 border-0 outline-none shadow-md relative">
+                 <Image
+                   src={activeProduct.image}
+                   alt={activeProduct.alt}
+                   fill
+                   sizes="(max-width: 640px) 48px, (max-width: 768px) 64px, 80px"
+                   className="object-cover"
+                 />
+               </div>
+               <h3 className="text-lg sm:text-xl font-bold text-center mb-2 sm:mb-3 uppercase tracking-wider">
+                 {activeProduct.title}
+               </h3>
+               <p className="text-sm sm:text-base text-gray-700 text-center">
+                 {activeProduct.tip}
+               </p>
+             </>
+           ) : null}
+         />
       </div>
       <style jsx>{`
         @keyframes fadeIn {

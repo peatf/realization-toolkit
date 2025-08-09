@@ -173,6 +173,20 @@ const defaultTestimonials: Testimonial[] = [
 
 const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({ testimonials = defaultTestimonials }) => {
   const [current, setCurrent] = useState(0);
+  // Prioritize testimonials: pinned first, then by priority level, then fallback
+  const sortedTestimonials = useMemo(() => {
+    const priorityOrder: Record<string, number> = { high: 0, medium: 1, low: 2 };
+    return [...testimonials].sort((a, b) => {
+      const aPinned = a.isPinned ? 0 : 1;
+      const bPinned = b.isPinned ? 0 : 1;
+      if (aPinned !== bPinned) return aPinned - bPinned;
+      const aP = a.priority ? priorityOrder[a.priority] ?? 3 : 3;
+      const bP = b.priority ? priorityOrder[b.priority] ?? 3 : 3;
+      if (aP !== bP) return aP - bP;
+      // keep original order otherwise
+      return 0;
+    });
+  }, [testimonials]);
   const [direction, setDirection] = useState<'left' | 'right' | 'none'>('none');
   const [autoplayPaused, setAutoplayPaused] = useState(false);
   const touchStartRef = useRef<number | null>(null);
@@ -185,10 +199,10 @@ const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({ testimonials 
     if (autoplayPaused || testimonials.length <= 1) return;
     const interval = setInterval(() => {
       setDirection('right');
-      setCurrent((prev) => (prev + 1) % testimonials.length);
+      setCurrent((prev) => (prev + 1) % sortedTestimonials.length);
     }, 12000);
     return () => clearInterval(interval);
-  }, [testimonials.length, autoplayPaused]);
+  }, [sortedTestimonials.length, autoplayPaused]);
 
   // Optimized touch handlers
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -211,15 +225,15 @@ const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({ testimonials 
 
   // Memoized navigation functions
   const nextSlide = useCallback(() => {
-    if (testimonials.length <= 1) return;
+    if (sortedTestimonials.length <= 1) return;
     setDirection('right');
-    setCurrent((prev) => (prev + 1) % testimonials.length);
-  }, [testimonials.length]);
+    setCurrent((prev) => (prev + 1) % sortedTestimonials.length);
+  }, [sortedTestimonials.length]);
   const prevSlide = useCallback(() => {
-    if (testimonials.length <= 1) return;
+    if (sortedTestimonials.length <= 1) return;
     setDirection('left');
-    setCurrent((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-  }, [testimonials.length]);
+    setCurrent((prev) => (prev - 1 + sortedTestimonials.length) % sortedTestimonials.length);
+  }, [sortedTestimonials.length]);
   const goToSlide = useCallback((index: number) => {
     if (index === current) return;
     setDirection(index > current ? 'right' : 'left');
@@ -277,9 +291,9 @@ const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({ testimonials 
                 className="w-full p-1 md:p-2"
                 role="group"
                 aria-roledescription="slide"
-                aria-label={`${current + 1} of ${testimonials.length}`}
+                aria-label={`${current + 1} of ${sortedTestimonials.length}`}
               >
-                {testimonials.length > 0 && <TestimonialCard testimonial={testimonials[current]} />}
+                {sortedTestimonials.length > 0 && <TestimonialCard testimonial={sortedTestimonials[current]} />}
               </motion.div>
             </AnimatePresence>
           </div>
@@ -287,16 +301,16 @@ const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({ testimonials 
           {/* Controls Area - Moved closer to card */}
           <div className="relative z-20 mt-4"> 
             {/* Indicators */}
-            {testimonials.length > 1 && (
+            {sortedTestimonials.length > 1 && (
               <CarouselIndicators
-                count={testimonials.length}
+                count={sortedTestimonials.length}
                 current={current}
                 setCurrent={goToSlide}
               />
             )}
 
             {/* Navigation Buttons */}
-            {testimonials.length > 1 && (
+            {sortedTestimonials.length > 1 && (
               <div className="flex justify-center items-center gap-4 mt-4">
                 <ArrowButton direction="prev" onClick={prevSlide} disabled={testimonials.length <= 1} />
                 <ArrowButton direction="next" onClick={nextSlide} disabled={testimonials.length <= 1} />

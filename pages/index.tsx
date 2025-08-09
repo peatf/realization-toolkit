@@ -9,6 +9,8 @@ import ProductCarousel from '../components/sections/ProductCarousel';
 import QuizWithPreview from '../components/QuizWithPreview';
 import CircularMenuWithGooeyText from '../components/sections/CircularMenuWithGooeyText';
 import GlassBowlIconsSection from '../components/sections/GlassBowlIconsSection';
+import ServicesGridSection from '../components/sections/ServicesGridSection';
+import CoreToolsDetail from '../components/sections/CoreToolsDetail';
 import { personalToolsProducts, communityToolsProducts } from '../data/productData';
 import { testimonials } from '../data/testimonialData';
 import { initSectionObserver } from '../utils/SectionObserver';
@@ -74,7 +76,7 @@ const Home: NextPage = () => {
             </div>
 
             {/* Quiz Section */}
-            <div className="w-full lg:w-1/2 flex flex-col items-center">
+            <div id="quiz" className="w-full lg:w-1/2 flex flex-col items-center">
               <h3 className="font-sans text-4xl md:text-5xl text-[var(--color-foreground)] mb-8 font-light text-center">
                 Find Your Tools
               </h3>
@@ -83,6 +85,16 @@ const Home: NextPage = () => {
           </div>
         </div>
       </section>
+
+      {/* Realization Toolkit Exclusives Section (Moved up) */}
+      <section id="toolkit-exclusives" className="relative py-16">
+        <div className="container mx-auto px-4 md:px-8">
+          <GlassBowlIconsSection id="toolkit-exclusives" />
+        </div>
+      </section>
+
+      {/* Services Grid (Do/When/Outcome/Time) */}
+      <ServicesGridSection id="services-grid" />
 
       {/* Product Carousels Section */}
       <section 
@@ -101,21 +113,32 @@ const Home: NextPage = () => {
           subtitle="Learn the Tools"
         />
       </section>
+
+      {/* Core Tools Detail */}
+      <CoreToolsDetail />
       
       {/* Testimonial Section */}
       <section id="testimonials" className="relative">
         <TestimonialCarousel testimonials={testimonials} />
       </section>
       
-      {/* Glass Bowl and Pricing Section */}
-      <section className="py-16">
+      {/* Pricing Section (Standalone) */}
+      <section id="pricing" className="py-16">
         <div className="container mx-auto px-4 md:px-8">
-          <div className="flex flex-col lg:flex-row items-baseline gap-12">
-            <div className="w-full lg:w-1/2">
-              <GlassBowlIconsSection id="toolkit-exclusives" />
-            </div>
-            <div className="w-full lg:w-1/2">
-              <PricingSection id="pricing" plans={[
+          <PricingSection id="pricing" plans={[
+                {
+                  id: 'ap-tools', 
+                  name: "Alchemical + Power Tools", 
+                  price: "96.00", 
+                  interval: "Every month",
+                  pricingPlanId: "c8a2ed11-3bee-4456-9e25-54ace2d47267", 
+                  pricingOptionId: "51646566-212a-480d-83d4-fe70f664958d",
+                  features: [ 
+                    "Access to Realization: Alchemical Tools", 
+                    "Access to Realization: Power Tools", 
+                    "Access to one Monthly Vision Coaching Call recording" 
+                  ]
+                },
                 {
                   id: 'rtk',
                   name: "Realization Toolkit ꩜", 
@@ -135,19 +158,6 @@ const Home: NextPage = () => {
                   ]
                 },
                 {
-                  id: 'ap-tools', 
-                  name: "Alchemical + Power Tools", 
-                  price: "96.00", 
-                  interval: "Every month",
-                  pricingPlanId: "c8a2ed11-3bee-4456-9e25-54ace2d47267", 
-                  pricingOptionId: "51646566-212a-480d-83d4-fe70f664958d",
-                  features: [ 
-                    "Access to Realization: Alchemical Tools", 
-                    "Access to Realization: Power Tools", 
-                    "Access to one Monthly Vision Coaching Call recording" 
-                  ]
-                },
-                {
                   id: 'refiner', 
                   name: "The Refiner 𓂀", 
                   hasMultipleIntervals: true,
@@ -163,8 +173,6 @@ const Home: NextPage = () => {
                   ]
                 }
               ]} />
-            </div>
-          </div>
         </div>
       </section>
     </Layout>
