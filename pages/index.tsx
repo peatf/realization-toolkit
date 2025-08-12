@@ -154,7 +154,8 @@ const Home: NextPage = () => {
                     "Access to Power Tools", 
                     "Access to Live Vision Coaching Calls", 
                     "Access to Vision Coaching Call Replays", 
-                    "Access to 1:1 Booking" 
+                     "Access to 1:1 Booking",
+                     "Access to the Self Dashboard" 
                   ]
                 },
                 {
