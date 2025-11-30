@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { NextPage } from 'next';
 import Layout from '../components/layout/Layout';
 import OpeningSection from '../components/sections/OpeningSection';
@@ -13,27 +13,8 @@ import ServicesGridSection from '../components/sections/ServicesGridSection';
 import CoreToolsDetail from '../components/sections/CoreToolsDetail';
 import { personalToolsProducts, communityToolsProducts } from '../data/productData';
 import { testimonials } from '../data/testimonialData';
-import { initSectionObserver } from '../utils/SectionObserver';
 
 const Home: NextPage = () => {
-  useEffect(() => {
-    // Initialize scroll animations
-    initSectionObserver();
-
-    // Improve scroll performance with passive events
-    const wheelOpts = { passive: true };
-    const wheelHandler = (e) => {
-      // You can add custom wheel behavior here if needed
-      // But keep it simple and don't interfere with natural scrolling
-    };
-
-    window.addEventListener('wheel', wheelHandler, wheelOpts);
-
-    return () => {
-      window.removeEventListener('wheel', wheelHandler);
-    };
-  }, []);
-
   return (
     <Layout>
       {/* Opening section */}
@@ -181,4 +162,3 @@ const Home: NextPage = () => {
 };
 
 export default Home;
-

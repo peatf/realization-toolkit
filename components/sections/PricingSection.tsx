@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // Extend the Window interface to include UserAccountApi
 declare global {
@@ -79,8 +79,6 @@ interface MembershipCardProps {
   layout?: 'stacked' | 'side-by-side';
 }
 
-// (Keep the existing MembershipCard component)
-// ... MembershipCard component remains the same ...
 const MembershipCard: React.FC<MembershipCardProps> = ({
   plan,
   isActive,
@@ -94,13 +92,13 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
   layout = 'stacked',
 }) => {
   const [hover, setHover] = useState(false);
-  const [buttonHover, setButtonHover] = useState(false);
 
   const relativeIndex = index - activeIndex;
   let translateY = 0;
   let scale = 1;
   let cardZIndex = totalCards;
 
+  // Stacked layout logic (only used for mobile/stacked view if needed, but we prefer responsive CSS)
   if (layout === 'stacked') {
     if (!isActive) {
       const distance = Math.abs(relativeIndex);
@@ -134,29 +132,6 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
     }
   }
 
-  const choosePlanBaseStyle = {
-    width: '80%',
-    padding: '12px 0',
-    borderRadius: '8px',
-    fontWeight: '500',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
-    cursor: 'pointer',
-    fontSize: '16px',
-    transition: 'all 0.3s ease',
-    marginTop: 'auto',
-    alignSelf: 'center',
-    background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05))',
-    boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-    fontFamily: 'var(--font-sans)',
-    color: 'var(--color-foreground)',
-  };
-
-  const choosePlanHoverStyle = {
-    background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.1))',
-    boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
-    transform: 'translateY(-1px)',
-  };
-
   const handlePurchaseClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (onPurchase) onPurchase();
@@ -185,7 +160,7 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
           gift: false,
           source: "MEMBER_AREA_BLOCK"
         }, '*'); // Allow any origin for testing
-        
+
         console.log(`Sent membership request to parent window for plan ${pricingPlanId}`);
       } catch (err) {
         console.error('Failed to communicate with parent window:', err);
@@ -193,116 +168,48 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
     }
   };
 
-  const containerStyle: React.CSSProperties = layout === 'stacked'
-    ? {
-        position: 'absolute',
-        left: '50%',
-        top: '50px',
-        width: '340px',
-        maxWidth: '90vw',
-        height: 'auto',
-        transform: transform,
-        zIndex: cardZIndex,
-        opacity: 1,
-        cursor: isActive ? 'default' : 'pointer',
-        transition: 'transform 0.5s ease, z-index 0.5s ease',
-      }
-    : {
-        position: 'relative',
-        width: '340px',
-        maxWidth: '95vw',
-        height: 'auto',
-        zIndex: index + 1,
-        marginLeft: index > 0 ? -20 : 0,
-        opacity: 1,
-        cursor: 'default',
-        transition: 'transform 0.3s ease',
-      };
+  // Dynamic classes based on layout and state
+  const containerClasses = layout === 'stacked'
+    ? `absolute left-1/2 top-[50px] w-[340px] max-w-[90vw] h-auto transition-all duration-500 ease-out`
+    : `relative w-full max-w-sm lg:w-[340px] h-auto transition-transform duration-300 ease-out ${index > 0 ? 'lg:-ml-5' : ''}`;
+
+  const containerStyle = layout === 'stacked'
+    ? { transform, zIndex: cardZIndex, opacity: 1, cursor: isActive ? 'default' : 'pointer' }
+    : { zIndex: index + 1, opacity: 1, cursor: 'default' };
 
   return (
     <div
+      className={containerClasses}
       style={containerStyle}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       onClick={() => layout === 'stacked' && !isActive ? onSelect() : undefined}
     >
       <div
-        style={{
-          position: 'relative',
-          width: '100%',
-          borderRadius: '30px',
-          overflow: 'hidden',
-          padding: '24px',
-          background: 'rgba(255, 255, 255, 0.08)',
-          backdropFilter: 'blur(4px)',
-          WebkitBackdropFilter: 'blur(2px)',
-          transform: 'translate3d(0, 0, 0)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          boxShadow: hover
-            ? '0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.12)'
-            : '0 4px 12px rgba(0, 0, 0, 0.05)',
-          transition: 'box-shadow 0.3s ease',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '400px', // Ensures a minimum height for content spacing
-        }}
+        className={`
+          relative w-full rounded-[30px] overflow-hidden p-6 flex flex-col min-h-[400px]
+          bg-white/5 backdrop-blur-sm border border-white/10
+          transition-shadow duration-300 ease-out
+          ${hover ? 'shadow-glass-card-hover' : 'shadow-glass-card'}
+        `}
       >
-        {/* Add OrganicBackgroundEffect here */}
+        {/* Organic Background Effect */}
         <OrganicBackgroundEffect
           intensity={isActive ? 'medium' : 'subtle'}
           colorScheme={index % 2 === 0 ? 'contrast' : 'cool'}
-          isStatic={true} // Changed from static={true} to isStatic={true}
+          isStatic={true}
         />
 
-        {/* The existing gradient overlay */}
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: '60%',
-            background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.1), transparent)',
-            transform: 'rotate(5deg) translateY(-50%) translateX(-10%)',
-            pointerEvents: 'none',
-          }}
-        />
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 h-[60%] bg-gradient-to-b from-white/10 to-transparent transform rotate-3 -translate-y-1/2 -translate-x-[10%] pointer-events-none" />
 
-        <div
-          style={{
-            position: 'relative',
-            zIndex: 2,
-            textAlign: 'center',
-            flexGrow: 1,
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          <h3
-            style={{
-              fontSize: '28px',
-              marginBottom: '12px',
-              fontFamily: 'var(--font-sans)',
-              fontWeight: '300',
-              color: 'var(--color-foreground)',
-            }}
-          >
+        <div className="relative z-[2] text-center flex-grow flex flex-col">
+          <h3 className="text-[28px] mb-3 font-sans font-light text-foreground">
             {plan.name}
           </h3>
 
           {plan.hasMultipleIntervals && plan.intervals && (
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                gap: '8px',
-                margin: '0 auto 15px auto',
-                background: 'rgba(0,0,0,0.1)',
-                padding: '4px',
-                borderRadius: '20px',
-                width: 'fit-content',
-              }}
-            >
+            <div className="flex justify-center gap-2 mx-auto mb-4 bg-black/10 p-1 rounded-[20px] w-fit">
               {Object.keys(plan.intervals).map((intervalKey) => (
                 <button
                   key={intervalKey}
@@ -310,18 +217,10 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
                     e.stopPropagation();
                     onIntervalChange(intervalKey);
                   }}
-                  style={{
-                    background: (selectedInterval || Object.keys(plan.intervals || {})[0]) === intervalKey ? 'rgba(255,255,255,0.2)' : 'none',
-                    border: 'none',
-                    padding: '6px 12px',
-                    borderRadius: '16px',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    fontSize: '13px',
-                    fontFamily: 'var(--font-sans)',
-                    fontWeight: '300',
-                    color: 'var(--color-foreground)',
-                  }}
+                  className={`
+                    border-none px-3 py-1.5 rounded-2xl cursor-pointer transition-all duration-300 text-[13px] font-sans font-light text-foreground
+                    ${(selectedInterval || Object.keys(plan.intervals || {})[0]) === intervalKey ? 'bg-white/20' : 'bg-transparent'}
+                  `}
                 >
                   {plan.toggleLabels?.[intervalKey] ||
                     intervalKey.charAt(0).toUpperCase() + intervalKey.slice(1)}
@@ -330,68 +229,27 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
             </div>
           )}
 
-          <p
-            style={{
-              fontSize: '40px',
-              marginBottom: '4px',
-              fontFamily: 'var(--font-sans)',
-              fontWeight: '300',
-              color: 'var(--color-foreground)',
-            }}
-          >
+          <p className="text-[40px] mb-1 font-sans font-light text-foreground">
             ${currentPrice}
           </p>
 
-          <p
-            style={{
-              fontSize: '14px',
-              marginBottom: '20px',
-              fontFamily: 'var(--font-sans)',
-              color: 'var(--color-secondary)',
-            }}
-          >
+          <p className="text-sm mb-5 font-sans text-text-secondary">
             {currentIntervalText}
           </p>
 
-          {/* Billing details: Cancel anytime + Next billing date */}
-          <p
-            style={{
-              fontSize: '12px',
-              marginTop: '-10px',
-              marginBottom: '16px',
-              fontFamily: 'var(--font-sans)',
-              color: 'var(--color-secondary)'
-            }}
-          >
+          {/* Billing details */}
+          <p className="text-xs -mt-2.5 mb-4 font-sans text-text-secondary">
             Cancel anytime • Next billing: {computeNextBillingDateText(plan, selectedInterval)}
           </p>
 
-          <ul
-            style={{
-              listStyle: 'none',
-              padding: 0,
-              margin: '0 auto 24px auto',
-              textAlign: 'left',
-              flexGrow: 1,
-              width: 'fit-content',
-              minHeight: '50px', // Example: Ensure feature list area has some minimum height
-            }}
-          >
+          <ul className="list-none p-0 mx-auto mb-6 text-left flex-grow w-fit min-h-[50px]">
             {plan.features &&
               plan.features.map((feature, fIndex) => (
                 <li
                   key={fIndex}
-                  style={{
-                    fontSize: '15px',
-                    marginBottom: '10px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    fontFamily: 'var(--font-sans)',
-                    fontWeight: '300',
-                    color: 'var(--color-foreground)',
-                  }}
+                  className="text-[15px] mb-2.5 flex items-center font-sans font-light text-foreground"
                 >
-                  <span style={{ marginRight: '10px', color: 'var(--color-accent-green)' }}>✓</span>
+                  <span className="mr-2.5 text-accent-green">✓</span>
                   {feature}
                 </li>
               ))}
@@ -399,13 +257,13 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
 
           <button
             data-payment-cta
-            style={{
-              ...choosePlanBaseStyle,
-              ...(buttonHover ? choosePlanHoverStyle : {}),
-            }}
             onClick={handlePurchaseClick}
-            onMouseEnter={() => setButtonHover(true)}
-            onMouseLeave={() => setButtonHover(false)}
+            className={`
+              w-[80%] py-3 rounded-lg font-medium border border-white/20 cursor-pointer text-base transition-all duration-300 mt-auto self-center
+              font-sans text-foreground shadow-sm
+              bg-gradient-to-b from-white/15 to-white/5
+              hover:from-white/25 hover:to-white/10 hover:shadow-md hover:-translate-y-px
+            `}
           >
             Choose Plan
           </button>
@@ -413,22 +271,10 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
       </div>
 
       {layout === 'stacked' && !isActive && (
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '-25px', // Adjusted slightly because the card itself moved up
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: '100px',
-            textAlign: 'center',
-            fontSize: '14px',
-            pointerEvents: 'none',
-            opacity: hover ? 1 : 0,
-            transition: 'opacity 0.3s ease',
-            fontFamily: 'var(--font-sans)',
-            color: 'var(--color-secondary)',
-          }}
-        >
+        <div className={`
+          absolute -bottom-6 left-1/2 -translate-x-1/2 w-[100px] text-center text-sm pointer-events-none transition-opacity duration-300 font-sans text-text-secondary
+          ${hover ? 'opacity-100' : 'opacity-0'}
+        `}>
           Click to view
         </div>
       )}
@@ -446,98 +292,55 @@ const PricingSection: React.FC<PricingSectionProps> = ({ plans = [], id }) => {
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [selectedIntervals, setSelectedIntervals] = useState<Record<number, string>>({});
   const metrics = usePerformanceMetrics();
-  const [layoutMode] = useState<'stacked' | 'side-by-side'>('side-by-side');
 
-  // Initialize selected intervals (important for multi-interval plans)
+  // Use CSS media queries instead of state for layout mode
+  // Default to side-by-side on large screens, stacked on small is handled via CSS classes if we wanted, 
+  // but preserving the logic: we'll render the responsive grid structure.
+
+  // Initialize selected intervals
   useEffect(() => {
     const initialIntervals: Record<number, string> = {};
     plans.forEach((plan, index) => {
       if (plan.hasMultipleIntervals && plan.intervals) {
-        // Default to the first interval key if available
         initialIntervals[index] = Object.keys(plan.intervals)[0] || 'monthly';
       }
     });
     setSelectedIntervals(initialIntervals);
-  }, [plans]); // Re-run if plans change
+  }, [plans]);
 
   return (
     <Section id="pricing" className="pricing-section py-16" data-pricing>
       <div className="container mx-auto px-4 py-8" data-cta>
-        <h2 className="font-sans text-4xl md:text-5xl text-[var(--color-foreground)] mb-6 font-light text-center">
+        <h2 className="font-sans text-4xl md:text-5xl text-foreground mb-6 font-light text-center">
           Membership Options
         </h2>
 
-        {layoutMode === 'stacked' ? (
-          <div className="relative w-full h-[550px] mt-16 flex justify-center items-start mb-8">
-            {plans.map((plan, index) => (
-              <MembershipCard
-                key={plan.id}
-                plan={plan}
-                isActive={index === activeCardIndex}
-                onSelect={() => setActiveCardIndex(index)}
-                index={index}
-                activeIndex={activeCardIndex}
-                totalCards={plans.length}
-                selectedInterval={selectedIntervals[index]}
-                onIntervalChange={(interval) => {
-                  setSelectedIntervals(prev => ({
-                    ...prev,
-                    [index]: interval
-                  }));
-                }}
-                onPurchase={metrics.recordPaymentClick}
-                layout="stacked"
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="w-full mt-10 flex flex-col items-center gap-4 lg:flex-row lg:justify-center lg:items-stretch lg:gap-0">
-            {plans.map((plan, index) => (
-              <MembershipCard
-                key={plan.id}
-                plan={plan}
-                isActive={true}
-                onSelect={() => {}}
-                index={index}
-                activeIndex={0}
-                totalCards={plans.length}
-                selectedInterval={selectedIntervals[index]}
-                onIntervalChange={(interval) => {
-                  setSelectedIntervals(prev => ({
-                    ...prev,
-                    [index]: interval
-                  }));
-                }}
-                onPurchase={metrics.recordPaymentClick}
-                layout="side-by-side"
-              />
-            ))}
-          </div>
-        )}
-
-        {layoutMode === 'stacked' && (
-          <div className="flex justify-center items-center gap-4 mt-4">
-            <button
-              onClick={() => activeCardIndex > 0 && setActiveCardIndex(activeCardIndex - 1)}
-              disabled={activeCardIndex === 0}
-              className="w-12 h-12 rounded-full border border-[var(--color-foreground-muted)] text-[var(--color-foreground)] hover:bg-[var(--color-foreground-muted)] transition-colors disabled:opacity-30 disabled:cursor-not-allowed backdrop-blur-sm bg-white/10 flex items-center justify-center"
-              aria-label="Previous plan"
-            >
-              ←
-            </button>
-            <button
-              onClick={() => activeCardIndex < plans.length - 1 && setActiveCardIndex(activeCardIndex + 1)}
-              disabled={activeCardIndex === plans.length - 1}
-              className="w-12 h-12 rounded-full border border-[var(--color-foreground-muted)] text-[var(--color-foreground)] hover:bg-[var(--color-foreground-muted)] transition-colors disabled:opacity-30 disabled:cursor-not-allowed backdrop-blur-sm bg-white/10 flex items-center justify-center"
-              aria-label="Next plan"
-            >
-              →
-            </button>
-          </div>
-        )}
+        {/* Responsive Container: Stacked on mobile (default), Side-by-side on LG */}
+        <div className="w-full mt-10 flex flex-col items-center gap-6 lg:flex-row lg:justify-center lg:items-stretch lg:gap-0">
+          {plans.map((plan, index) => (
+            <MembershipCard
+              key={plan.id}
+              plan={plan}
+              isActive={true} // Always active in the responsive grid view
+              onSelect={() => { }}
+              index={index}
+              activeIndex={0}
+              totalCards={plans.length}
+              selectedInterval={selectedIntervals[index]}
+              onIntervalChange={(interval) => {
+                setSelectedIntervals(prev => ({
+                  ...prev,
+                  [index]: interval
+                }));
+              }}
+              onPurchase={metrics.recordPaymentClick}
+              layout="side-by-side"
+            />
+          ))}
+        </div>
 
         {process.env.NODE_ENV !== 'production' ? (
-          <div className="mt-6 text-center text-sm text-[var(--color-secondary)]">
+          <div className="mt-6 text-center text-sm text-text-secondary">
             <p>Dev Metrics: TTFCTA: {metrics.timeToFirstCTA ? (metrics.timeToFirstCTA / 1000).toFixed(2) + 's' : '—'} | TTPricing: {metrics.timeToPricing ? (metrics.timeToPricing / 1000).toFixed(2) + 's' : '—'} | Clicks→Payment: {metrics.clicksToPayment ?? '—'} | Payment Attempts: {metrics.paymentAttempts}</p>
           </div>
         ) : null}

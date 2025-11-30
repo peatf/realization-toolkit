@@ -91,7 +91,7 @@ export const debounce = (func: Function, wait: number = 20): (...args: any[]) =>
  * @param selector The CSS selector for elements to apply parallax to
  * @param speedFactor The speed factor for the parallax effect (negative moves opposite to scroll)
  */
-export const setupParallaxScroll = (selector: string, speedFactor: number = 0.5): void => {
+export const setupParallaxScroll = (selector: string, speedFactor: number = 0.5): (() => void) | undefined => {
   if (typeof window === 'undefined') return;
   
   const elements = document.querySelectorAll<HTMLElement>(selector);
@@ -116,10 +116,14 @@ export const setupParallaxScroll = (selector: string, speedFactor: number = 0.5)
     });
   }, 10);
   
-  window.addEventListener('scroll', handleScroll);
+  window.addEventListener('scroll', handleScroll, { passive: true });
   
   // Call once to set initial position
   handleScroll();
+
+  return () => {
+    window.removeEventListener('scroll', handleScroll);
+  };
 };
 
 /**

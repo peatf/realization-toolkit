@@ -82,6 +82,7 @@ body::before {
     radial-gradient(var(--color-noise) 1px, transparent 1px);
   background-size: 4px 4px;
   background-position: 0 0, 2px 2px;
+  /* Use Tailwind animation utility if possible, but keep here for global effect */
   animation: subtleNoise 1s steps(2) infinite;
 }
 
@@ -118,7 +119,7 @@ body::after {
   animation: gradientMove 25s ease-in-out infinite alternate;
 }
 
-/* Animation for subtle noise effect */
+/* Animations defined in Tailwind config, but kept here for global pseudo-elements */
 @keyframes subtleNoise {
    0% { background-position: 0 0, 2px 2px; }
    100% { background-position: 0 0, 2.1px 2.1px; }
@@ -128,18 +129,6 @@ body::after {
   0% {
     background-position: 0% 0%;
     background-size: 100% 100%;
-  }
-  25% {
-    background-position: 3% 5%;
-    background-size: 105% 110%;
-  }
-  50% {
-    background-position: -2% 8%;
-    background-size: 110% 105%;
-  }
-  75% {
-    background-position: 5% 3%;
-    background-size: 108% 115%;
   }
   100% {
     background-position: 7% -3%;

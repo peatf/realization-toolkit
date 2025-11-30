@@ -1,50 +1,53 @@
-import { gsap } from 'gsap';
+import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
+
+let scrollTriggerRegistered = false;
 
 export function initSectionObserver() {
   // Only run on client side
-  if (typeof window === 'undefined') return;
-  
-  // Register GSAP plugins
-  if (gsap) {
+  if (typeof window === 'undefined') return () => { };
+
+  if (!scrollTriggerRegistered) {
     gsap.registerPlugin(ScrollTrigger);
-  } else {
-    console.warn("GSAP not available");
-    return;
+    scrollTriggerRegistered = true;
   }
-  
-  // Wait for DOM to be fully loaded
-  setTimeout(() => {
-    // Get all sections that should be animated on scroll
-    const sections = document.querySelectorAll('.section-animated');
-    
-    if (!sections.length) {
-      console.log("No animated sections found");
-      return;
-    }
-    
-    sections.forEach((section, index) => {
-      // Initial state - slightly transparent but VISIBLE
-      gsap.set(section, { 
-        opacity: 0.85, // Start mostly visible!
-        y: 15
-      });
-      
-      // Create scroll trigger
-      ScrollTrigger.create({
-        trigger: section,
-        start: 'top 85%',
-        onEnter: () => {
-          // Animate to fully visible
-          gsap.to(section, {
-            opacity: 1,
-            y: 0,
-            duration: 0.8,
-            ease: "power2.out"
-          });
-        },
-        once: true
-      });
+
+  // Get all sections that should be animated on scroll
+  const sections = document.querySelectorAll('.section-animated');
+
+  if (!sections.length) {
+    return () => { };
+  }
+
+  const triggers: ScrollTrigger[] = [];
+
+  sections.forEach((section) => {
+    // Initial state
+    gsap.set(section, {
+      opacity: 0.85,
+      y: 15
     });
-  }, 100); // Short delay to ensure DOM is ready
+
+    // Create scroll trigger
+    const trigger = ScrollTrigger.create({
+      trigger: section,
+      start: 'top 85%',
+      onEnter: () => {
+        gsap.to(section, {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "power2.out"
+        });
+      },
+      once: true
+    });
+
+    triggers.push(trigger);
+  });
+
+  // Return cleanup function
+  return () => {
+    triggers.forEach(t => t.kill());
+  };
 }

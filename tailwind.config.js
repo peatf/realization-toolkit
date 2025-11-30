@@ -12,17 +12,21 @@ module.exports = {
       },
       colors: {
         // Updated color palette
-        background: '#FEFFFA',
+        background: 'var(--color-background)',
+        foreground: 'var(--color-foreground)',
         text: {
-          primary: '#1A1A1A',
-          secondary: '#5A5A5A',
+          primary: 'var(--color-foreground)',
+          secondary: 'var(--color-secondary)',
         },
-        card: '#EFEFEF',
+        card: 'var(--color-card)',
         accent: {
-          taupe: '#D8D0C9',
-          green: '#AFCEAE',
-          sand: '#E5DED5',
-          lavender: '#B0B7D8',
+          taupe: 'var(--color-accent-taupe)',
+          green: 'var(--color-accent-green)',
+          sand: 'var(--color-accent-sand)',
+          lavender: 'var(--color-accent-lavender)',
+          // New colors from VisualPreview
+          raspberry: '#AA4369',
+          copper: '#C2995F',
         },
         // Keep the original palette for backward compatibility
         mist: {
@@ -79,6 +83,8 @@ module.exports = {
         'glass-sm': '0 4px 12px rgba(0, 0, 0, 0.03)',
         'glass-md': '0 8px 24px rgba(0, 0, 0, 0.04)',
         'glass-lg': '0 12px 32px rgba(0, 0, 0, 0.05)',
+        'glass-card': '0 8px 32px 0 rgba(31, 38, 135, 0.2)',
+        'glass-card-hover': '0 12px 40px 0 rgba(31, 38, 135, 0.3)',
         // Keep original neumorphic shadows for backward compatibility
         'neu-sm': '5px 5px 10px rgba(0, 0, 0, 0.05), -5px -5px 10px rgba(255, 255, 255, 0.05)',
         'neu-md': '8px 8px 16px rgba(0, 0, 0, 0.06), -8px -8px 16px rgba(255, 255, 255, 0.06)',
@@ -104,6 +110,27 @@ module.exports = {
         xl: '16px',
         '2xl': '24px',
         '3xl': '32px',
+      },
+      animation: {
+        'subtle-noise': 'subtleNoise 1s steps(2) infinite',
+        'gradient-move': 'gradientMove 25s ease-in-out infinite alternate',
+        'fog': 'fogAnimation 60s linear infinite',
+        'fog-delayed': 'fogAnimation 45s linear infinite -10s',
+        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+      },
+      keyframes: {
+        subtleNoise: {
+          '0%': { backgroundPosition: '0 0, 2px 2px' },
+          '100%': { backgroundPosition: '0 0, 2.1px 2.1px' },
+        },
+        gradientMove: {
+          '0%': { backgroundPosition: '0% 0%', backgroundSize: '100% 100%' },
+          '100%': { backgroundPosition: '7% -3%', backgroundSize: '115% 112%' },
+        },
+        fogAnimation: {
+          '0%': { transform: 'translateX(-150vw)' },
+          '100%': { transform: 'translateX(150vw)' },
+        },
       },
     },
   },

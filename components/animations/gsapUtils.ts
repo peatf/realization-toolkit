@@ -143,7 +143,7 @@ export const createScrollAnimation = (element: HTMLElement, animation: {
   end?: string,
   markers?: boolean
 }) => {
-  if (!element) return;
+  if (!element) return () => {};
   
   const { from, to, scrub = false, start = "top bottom", end = "bottom center", markers = false } = animation;
   
@@ -151,7 +151,7 @@ export const createScrollAnimation = (element: HTMLElement, animation: {
   gsap.set(element, from);
   
   // Create the scroll-triggered animation
-  ScrollTrigger.create({
+  const trigger = ScrollTrigger.create({
     trigger: element,
     start,
     end,
@@ -166,6 +166,10 @@ export const createScrollAnimation = (element: HTMLElement, animation: {
     },
     onLeaveBack: scrub ? undefined : () => {}
   });
+
+  return () => {
+    trigger.kill();
+  };
 };
 
 /**
@@ -235,9 +239,9 @@ export const createTextAnimation = (element: HTMLElement, staggerAmount: number 
  * @param speed The speed of the parallax effect (negative values move opposite to scroll)
  */
 export const createParallaxEffect = (element: HTMLElement, speed: number = -0.5) => {
-  if (!element) return;
+  if (!element) return () => {};
   
-  gsap.to(element, {
+  const tween = gsap.to(element, {
     y: () => speed * ScrollTrigger.maxScroll(window),
     ease: "none",
     scrollTrigger: {
@@ -247,6 +251,11 @@ export const createParallaxEffect = (element: HTMLElement, speed: number = -0.5)
       scrub: true
     }
   });
+
+  return () => {
+    tween.scrollTrigger?.kill();
+    tween.kill();
+  };
 };
 
 /**
